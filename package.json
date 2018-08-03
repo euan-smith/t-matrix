@@ -1,0 +1,28 @@
+{
+  "name": "t-matrix",
+  "version": "0.0.1",
+  "description": "A small type-array based matrix lib. A core matrix type plus just the other functions you need. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zakalwe314/t-matrix.git"
+  },
+  "keywords": [
+    "matrix",
+    "typedArray",
+    "float64",
+    "linear",
+    "algebra",
+    "decomposition",
+    "solver"
+  ],
+  "author": "Euan Smith <euan1971@yahoo.co.uk> (https://github.com/zakalwe314)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zakalwe314/t-matrix/issues"
+  },
+  "homepage": "https://github.com/zakalwe314/t-matrix#readme"
+}
