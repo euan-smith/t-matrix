@@ -4,7 +4,8 @@
   "description": "A small type-array based matrix lib. A core matrix type plus just the other functions you need. ",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require reify test/*.js"
+    "test": "mocha --require reify test/*.js",
+    "build": "rollup -c"
   },
   "repository": {
     "type": "git",
@@ -29,9 +30,12 @@
     "chai": "^4.1.2",
     "chai-almost": "^1.0.1",
     "mocha": "^5.2.0",
-    "reify": "^0.17.2"
+    "reify": "^0.17.2",
+    "rollup": "^0.65.2",
+    "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-node-resolve": "^3.4.0"
   },
   "publishConfig": {
-    "registry":"https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/"
   }
 }
