@@ -30,5 +30,8 @@
     "chai-almost": "^1.0.1",
     "mocha": "^5.2.0",
     "reify": "^0.17.2"
+  },
+  "publishConfig": {
+    "registry":"https://registry.npmjs.org/"
   }
 }
