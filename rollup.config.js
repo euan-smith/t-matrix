@@ -1,6 +1,7 @@
 // rollup.config.js
 import nodeResolve  from 'rollup-plugin-node-resolve';
 import json         from 'rollup-plugin-json';
+import {terser}     from 'rollup-plugin-terser';
 
 export default [
   {
@@ -19,6 +20,7 @@ export default [
     plugins: [
       nodeResolve({jsnext: true}), // load npm modules from npm_modules
       json(), // avoid the package.json parsing issue
+      terser(),
     ],
   },
 ];

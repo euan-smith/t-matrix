@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --require reify test/*.js",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "publish": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -33,7 +34,8 @@
     "reify": "^0.17.2",
     "rollup": "^0.65.2",
     "rollup-plugin-json": "^3.0.0",
-    "rollup-plugin-node-resolve": "^3.4.0"
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-terser": "^2.0.2"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
