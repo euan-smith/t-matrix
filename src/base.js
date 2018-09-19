@@ -86,11 +86,13 @@ export class Matrix{
   }
   toArray(){
     if (!this[SKIP]){
-      return this[DATA].slice(this.offset,this.offset+this.rows*this.cols);
+      return this[DATA].slice(0,this.rows*this.cols);
     }
     const rtn=new Float64Array(this.rows*this.cols);
-    for (let i=this.offset,j=0,c=0;c<this.cols;i+=this[SPAN],j+=this.rows,c++){
-      const toCopy = new Float64Array(this[DATA].buffer,i*8,this.rows);
+    //i is the BYTE position in the source buffer, j is the INDEX position in the destination array
+    //hence adding SPAN*8 to i but just rows to j
+    for (let i=this[DATA].byteOffset,j=0,c=0;c<this.cols;i+=this[SPAN]*8,j+=this.rows,c++){
+      const toCopy = new Float64Array(this[DATA].buffer,i,this.rows);
       rtn.set(toCopy,j);
     }
     return rtn;
@@ -142,8 +144,12 @@ export class Matrix{
   row(r){
     return new Matrix(1,this.cols,this,this[SPAN],r);
   }
-  subMatrix(r,c,rows,cols){
-    return new Matrix(rows,cols,this,this[SPAN],r+c*this[SPAN]);
+  subMatrix(r=0,c=0,rEnd=0,cEnd=0){
+    if (r<=0) r+=this.rows;
+    if (c<=0) c+=this.cols;
+    if (rEnd<=0) rEnd+=this.rows;
+    if (cEnd<=0) cEnd+=this.cols;
+    return new Matrix(rEnd-r,cEnd-c,this,this[SPAN],r+c*this[SPAN]);
   }
   fill(v){
     this.setEach(()=>v);
