@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "description": "A small type-array based matrix lib. A core matrix type plus just the other functions you need. ",
   "main": "dist/bundle.js",
+  "module":"dist/bundle.mjs",
   "scripts": {
     "test": "mocha --require reify test/*.js",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",

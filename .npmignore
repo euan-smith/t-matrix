@@ -1,2 +1,3 @@
 *
-~dist/bundle.js
+!dist/bundle.mjs
+!dist/bundle.js
