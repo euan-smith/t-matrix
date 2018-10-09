@@ -2,9 +2,10 @@
   "name": "t-matrix",
   "version": "0.0.1",
   "description": "A small type-array based matrix lib. A core matrix type plus just the other functions you need. ",
-  "main": "index.js",
+  "main": "dist/bundle.js",
   "scripts": {
-    "test": "mocha --require reify test/*.js"
+    "test": "mocha --require reify test/*.js",
+    "build": "rollup -c"
   },
   "repository": {
     "type": "git",
@@ -26,9 +27,17 @@
   },
   "homepage": "https://github.com/zakalwe314/t-matrix#readme",
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
     "chai": "^4.1.2",
     "chai-almost": "^1.0.1",
     "mocha": "^5.2.0",
-    "reify": "^0.17.2"
+    "reify": "^0.17.2",
+    "rollup": "^0.66.5",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^8.2.1",
+    "rollup-plugin-json": "^2.3.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "uglify-js": "^3.0.28"
   }
 }
