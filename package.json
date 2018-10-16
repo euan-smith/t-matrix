@@ -1,6 +1,6 @@
 {
   "name": "t-matrix",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A small type-array based matrix lib. A core matrix type plus just the other functions you need. ",
   "main": "index.js",
   "scripts": {
