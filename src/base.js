@@ -132,6 +132,9 @@ export class Matrix{
           rtn[DATA][k]+=this[DATA][i]*m[DATA][j];
     return rtn;
   }
+  pmult(m){
+    return this.map((v,r,c)=>v*m.get(r,c));
+  }
   scale(s){
     return this.setEach(v=>v*s);
   }
@@ -143,6 +146,10 @@ export class Matrix{
   }
   row(r){
     return new Matrix(1,this.cols,this,this[SPAN],r);
+  }
+  diag(){
+    const s=Math.max(this.rows,this.cols);
+    return new Matrix(1,s,this,this[SPAN]+1);
   }
   subMatrix(r=0,c=0,rEnd=0,cEnd=0){
     if (r<=0) r+=this.rows;

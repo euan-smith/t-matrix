@@ -2,6 +2,11 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import * as Matrix from "../src/matrix";
+import {DATA, SKIP, SPAN} from "../src/base";
+
+function printAll(m){
+  console.log(m,m.toArray().join(','),{span:m[SPAN],skip:m[SKIP]})
+}
 describe("matrix",function () {
   describe("minor",function(){
     it('produces a minor(0,0) matrix',function () {
@@ -60,5 +65,28 @@ describe("matrix",function () {
       const m=Matrix.from([1,2,3,4,5,6,7,8,9]);
       expect(m.subMatrix(1,1).toArray()).to.eql(new Float64Array([5,6,8,9]));
     })
-  })
+  });
+  describe('diag instance function',function(){
+    it('returns a vector containing the diagonal elements', function(){
+      expect(Matrix.eye(6).diag().toArray()).to.eql(Matrix.ones(6,1).toArray());
+    });
+  });
+  describe('sum',function(){
+    it('adds up the contents of a matrix',function(){
+      const m=Matrix.from([1,2,3,4,2,3,4,1,3,4,1,2,4,1,2,3]);
+      expect(Matrix.sum(m)).to.eql(40);
+    })
+  });
+  describe('sumColumns',function(){
+    it('adds up the columns of a matrix', function(){
+      const m=Matrix.from([1,2,3,4,2,3,4,1,3,4,1,2,4,1,2,3]);
+      expect(Matrix.sumColumns(m).toArray()).to.eql(new Float64Array([10,10,10,10]));
+    })
+  });
+  describe('trace',function(){
+    it('returns the trace of a matrix',function(){
+      const m=Matrix.from([1,2,3,4,2,3,4,1,3,4,1,2,4,1,2,3]);
+      expect(Matrix.trace(m)).to.eql(8);
+    })
+  });
 });
