@@ -51,5 +51,14 @@ describe("matrix",function () {
       const v=Matrix.vect([2,-2,2,-2]);
       expect(m.ldiv(v).toArray()).to.eql(new Float64Array([-1,1,-1,1]));
     })
+  });
+  describe('toArray',function(){
+    it('outputs the right thing for an eye(4) array', function(){
+      expect(Matrix.eye(4).toArray()).to.eql(new Float64Array([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]));
+    });
+    it('outputs the correct array for a submatrix', function(){
+      const m=Matrix.from([1,2,3,4,5,6,7,8,9]);
+      expect(m.subMatrix(1,1).toArray()).to.eql(new Float64Array([5,6,8,9]));
+    })
   })
 });

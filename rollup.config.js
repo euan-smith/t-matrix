@@ -1,28 +1,27 @@
 // rollup.config.js
 import nodeResolve  from 'rollup-plugin-node-resolve';
-import commonjs     from 'rollup-plugin-commonjs';
-import babel        from 'rollup-plugin-babel';
 import json         from 'rollup-plugin-json';
+import {terser}     from 'rollup-plugin-terser';
 
-export default {
-  input: 'index.js',
-  output: [
-    {
-      file: 'dist/bundle.js',
-      format: 'cjs',
-      sourcemap: true
-    },
-    {
-      file: 'dist/bundle.mjs',
-      format: 'es',
-      sourcemap: true
-    }
-  ],
-  plugins: [
-    nodeResolve({ jsnext: true }), // load npm modules from npm_modules
-    json(), // avoid the package.json parsing issue
-    commonjs(), // convert CommonJS modules to ES6
-    babel(), // convert to ES5
-  ]
-};
+export default [
+  {
+    input: 'src/matrix.js',
+    external:['events'],
+    output: [
+      {
+        file: 'index.mjs',
+        format: 'es',
+      },
+      {
+        file: 'index.js',
+        format: 'cjs',
+      },
+    ],
+    plugins: [
+      nodeResolve({jsnext: true}), // load npm modules from npm_modules
+      json(), // avoid the package.json parsing issue
+      terser(),
+    ],
+  },
+];
 
