@@ -56,9 +56,23 @@ export class Matrix{
       [DATA]:{value:data}
     });
   }
+
+  /**
+   * Get a matrix value.
+   * @param r {Number} The row number
+   * @param c {Number} The column number
+   * @returns {Number} the contents of the matrix at the specified location
+   */
   get(r,c){
     return this[DATA][r+c*this[SPAN]];
   }
+  /**
+   * Set a matrix value
+   * @param r {Number} The row number
+   * @param c {Number} The column number
+   * @param v {Number} The number to set at the specified row and column
+   * @returns {Matrix}
+   */
   set(r,c,v){
     this[DATA][r+c*this[SPAN]]=v;
     return this;
