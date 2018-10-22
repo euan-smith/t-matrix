@@ -2,8 +2,8 @@
   "name": "t-matrix",
   "version": "0.0.3",
   "description": "A small type-array based matrix lib. A core matrix type plus just the other functions you need. ",
-  "main": "dist/bundle.js",
-  "module": "dist/bundle.mjs",
+  "main": "index.js",
+  "module": "index.mjs",
   "scripts": {
     "test": "mocha --require reify test/*.js",
     "build": "rollup -c",
@@ -37,7 +37,6 @@
     "rollup": "^0.66.5",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.1",
-    "uglify-js": "^3.0.28"
     "rollup-plugin-json": "^3.0.0",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-terser": "^2.0.2"

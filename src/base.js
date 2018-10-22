@@ -1,5 +1,24 @@
 export const DATA=Symbol(), SPAN=Symbol(), SKIP=Symbol();
 
+//map multiple matrices onto one
+export function nMap(mats, fn){
+  const rows=Math.min(...mats.map(m=>m.rows));
+  const cols=Math.min(...mats.map(m=>m.cols));
+  const rtn=new Matrix(rows,cols);
+  const skip=mats.map(m=>m[SKIP]+m.rows-rows);
+  const cnt=mats.length;
+  const idx=new Array(cnt).fill(0);
+  for(let i=0,c=0;c<cols;c++){
+    for(let r=0;r<rows;r++,i++){
+      const vals=new Array(cnt);
+      for(let j=0;j<cnt;j++)vals[j]=mats[DATA][idx[j]++];
+      rtn[DATA][i]=fn(vals,r,c);
+    }
+    for(let j=0;j<cnt;j++)idx[j]+=skip[j];
+  }
+  return rtn;
+}
+
 /**
  *
  * @class Matrix
@@ -77,28 +96,20 @@ export class Matrix{
     this[DATA][r+c*this[SPAN]]=v;
     return this;
   }
-  map(fn){
-    return this.clone().setEach(fn);
-  }
-  setEach(fn){
+
+  /**
+   * Define an iterator which will step through the data in column order
+   */
+  *[Symbol.iterator](){
     for(let i=0,c=0;c<this.cols;c++,i+=this[SKIP])
       for(let r=0;r<this.rows;r++,i++)
-        this[DATA][i]=fn(this[DATA][i],r,c,i);
-    return this;
+        yield this[DATA][i];
   }
-  setTo(a){
-    if (a instanceof Matrix){
-      a = a.toArray();
-    }
-    this.setEach((v,r,c,i)=>a[i]);
-  }
-  forEach(fn){
-    for(let i=0,c=0;c<this.cols;c++,i+=this[SKIP])
-      for(let r=0;r<this.rows;r++,i++)
-        fn(this[DATA][i],r,c,i);
-    return this;
-  }
-  toArray(){
+  /**
+   * Returns a new Float64Array with the matrix data in column order
+   * @returns {Float64Array}
+   */
+  toFloatArray(){
     if (!this[SKIP]){
       return this[DATA].slice(0,this.rows*this.cols);
     }
@@ -111,15 +122,71 @@ export class Matrix{
     }
     return rtn;
   }
-  clone(){
-    return new Matrix(this.rows,this.cols,this.toArray());
+
+  /**
+   * This callback is used with the matrix map
+   * @callback Matrix~mapCallback
+   * @param currentValue {number} the value of the current matrix element
+   * @param row {number} the row index
+   * @param col {number} the column index
+   * @param idx {number} the raw data array index
+   * @returns {number} the value for the new matrix
+   */
+
+  /**
+   * Create a new matrix with the results of calling a provided function on every element in the calling matrix
+   * @param fn {Matrix~mapCallback} A function which is called for every matrix element, with the new matrix built from the return values
+   * @returns {Matrix}
+   */
+  map(fn){
+    return this.clone().setEach(fn);
   }
-  setDiag(fn){
-    const step=this[SPAN]+1, lim=Math.min(this.rows,this.cols);
-    for(let r=0,i=0;r<lim;r++,i+=step)
-      this[DATA][i]=fn(this[DATA][i],r,i);
+
+  /**
+   * modifies the value of each matrix element with the results of calling a provided function.
+   * @param fn {Matrix~mapCallback} A function which is called for every matrix element, with the element set to the returned value
+   * @returns {Matrix}
+   */
+  setEach(fn){
+    for(let i=0,c=0;c<this.cols;c++,i+=this[SKIP])
+      for(let r=0;r<this.rows;r++,i++)
+        this[DATA][i]=fn(this[DATA][i],r,c,i);
     return this;
   }
+
+  /**
+   * This callback is used with the matrix forEach
+   * @callback Matrix~forEachCallback
+   * @param currentValue {number} the value of the current matrix element
+   * @param row {number} the row index
+   * @param col {number} the column index
+   * @param idx {number} the raw data array index
+   */
+
+  /**
+   * call a function on each element of a matrix
+   * @param fn {Matrix~forEachCallback}
+   * @returns {Matrix} returns this
+   */
+  forEach(fn){
+    for(let i=0,c=0;c<this.cols;c++,i+=this[SKIP])
+      for(let r=0;r<this.rows;r++,i++)
+        fn(this[DATA][i],r,c,i);
+    return this;
+  }
+
+  /**
+   * Make a copy of the matrix
+   * @returns {Matrix} a copy of the matrix
+   */
+  clone(){
+    return new Matrix(this.rows,this.cols,this.toFloatArray());
+  }
+
+  /**
+   * return the transpose of the matrix
+   * @returns {Matrix} the transposed matrix
+   */
   transpose(){
     const rtn=new Matrix(this.cols, this.rows);
     const step=this.cols*this.rows-1;
@@ -129,13 +196,12 @@ export class Matrix{
       }
     return rtn;
   }
-  to2dArray(){
-    const data=this.transpose()[DATA];
-    const rtn=[];
-    for(let i=0,r=0;r<this.rows;r++)
-      rtn.push(data.slice(i,i+=this.cols));
-    return rtn;
-  }
+
+  /**
+   * multiply the current matrix by another
+   * @param m
+   * @returns {Matrix} the result of the multiplication
+   */
   mult(m){
     if (typeof m === "number") return this.clone().scale(m);
     const rtn = new Matrix(this.rows, m.cols);
@@ -183,21 +249,6 @@ export class Matrix{
     }
     return rtn;
   }
-  det(){
-    if (this.rows !== this.cols) return 0;
-    const d=this[DATA];
-    if (this.rows === 2) return d[0] * d[3] - d[1] * d[2];
-    if (this.rows === 3) return d[0]*(d[4]*d[8]-d[7]*d[5]) + d[1]*(d[5]*d[6]-d[8]*d[3]) + d[2]*(d[3]*d[7]-d[6]*d[4]);
-    let det = 0;
-    for(let i = 1; i <= this.cols; i += 2)
-      if (i < this.cols)
-        det += d[i-1]*this.minor(i - 1, 0).det() - d[i]*this.minor(i, 0).det();
-      else det += d[i-1]*this.minor(i - 1, 0).det();
-    return det;
-  }
-  inv(){
-    return this.ldiv(Matrix.eye(this.rows));
-  }
   ldiv(m){
     const working = this.clone(), {[DATA]:wd,[SPAN]:ws,rows}=working;
     const rtn = m.clone(), {[DATA]:rd, [SPAN]:rs, cols}=rtn;
@@ -225,5 +276,8 @@ export class Matrix{
       }
     }
     return rtn;
+  }
+  div(m){
+    return (m.transpose().ldiv(this.transpose())).transpose();
   }
 }

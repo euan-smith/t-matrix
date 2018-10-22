@@ -32,3 +32,13 @@ const a=m.ldiv(v);
 //the answer should be [-1,1,-1,1];
 console.log(a.toArray());
 ```
+
+# Todo
+Reduce the core methods to:
+* get
+* set
+* forEach
+* setEach
+* toFloatArray
+* clone
+* map

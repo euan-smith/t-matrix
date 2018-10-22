@@ -1,4 +1,5 @@
 import {Matrix} from './base';
+import {setDiag} from "./helper";
 
 export const
   /**
@@ -25,7 +26,7 @@ export const
    * @param n {number} number of rows and columns
    * @returns {Matrix}
    */
-  eye = n => zeros(n).setDiag(() => 1),
+  eye = n => setDiag(zeros(n),() => 1),
 
   /**
    * @function diag
@@ -33,7 +34,7 @@ export const
    * @param a {Array} An array of values
    * @returns {Matrix}
    */
-  diag = a => zeros(a.length).setDiag((v, i) => a[i]),
+  diag = a => setDiag(zeros(a.length),(v, i) => a[i]),
 
   /**
    * @function vect
