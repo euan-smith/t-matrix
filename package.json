@@ -1,11 +1,12 @@
 {
   "name": "t-matrix",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A small type-array based matrix lib. A core matrix type plus just the other functions you need. ",
   "main": "index.js",
   "module": "index.mjs",
   "scripts": {
     "test": "mocha --require reify test/*.js",
+    "cover": "nyc npm test",
     "build": "rollup -c",
     "prepublish": "npm run build"
   },
@@ -33,6 +34,7 @@
     "chai-almost": "^1.0.1",
     "jsdoc-to-markdown": "^4.0.1",
     "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
     "reify": "^0.17.2",
     "rollup": "^0.66.5",
     "rollup-plugin-babel": "^3.0.2",

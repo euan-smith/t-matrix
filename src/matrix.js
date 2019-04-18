@@ -1,3 +1,2 @@
-
 export * from './create';
-export * from './helper';
+export * from './manipulations';
