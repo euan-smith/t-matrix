@@ -48,3 +48,12 @@ export function sum(matrix){
 export function trace(matrix){
   return sum(matrix.diag());
 }
+
+/**
+ * calculate the inverse of a matrix
+ * @param matrix
+ * @returns {Matrix} the inverse of the supplied matrix
+ */
+export function inv(matrix){
+  return matrix.ldiv(Matrix.eye(this.rows));
+}
