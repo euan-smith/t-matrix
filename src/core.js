@@ -55,6 +55,24 @@ export function from(data){
   throw new Error('Unsupported data for Matrix::from');
 }
 
+export function zeros(r,c){
+  if (!c) c=r;
+  return new Matrix(r,c,0);
+}
+
+export function ones(r,c){
+  if (!c) c=r;
+  return new Matrix(r,c,1);
+}
+
+export function eye(s){
+  return new Matrix(s,s,0).diag(1);
+}
+
+export function sum(m){
+  return [...m].reduce((a,b)=>a+b);
+}
+
 export const isMatrix = (m)=> m instanceof Matrix;
 
 export class Matrix{
@@ -108,7 +126,10 @@ export class Matrix{
   }
 
   diag(set){
-    if (set) return this.diag().set(set);
+    if (set) {
+      this.diag().set(set);
+      return this;
+    }
     const R=this[ROWS],C=this[COLS],D=this[DATA];
     return R.length<C.length?
       new Matrix(R.map((r,i)=>r+C[i]),[0],D):
@@ -119,6 +140,7 @@ export class Matrix{
   set(rows,cols,val){
     let R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
     const D=this[DATA];
+    if (isNum(rows) && isNum(cols) && isNum(val)) D[R[rows]+C[cols]]=val;
     if (arguments.length===1){
       val=rows;
     } else {
@@ -128,16 +150,16 @@ export class Matrix{
       Cl = C.length;
     }
     if (isNum(val)){
-      for(let c of this[COLS])
-        for(let r of this[ROWS])
-          this[DATA][r+c] = val;
+      for(let c of C) for(let r of R)
+        this[DATA][r+c] = val;
+      return this;
     }
     if (!isMatrix(val)) val = from(val);
-    const [vRl,vCl] = val.size();
+    const [vRl,vCl] = val.size;
     if (Rl!==vRl || Cl!==vCl) throw new Error('Assignment error, matrix dimensions must agree');
     const vD = val[DATA], vR=val[ROWS], vC = val[COLS];
-    for (let i=0;i<Rl;i++)
-      for (let j=0;j<Cl;j++)
-        D[R[i]+C[j]] = vD[vR[i]+vC[j]];
+    for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
+      D[R[i]+C[j]] = vD[vR[i]+vC[j]];
+    return this;
   }
 }

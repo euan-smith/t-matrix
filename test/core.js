@@ -1,7 +1,7 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {Matrix, range, from} from "../src/core";
+import {Matrix, range, from, zeros, eye, sum} from "../src/core";
 
 
 describe('range',function(){
@@ -17,6 +17,15 @@ describe('range',function(){
   it('creates a range : for length 3',function(){
     expect([...range([':'],3)]).to.eql([0,1,2]);
   });
+});
+describe('eye',function(){
+  it('returns the identity matrix',function(){
+    const m=eye(4);
+    expect(m.size).to.eql([4,4]);
+    expect([...m.diag()]).to.eql([1,1,1,1]);
+    expect([...m]).to.eql([...m.t]);
+    expect(sum(m)).to.equal(4);
+  })
 });
 describe('Matrix',function(){
   it('creates a matrix',function(){
@@ -34,6 +43,16 @@ describe('Matrix',function(){
     it('can flip the cols of a matrix',function(){
       const m=new Matrix(2,3,[1,2,3,4,5,6]);
       expect([...m.get(':',[-1,'::',-1,0])]).to.eql([3,6,2,5,1,4]);
+    })
+  });
+  describe('set',function(){
+    it('can set a submatrix',function(){
+      const m=zeros(4);
+      expect([...m.set([0,1],[0,1],1)]).to.eql([1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0]);
+    });
+    it('can make one matrix equal another',function(){
+      const m=zeros(2);
+      expect([...m.set([[1,2],[3,4]])]).to.eql([1,3,2,4]);
     })
   })
 });
