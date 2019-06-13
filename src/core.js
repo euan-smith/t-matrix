@@ -1,48 +1,7 @@
 
 export const DATA=Symbol(), ROWS=Symbol(), COLS=Symbol();
 
-import {isNum} from "./tools";
-const isArray = Array.isArray;
-
-export function *range(def, lim){
-  let state=-1, i, step;
-  if (!isArray(def)) def=[def];
-  for (let d of def){
-    switch(state){
-      case -1:
-        if (d===':' || d==='::'){
-          yield i=0;
-        }
-        state=0;
-      // noinspection FallThroughInSwitchStatementJS
-      case 0:
-        if (d===':'){
-          i+=step=1;
-          state=2;
-        } else if (d==='::'){
-          state=1;
-        } else yield i=lim?(d+lim)%lim:d;
-        break;
-      case 1:
-        i+=step=d;
-        state=2;
-        break;
-      case 2:
-        yield* rng(i,step,lim?(d+lim)%lim:d);
-        state=0;
-        break;
-    }
-  }
-  if (state === 2) {
-    if (!lim) throw new Error('Invalid range specification.');
-    yield* rng(i,step,lim-1);
-  }
-}
-
-function *rng(i,step,end){
-  if (step>0) for(;i<=end;i+=step) yield i;
-  else for(;i>=end;i+=step) yield i;
-}
+import {isNum, range, isArray, isFunction} from "./tools";
 
 export function from(data){
   if (isArray(data) && data.length){
@@ -97,21 +56,23 @@ export class Matrix{
   }
 
   * [Symbol.iterator](){
-    for(let c of this[COLS])
-      for(let r of this[ROWS])
+    for(let r of this[ROWS])
+      for(let c of this[COLS])
         yield this[DATA][r+c];
   }
 
   get size(){return [this[ROWS].length,this[COLS].length]}
 
   *rows(){
+    const cols = Array.from(this[COLS]);
     for(let r of this[ROWS])
-      yield this[COLS].map(c=>this[DATA][r+c]);
+      yield cols.map(c=>this[DATA][r+c]);
   }
 
   *cols(){
+    const rows = Array.from(this[ROWS]);
     for(let c of this[COLS])
-      yield this[ROWS].map(r=>this[DATA][r+c]);
+      yield rows.map(r=>this[DATA][r+c]);
   }
 
   get t(){return new Matrix(this[COLS],this[ROWS],this[DATA])}
@@ -150,8 +111,13 @@ export class Matrix{
       Cl = C.length;
     }
     if (isNum(val)){
-      for(let c of C) for(let r of R)
-        this[DATA][r+c] = val;
+      for(let r of R) for(let c of C)
+        D[r+c] = val;
+      return this;
+    }
+    if (isFunction(val)){
+      for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
+        D[R[i]+C[j]] = val(D[R[i]+C[j]],i,j);
       return this;
     }
     if (!isMatrix(val)) val = from(val);
@@ -162,4 +128,16 @@ export class Matrix{
       D[R[i]+C[j]] = vD[vR[i]+vC[j]];
     return this;
   }
+
+  clone(rows,cols){
+    if (rows) return this.get(rows,cols).clone();
+    return new Matrix(this[ROWS].length, this[COLS].length, this);
+  }
+
+  map(fn){return this.clone().set(fn)}
+
+  toString(){
+    return '[ '+[...this.rows()].map(row=>row.join(', ')).join(';\n  ')+' ]\n';
+  }
+
 }

@@ -1,4 +1,4 @@
-import {Matrix} from './base';
+import {Matrix, isMatrix} from './core';
 
 export const
   /**
@@ -17,7 +17,7 @@ export const
    * @param [cols] {number} number of columns
    * @returns {Matrix}
    */
-  ones = (rows, cols) => zeros(rows, cols).fill(1),
+  ones = (rows, cols) => new Matrix(rows, cols || rows, 1),
 
   /**
    * @function eye
@@ -25,31 +25,15 @@ export const
    * @param n {number} number of rows and columns
    * @returns {Matrix}
    */
-  eye = n => zeros(n).setDiag(() => 1),
+  eye = n => zeros(n).diag(1),
 
   /**
    * @function diag
    * creates a new diagonal matrix from the provided array
-   * @param a {Array} An array of values
+   * @param a {Array|Matrix} An array of values or a column matrix
    * @returns {Matrix}
    */
-  diag = a => zeros(a.length).setDiag((v, i) => a[i]),
-
-  /**
-   * @function vect
-   * creates a new column vector from the provided array
-   * @param a {Array} An array of values
-   * @returns {Matrix}
-   */
-  vect = a => new Matrix(a.length, 1, a),
-
-  /**
-   * @function rowVect
-   * creates a new row vector from the provided array
-   * @param a {Array} An array of values
-   * @returns {Matrix}
-   */
-  rowVect = a => new Matrix(1, a.length, a),
+  diag = a => zeros(isMatrix(a)?a.size[0]:a.length).diag(a),
 
   /**
    * @function rand
