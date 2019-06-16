@@ -1,3 +1,60 @@
+/**
+ * The aim is to have a static method 'mixin' of Matrix
+ *
+ * import {Matrix, det} from 't-matrix';
+ * Matrix.mixin(det);
+ *
+ * const m=new Matrix([1,2,3,4]);
+ * m.det();
+ * det(m);
+ * //both will do the same thing
+ *
+ * Change the matrix definitions to
+ * Matrix.from([1,2,3,4]) // column matrix
+ * Matrix.from([[1,2,3,4]]) // row matrix
+ * Matrix.from([[1,2,3,4],[5,6,7,8]]) // 2x4 matrix
+ *
+ * core methods:
+ * get(r,c) => number
+ * get([r1,r2,r3],c) => Matrix
+ * get([1,':',5,-1],c)
+ * get([1,'::',2,5,-1],c)
+ * get([':'],c) === get(':',c)
+ * get(i) => number
+ * get([0,3,-1]) => Matrix (column vector)
+ * get(':') => Matrix (column vector)
+ *
+ * set(r,c,v)
+ * set([r1,r2,r3],c,v)
+ * set([r1,r2,r3],c,[v1,v2,v3])
+ * set([r1,r2,r3],c,matrix)
+ * set([],[],array | typedArray)
+ * set(':',array | matrix | typedArray);
+ *
+ * [Symbol.iterator] *
+ *
+ * pMult(m|v,inPlace),
+ * transpose() / t (accessor property   mult(a, b.t)
+ *
+ *
+ * core properties:
+ * rows, cols
+ * core static method:
+ * from
+ * diag
+ * mixin
+ *
+ * mixins
+ * map(matrix,function[,inPlace]) => matrix.map(function)
+ * forEach
+ * diag
+ * setDiag
+ * to2dArray
+ * mult(...m)
+ * add(...m)
+ */
+
+
 export const DATA=Symbol(), SPAN=Symbol(), SKIP=Symbol();
 
 //map multiple matrices onto one
@@ -23,7 +80,7 @@ export function nMap(mats, fn){
  *
  * @class Matrix
  * @property rows Number the row count
- * @property cols Number the oolumn count
+ * @property cols Number the column count
  * @private [DATA] Float64Array the matrix data
  * @private [SPAN] Number the column span in the array
  * @private [SKIP] Number the entries to skip at the end of a column
@@ -256,6 +313,21 @@ export class Matrix{
     }
     return rtn;
   }
+  det(){
+    if (this.rows !== this.cols) return 0;
+    const d=this[DATA];
+    if (this.rows === 2) return d[0] * d[3] - d[1] * d[2];
+    if (this.rows === 3) return d[0]*(d[4]*d[8]-d[7]*d[5]) + d[1]*(d[5]*d[6]-d[8]*d[3]) + d[2]*(d[3]*d[7]-d[6]*d[4]);
+    let det = 0;
+    for(let i = 1; i <= this.cols; i += 2)
+      if (i < this.cols)
+        det += d[i-1]*this.minor(i - 1, 0).det() - d[i]*this.minor(i, 0).det();
+      else det += d[i-1]*this.minor(i - 1, 0).det();
+    return det;
+  }
+  inv(){
+    return this.ldiv(Matrix.eye(this.rows));
+  }
   ldiv(m){
     const working = this.clone(), {[DATA]:wd,[SPAN]:ws,rows}=working;
     const rtn = m.clone(), {[DATA]:rd, [SPAN]:rs, cols}=rtn;
@@ -288,3 +360,25 @@ export class Matrix{
     return (m.transpose().ldiv(this.transpose())).transpose();
   }
 }
+
+
+//curiosity, a dual pass gaussian filter,  useful when considering convolutions etc.
+/**
+ qFactor = 5;
+
+ b0Coeff = 1.57825 + (2.44413 * qFactor) + (1.4281 * qFactor * qFactor) + (0.422205 * qFactor * qFactor * qFactor);
+ b1Coeff = (2.44413 * qFactor) + (2.85619 * qFactor * qFactor) + (1.26661 * qFactor * qFactor * qFactor);
+ b2Coeff = (-1.4281 * qFactor * qFactor) + (-1.26661 * qFactor * qFactor * qFactor);
+ b3Coeff = 0.422205 * qFactor * qFactor * qFactor;
+
+ normalizationCoeff = 1 - ((b1Coeff + b2Coeff + b3Coeff) / b0Coeff);
+
+ vDenCoeff = [b0Coeff, -b1Coeff, -b2Coeff, -b3Coeff] / b0Coeff;
+
+
+ vXSignal = zeros(61, 1);
+ vXSignal(31) = 10;
+
+ vYSignal = filter(normalizationCoeff, vDenCoeff, vXSignal);
+ vYSignal = filter(normalizationCoeff, vDenCoeff, vYSignal(end:-1:1));
+ **/
