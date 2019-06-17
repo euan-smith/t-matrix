@@ -40,3 +40,19 @@ function *rng(i,step,end){
   if (step>0) for(;i<=end;i+=step) yield i;
   else for(;i>=end;i+=step) yield i;
 }
+
+export function *mapIter(iter,fn){
+  for(let i of iter){
+    yield fn(i);
+  }
+}
+
+const Si=Symbol.iterator;
+export function *zipIters(...iters){
+  iters=iters.map(i=>i[Si]?i[Si]():i);
+  let r=iters.map(i=>i.next());
+  while(r.every(i=>!i.done)){
+    yield r.map(i=>i.value);
+    r=iters.map(i=>i.next());
+  }
+}

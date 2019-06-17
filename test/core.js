@@ -1,19 +1,11 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {Matrix, from, zeros, eye, sum} from "../src/core";
+import {Matrix,from,mixin} from "../src/core";
+import {eye,zeros} from "../src/create";
 
 
 
-describe('eye',function(){
-  it('returns the identity matrix',function(){
-    const m=eye(4);
-    expect(m.size).to.eql([4,4]);
-    expect([...m.diag()]).to.eql([1,1,1,1]);
-    expect([...m]).to.eql([...m.t]);
-    expect(sum(m)).to.equal(4);
-  })
-});
 describe('Matrix',function(){
   describe('constructor',function(){
     it('creates a matrix',function(){
@@ -91,5 +83,20 @@ describe('from',function(){
   });
   it('creates a general matrix',function(){
     expect(from([[1,2],[3,4]]).size).to.eql([2,2]);
+  });
+  it('throws an error with unsupported data',function(){
+    expect(()=>from(0)).to.throw();
+    expect(()=>from(null)).to.throw();
+    expect(()=>from('foo')).to.throw();
+  })
+});
+describe('mixin',function(){
+  it('adds to the matrix prototype',function(){
+    const foo=()=>"foo";
+    const m=zeros(4);
+    expect(m).to.not.have.a.property('foo');
+    mixin(foo);
+    expect(m).to.have.a.property('foo');
+    expect(m.foo()).to.equal("foo");
   })
 });

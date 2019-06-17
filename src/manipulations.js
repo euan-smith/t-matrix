@@ -1,59 +1,57 @@
-import {SKIP, DATA, SPAN} from "./base";
-import * as Matrix from './create';
+import {Matrix, DATA, COLS, ROWS} from "./core";
+import {zeros} from './create';
+import {range, zipIters} from "./tools";
 
 /**
- * Produce a row vector which is the sum of all matrix rows
+ * gets, sets or creates diagonal matrices
  * @param matrix {Matrix}
- * @returns {Matrix} a row vector
+ * @param [set] {Matrix|Array|Function|Number}
+ * @returns {Matrix}
+ * @example
+ * //Create a random matrix
+ * const mRand = random(20);
+ * //Extract the diagonal of the matrix (as a column vector)
+ * const vect = diag(mRand);
+ * //Create a new matrix with the same diagonal
+ * const mDiag = diag(vect);
+ * //Set the diagonal of the original to zero
+ * diag(mRand,0);
  */
-export function sumRows(matrix){
-  return Matrix
-    .zeros(1, matrix.cols)
-    .setEach((tot, r, c) => {
-      matrix.column(c).forEach(v => tot += v);
-      return tot;
-    });
+export function diag(matrix, set) {
+  const R = matrix[ROWS], C = matrix[COLS], D = matrix[DATA], Cl = C.length, Rl = R.length;
+  if (Cl === 1) {
+    if (Rl === 1) {
+      if (set) return matrix.set(set);
+      else return matrix;
+    }
+    set = matrix;
+    matrix = zeros(Rl);
+  }
+  if (set) {
+    diag(matrix).set(set);
+    return matrix;
+  }
+  return Rl < Cl ?
+    new Matrix(R.map((r, i) => r + C[i]), [0], D) :
+    new Matrix(C.map((c, i) => R[i] + c), [0], D);
 }
 
-/**
- * Produce a column vector which is the sum of all matrix columns
- * @param matrix {Matrix}
- * @returns {Matrix} a column vector
- */
-export function sumColumns(matrix){
-  return Matrix
-    .zeros(matrix.rows, 1)
-    .setEach((tot, r) => {
-      matrix.row(r).forEach(v => tot += v);
-      return tot;
-    });
+export function reshape(matrix, rows, cols) {
+  return new Matrix(rows, cols, matrix);
 }
 
-/**
- * sum all elements in a matrix
- * @param matrix {Matrix}
- * @returns {number}
- */
-export function sum(matrix){
-  let tot=0;
-  matrix.forEach(v=>tot+=v);
-  return tot;
+export function swapRows(matrix, rowsA, rowsB) {
+  const R = matrix[ROWS];
+  for (let i of zipIters(range(rowsA), range(rowsB))) {
+    [R[i[0]], R[i[1]]] = [R[i[1]], R[i[0]]];
+  }
+  return matrix;
 }
 
-/**
- * calculate the trace of a matrix (the sum of the diagonal elements).
- * @param matrix {Matrix}
- * @returns {number} the calculated trace
- */
-export function trace(matrix){
-  return sum(matrix.diag());
-}
-
-/**
- * calculate the inverse of a matrix
- * @param matrix
- * @returns {Matrix} the inverse of the supplied matrix
- */
-export function inv(matrix){
-  return matrix.ldiv(Matrix.eye(this.rows));
+export function swapCols(matrix, colsA, colsB) {
+  const C = matrix[COLS];
+  for (let i of zipIters(range(colsA), range(colsB))) {
+    [C[i[0]], C[i[1]]] = [C[i[1]], C[i[0]]];
+  }
+  return matrix;
 }

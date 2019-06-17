@@ -1,11 +1,7 @@
 
 export const DATA=Symbol(), ROWS=Symbol(), COLS=Symbol();
 
-import {isNum, range, isFunction} from "./tools";
-
-export function sum(m){
-  return [...m].reduce((a,b)=>a+b);
-}
+import {isNum, range, isFunction, isArray} from "./tools";
 
 export const isMatrix = (m)=> m instanceof Matrix;
 
@@ -38,18 +34,6 @@ export class Matrix{
 
   get size(){return [this[ROWS].length,this[COLS].length]}
 
-  *rows(){
-    const cols = Array.from(this[COLS]);
-    for(let r of this[ROWS])
-      yield cols.map(c=>this[DATA][r+c]);
-  }
-
-  *cols(){
-    const rows = Array.from(this[ROWS]);
-    for(let c of this[COLS])
-      yield rows.map(r=>this[DATA][r+c]);
-  }
-
   get t(){return new Matrix(this[COLS],this[ROWS],this[DATA])}
 
   get(rows,cols){
@@ -59,17 +43,6 @@ export class Matrix{
       Uint32Array.from([...range(rows,Rl)].map(r=>R[r])),
       Uint32Array.from([...range(cols,Cl)].map(c=>C[c])),
       D);
-  }
-
-  diag(set){
-    if (set) {
-      this.diag().set(set);
-      return this;
-    }
-    const R=this[ROWS],C=this[COLS],D=this[DATA];
-    return R.length<C.length?
-      new Matrix(R.map((r,i)=>r+C[i]),[0],D):
-      new Matrix(C.map((c,i)=>R[i]+c),[0],D);
   }
 
   //val can be a number, a function, a matrix, an array or an array of arrays
@@ -110,9 +83,39 @@ export class Matrix{
   }
 
   map(fn){return this.clone().set(fn)}
+}
 
-  toString(){
-    return '[ '+[...this.rows()].map(row=>row.join(', ')).join(';\n  ')+' ]\n';
+/**
+ * @function from
+ * If a matrix is given, this is cloned.
+ * If an array of numbers, a column matrix is created.
+ * If an array of arrays of numbers these must all be the same length and a matrix is created.
+ * @param data {Array<Number>|Array<Array<Number>>|Matrix}
+ * @returns {Matrix}
+ * @example
+ * Matrix.from([1,2,3,4])
+ * //a column matrix [1;2;3;4]
+ * @example
+ * Matrix.from([[1,2,3,4]])
+ * //a row matrix [1,2,3,4]
+ * @example
+ * Matrix.from([[1,2],[3,4]]
+ * //a 2x2 matrix [1,2;3,4]
+ */
+export function from(data){
+  if (isMatrix(data)) return data;
+  if (isArray(data) && data.length){
+    if (isNum(data[0])) return new Matrix(data.length, [0], data);
+    if (isArray(data[0])){
+      const rows = data.length, cols = data[0].length;
+      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,data.flat());
+    }
   }
+  throw new Error('Unsupported data for Matrix::from');
+}
 
+export function mixin(...methods){
+  for(let method of methods.flat()){
+    Matrix.prototype[method.name]=method;
+  }
 }

@@ -1,7 +1,7 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {isNum, range} from '../src/tools';
+import {isNum, range, mapIter, zipIters} from '../src/tools';
 
 describe('range',function(){
   it('creates a range 0:2',function(){
@@ -32,5 +32,22 @@ describe('isNum', function(){
     expect(isNum()).to.equal(false);
     expect(isNum(null)).to.equal(false);
     expect(isNum(new Date())).to.equal(false);
+  });
+});
+
+describe('mapIter',function(){
+  it('maps an iterable as another iterable',function(){
+    let l=0;
+    const r = range([1,':',10]),fn=a=>l=a*2;
+    const iter = mapIter(r,fn);
+    expect(l).to.equal(0);
+    expect([...iter]).to.eql([...range([2,'::',2,20])]);
+    expect(l).to.equal(20);
+  })
+});
+
+describe('zipIters',function(){
+  it('zips together two arrays',function(){
+    expect([...zipIters([1,2,3],[4,5,6])]).to.eql([[1,4],[2,5],[3,6]])
   });
 });
