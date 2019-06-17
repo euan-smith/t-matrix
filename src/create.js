@@ -1,4 +1,5 @@
 import {Matrix, isMatrix} from './core';
+import {isArray, isNum} from "./tools";
 
 export const
   /**
@@ -46,25 +47,31 @@ export const
 
 /**
  * @function from
- * creates a matrix from the given array.
- * If only array is provided then the matrix will be square (if array has a square number size) or a column vector.
- * If the row count is provided, then the matrix will have enough columns to hold all of the array data
- * @param array {Array}
- * @param [rows] {number}
- * @param [cols] {number}
+ * If a matrix is given, this is cloned.
+ * If an array of numbers, a column matrix is created.
+ * If an array of arrays of numbers these must all be the same length and a matrix is created.
+ * @param data {Array<Number>|Array<Array<Number>>|Matrix}
  * @returns {Matrix}
+ * @example
+ * Matrix.from([1,2,3,4])
+ * //a column matrix [1;2;3;4]
+ * @example
+ * Matrix.from([[1,2,3,4]])
+ * //a row matrix [1,2,3,4]
+ * @example
+ * Matrix.from([[1,2],[3,4]]
+ * //a 2x2 matrix [1,2;3,4]
  */
-function from(array, rows, cols){
-  if (!rows){
-    rows=Math.sqrt(array.length);
-    if (rows%1){
-      rows=array.length;
+export function from(data){
+  if (isMatrix(data)) return data.clone();
+  if (isArray(data) && data.length){
+    if (isNum(data[0])) return new Matrix(data.length, [0], data);
+    if (isArray(data[0])){
+      const rows = data.length, cols = data[0].length;
+      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,data.flat());
     }
   }
-  if (!cols){
-    cols=Math.ceil(array.length/rows);
-  }
-  return new Matrix(rows,cols,array);
+  throw new Error('Unsupported data for Matrix::from');
 }
 
-export {from};
+

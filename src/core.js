@@ -1,32 +1,7 @@
 
 export const DATA=Symbol(), ROWS=Symbol(), COLS=Symbol();
 
-import {isNum, range, isArray, isFunction} from "./tools";
-
-export function from(data){
-  if (isArray(data) && data.length){
-    if (isNum(data[0])) return new Matrix(data.length, [0], data);
-    if (isArray(data[0])){
-      const rows = data.length, cols = data[0].length;
-      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,data.flat());
-    }
-  }
-  throw new Error('Unsupported data for Matrix::from');
-}
-
-export function zeros(r,c){
-  if (!c) c=r;
-  return new Matrix(r,c,0);
-}
-
-export function ones(r,c){
-  if (!c) c=r;
-  return new Matrix(r,c,1);
-}
-
-export function eye(s){
-  return new Matrix(s,s,0).diag(1);
-}
+import {isNum, range, isFunction} from "./tools";
 
 export function sum(m){
   return [...m].reduce((a,b)=>a+b);
