@@ -31,7 +31,7 @@ export function *range(def, lim){
     }
   }
   if (state === 2) {
-    if (!lim) throw new Error('Invalid range specification.');
+    if (!lim) throw new Error('Matrix:: Invalid range specification.');
     yield* rng(i,step,lim-1);
   }
 }

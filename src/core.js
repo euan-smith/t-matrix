@@ -17,7 +17,7 @@ export class Matrix{
     else if (isNum(data)) data = new Float64Array(size).fill(data);
     else if (!(data instanceof Float64Array)) data = Float64Array.from(data);
     if (data.length<size){
-      throw new Error('Matrix: Data array too small for specified rows and columns');
+      throw new Error('Matrix:: Data array too small for specified rows and columns');
     }
     Object.defineProperties(this,{
       [DATA]:{value:data},
@@ -70,7 +70,7 @@ export class Matrix{
     }
     if (!isMatrix(val)) val = from(val);
     const [vRl,vCl] = val.size;
-    if (Rl!==vRl || Cl!==vCl) throw new Error('Assignment error, matrix dimensions must agree');
+    if (Rl!==vRl || Cl!==vCl) throw new Error('Matrix::set Assignment error, matrix dimensions must agree');
     const vD = val[DATA], vR=val[ROWS], vC = val[COLS];
     for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
       D[R[i]+C[j]] = vD[vR[i]+vC[j]];
@@ -111,7 +111,7 @@ export function from(data){
       if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,data.flat());
     }
   }
-  throw new Error('Unsupported data for Matrix::from');
+  throw new TypeError('Matrix::from Unsupported data type');
 }
 
 export function mixin(...methods){

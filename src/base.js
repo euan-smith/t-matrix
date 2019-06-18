@@ -112,10 +112,10 @@ export class Matrix{
       if (dataIn instanceof Matrix){
         const byteOffset = dataIn[DATA].byteOffset + offset*8;
         dataIn = dataIn[DATA].buffer;
-        if (dataIn.byteLength<(span*cols-skip)*8+byteOffset)throw new TypeError('data length insufficient for matrix size');
+        if (dataIn.byteLength<(span*cols-skip)*8+byteOffset)throw new TypeError('Matrix:: data length insufficient for matrix size.');
         data = new Float64Array(dataIn, byteOffset);
       } else {
-        if (dataIn.length<span*cols+offset-skip) throw new TypeError('data length insufficient for matrix size');
+        if (dataIn.length<span*cols+offset-skip) throw new TypeError('Matrix:: data length insufficient for matrix size.');
         if (offset) dataIn = dataIn.slice(offset);
         data = new Float64Array(dataIn);
       }
