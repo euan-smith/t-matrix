@@ -1,7 +1,9 @@
-import {Matrix,ROWS,COLS,DATA, isMatrix, from} from "./core";
+import {Matrix, isMatrix, from} from "./core";
+import {ROWS,COLS,DATA} from "./const";
 import {rows, cols} from "./conversions";
 import {mapIter, zipIters, isNum} from "./tools";
 import {diag, minor} from "./manipulations";
+import {eye} from "./create";
 
 const
   op = (m, dir, opFn) => {
@@ -133,4 +135,48 @@ export function det(m){
     if (c<w) dt -= m.get(0,c)*det(minor(m,0,c));
   }
   return dt;
+}
+
+export function ldiv(a,b){
+  const working = a.clone(), {[ROWS]:Rw,[COLS]:Cw,[DATA]:Dw}=working;
+  const rtn = b.clone(), {[ROWS]:Rr,[COLS]:Cr,[DATA]:Dr}=rtn;
+  const [h,w] = b.size;
+  const [hc,wc] = a.size;
+  if (hc!==wc || hc!==h) throw new Error('Matrix::div matrix dimensions incompatible with operation');
+  for (let r=0;r<h;r++){
+    //ensure that the pivot element is not too small
+    if (Math.abs(Dw[Rw[r]+Cw[r]])< 1e-10){
+      //find a value in the column which is large enough
+      let r2;
+      for (r2=r+1;r2<h;r2++){
+        if (Math.abs(Dw[Rw[r2]+Cw[r]])> 1e-10){
+          //found it, so swap the rows
+          [Rw[r],Rw[r2]] = [Rw[r2],Rw[r]];
+          [Rr[r],Rr[r2]] = [Rr[r2],Rr[r]];
+          break;
+        }
+      }
+      if (r2>=h) throw new Error('Matrix::div matrix is singular to working precision.')
+    }
+    const rw=Rw[r],rr=Rr[r];
+    const p = 1 / Dw[rw+Cw[r]];
+    for (let cw of Cw) Dw[rw+cw] *= p;
+    for (let cr of Cr) Dr[rr+cr] *= p;
+
+    for (let r2=0; r2<h; r2++){
+      if (r2===r) continue;
+      const rw2=Rw[r2],rr2=Rr[r2],q=Dw[rw2+Cw[r]];
+      for (let cw of Cw) Dw[rw2+cw] -= q*Dw[rw+cw];
+      for (let cr of Cr) Dr[rr2+cr] -= q*Dr[rr+cr];
+    }
+  }
+  return rtn;
+}
+
+export function div(a,b){
+  return ldiv(b.t,a.t).t;
+}
+
+export function inv(a){
+  return ldiv(a,eye(a.size[0]));
 }

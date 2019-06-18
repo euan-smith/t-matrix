@@ -4,9 +4,10 @@ chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
 import {diag} from "../src/manipulations";
 import {sum,max,min} from "../src/operations";
+const sizes = [1,2,3,4,11,17,32,54,89,123];
 describe('eye',function(){
   it('returns the identity matrix',function(){
-    for (let s=1;s<100;s++){
+    for (let s of sizes){
       const m=eye(s);
       expect(m.size).to.eql([s,s]);
       expect(sum(diag(m))).to.equal(s);
@@ -19,7 +20,7 @@ describe('eye',function(){
 });
 describe('zeros',function(){
   it('returns a matrix initialised all with zeros',function(){
-    for (let s=1;s<100;s++){
+    for (let s of sizes){
       const m=zeros(s);
       expect(m.size).to.eql([s,s]);
       expect(sum(m)).to.almost.equal(0);
@@ -27,12 +28,13 @@ describe('zeros',function(){
       expect(min(m)).to.equal(0);
       expect([...m]).to.eql([...m.t]);
     }
+    expect(zeros().size).to.eql([1,1]);
   })
 });
 
 describe('ones',function(){
   it('returns a matrix initialised all with ones',function(){
-    for (let s=1;s<100;s++){
+    for (let s of sizes){
       const m=ones(s);
       expect(m.size).to.eql([s,s]);
       expect(sum(m)).to.equal(s*s);
@@ -40,11 +42,12 @@ describe('ones',function(){
       expect(min(m)).to.equal(1);
       expect([...m]).to.eql([...m.t]);
     }
+    expect(ones().size).to.eql([1,1]);
   })
 });
 describe('rand',function(){
   it('returns a matrix initialised all random values',function(){
-    for (let s=1;s<100;s++){
+    for (let s of sizes){
       const m=rand(s);
       expect(m.size).to.eql([s,s]);
       expect(max(m)).to.be.lte(1);

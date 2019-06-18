@@ -1,7 +1,8 @@
-
-export const DATA=Symbol(), ROWS=Symbol(), COLS=Symbol();
+import {DATA,ROWS,COLS} from "./const";
 
 import {isNum, range, isFunction, isArray} from "./tools";
+
+import {rows} from "./conversions";
 
 export const isMatrix = (m)=> m instanceof Matrix;
 
@@ -83,6 +84,10 @@ export class Matrix{
   }
 
   map(fn){return this.clone().set(fn)}
+
+  toJSON(){
+    return [...rows(this)];
+  }
 }
 
 /**
@@ -115,7 +120,9 @@ export function from(data){
 }
 
 export function mixin(...methods){
-  for(let method of methods.flat()){
-    Matrix.prototype[method.name]=method;
+  for(let method of methods){
+    Matrix.prototype[method.name]=function(...args){
+      return method(this, ...args);
+    };
   }
 }

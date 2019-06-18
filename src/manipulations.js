@@ -1,4 +1,5 @@
-import {Matrix, DATA, COLS, ROWS} from "./core";
+import {Matrix} from "./core";
+import {DATA,ROWS,COLS} from "./const";
 import {zeros} from './create';
 import {range, zipIters} from "./tools";
 

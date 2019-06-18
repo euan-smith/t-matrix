@@ -72,6 +72,15 @@ describe('Matrix',function(){
       const m=zeros(2);
       expect([...m.set((v,r,c)=>r*2+c+1)]).to.eql([1,2,3,4]);
     });
+    it('throws an error when the set size does not match',function(){
+      expect(()=>eye(3).set(eye(2))).to.throw();
+    })
+  });
+  describe('toJSON',function(){
+    it('can serialise to a nested array',function(){
+      const m=eye(2);
+      expect(JSON.stringify(m)).to.equal("[[1,0],[0,1]]");
+    })
   })
 });
 describe('from',function(){
@@ -88,6 +97,12 @@ describe('from',function(){
     expect(()=>from(0)).to.throw();
     expect(()=>from(null)).to.throw();
     expect(()=>from('foo')).to.throw();
+    expect(()=>from(['foo'])).to.throw();
+    expect(()=>from([[1],[2,3]])).to.throw();
+  });
+  it('returns a matrix when passed',function(){
+    const m=eye(4);
+    expect(from(m)).to.equal(m);
   })
 });
 describe('mixin',function(){

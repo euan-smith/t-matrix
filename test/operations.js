@@ -2,9 +2,8 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
-import {diag} from "../src/manipulations";
-import {sum,max,min,trace,product, mult, det} from "../src/operations";
-import {from, default as Matrix} from "../src/core"
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv} from "../src/operations";
+import {from} from "../src/core"
 
 const m=from([[1,2,4],[8,16,32],[64,128,256]]);
 
@@ -145,4 +144,54 @@ describe('det',function () {
   });
 });
 
+describe('ldiv',function(){
+  it('divides two matrices',function(){
+    expect([...ldiv(eye(3),m)]).to.eql([...m]);
+  });
+  it('divides a matrix and a vector',function(){
+    const v=m.get(':',1);
+    expect([...ldiv(eye(3),v)]).to.eql([...v]);
+  });
+  it('solves an equation correctly', function(){
+    const m=from([[1,2,3,4],[2,3,4,1],[3,4,1,2],[4,1,2,3]]);
+    const v=from([2,-2,2,-2]);
+    expect([...ldiv(m,v)]).to.eql([-1,1,-1,1]);
+  });
+  it('throws an error when the matrix sizes are wrong',function(){
+    expect(()=>ldiv(zeros(3),zeros(4))).to.throw();
+    expect(()=>ldiv(zeros(2,4),zeros(4))).to.throw();
+  });
+  it('can handle matrices with zeros in the diagonal',function(){
+    const m=sum(eye(4),-1);
+    const v=from([-9,-8,-7,-6]);
+    expect([...ldiv(m,v)]).to.eql([1,2,3,4]);
+  })
+});
 
+describe('div',function(){
+  it('divides two matrices',function(){
+    expect([...div(m,eye(3))]).to.eql([...m]);
+  });
+  it('divides a matrix and a vector',function(){
+    const v=m.get(1,':');
+    expect([...div(v,eye(3))]).to.eql([...v]);
+  });
+  it('solves an equation correctly', function(){
+    const m=from([[1,2,3,4],[2,3,4,1],[3,4,1,2],[4,1,2,3]]);
+    const v=from([[2,-2,2,-2]]);
+    expect([...div(v,m)]).to.eql([-1,1,-1,1]);
+  })
+});
+
+describe('inv',function(){
+  it('inverts the identity to itself',function(){
+    expect([...inv(eye(4))]).to.eql([...eye(4)]);
+  });
+  it('the product of an inverted matrix and the inverse is the identity',function(){
+    const m=from([[1,2,3,4],[2,3,4,1],[3,4,1,2],[4,1,2,3]]);
+    expect([...mult(m,inv(m))]).to.almost.eql([...eye(4)]);
+  });
+  it('throws an error with a singular matrix',function(){
+    expect(()=>inv(m)).to.throw();
+  })
+});

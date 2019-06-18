@@ -1,3 +1,5 @@
 export * from './create';
 export * from './manipulations';
-export {to2dArray, det, inverse} from './helper';
+export * from './operations';
+export * from './conversions';
+export {from, mixin, isMatrix} from './core';

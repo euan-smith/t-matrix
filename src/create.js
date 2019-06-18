@@ -18,7 +18,7 @@ export const
    * @param [cols] {number} number of columns
    * @returns {Matrix}
    */
-  ones = (rows, cols) => new Matrix(rows, cols || rows, 1),
+  ones = (rows = 1, cols) => new Matrix(rows, cols || rows, 1),
 
   /**
    * @function eye
