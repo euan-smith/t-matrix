@@ -1,6 +1,5 @@
 import {Matrix} from "./core";
 import {DATA,ROWS,COLS} from "./const";
-import {zeros} from './create';
 import {range, zipIters} from "./tools";
 
 /**
@@ -26,7 +25,7 @@ export function diag(matrix, set) {
       else return matrix;
     }
     set = matrix;
-    matrix = zeros(Rl);
+    matrix = new Matrix(Rl,Rl);
   }
   if (set) {
     diag(matrix).set(set);
