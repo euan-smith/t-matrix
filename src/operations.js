@@ -1,7 +1,7 @@
 import {Matrix,ROWS,COLS,DATA, isMatrix, from} from "./core";
 import {rows, cols} from "./conversions";
 import {mapIter, zipIters, isNum} from "./tools";
-import {diag} from "./manipulations";
+import {diag, minor} from "./manipulations";
 
 const
   op = (m, dir, opFn) => {
@@ -117,4 +117,20 @@ function *_mult(a,b,K){
     for (let k=0;k<K;k++) t+=Da[r+Ca[k]]*Db[Rb[k]+c];
     yield t;
   }
+}
+
+export function det(m){
+  const [h,w] = m.size;
+  if (h!==w) return 0;
+  if (h<4){
+    const d=[...m];
+    if (h===2) return d[0] * d[3] - d[1] * d[2];
+    return d[0]*(d[4]*d[8]-d[7]*d[5]) + d[1]*(d[5]*d[6]-d[8]*d[3]) + d[2]*(d[3]*d[7]-d[6]*d[4]);
+  }
+  let dt=0;
+  for(let c=1;c<=w;c+=2){
+    dt += m.get(0,c-1)*det(minor(m,0,c-1));
+    if (c<w) dt -= m.get(0,c)*det(minor(m,0,c));
+  }
+  return dt;
 }

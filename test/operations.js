@@ -3,8 +3,8 @@ import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
 import {diag} from "../src/manipulations";
-import {sum,max,min,trace,product, mult} from "../src/operations";
-import {from} from "../src/core"
+import {sum,max,min,trace,product, mult, det} from "../src/operations";
+import {from, default as Matrix} from "../src/core"
 
 const m=from([[1,2,4],[8,16,32],[64,128,256]]);
 
@@ -120,4 +120,29 @@ describe('mult',function(){
     expect(()=>mult(ones(2,3),ones(4,5),ones(5,4)).size).to.throw();
   })
 });
+
+describe('det',function () {
+  it('calculates a 2x2 determinant',function () {
+    expect(det(from([[1,2],[3,4]]))).to.equal(-2);
+    const a=rand(2),da=det(a);
+    expect(det(mult(a,a))).to.almost.equal(da*da);
+    expect(det(product(a,2))).to.almost.equal(da*4);
+  });
+  it('calculates a 3x3 determinant',function () {
+    const a=rand(3),da=det(a);
+    expect(det(mult(a,a))).to.almost.equal(da*da);
+    expect(det(product(a,2))).to.almost.equal(da*8);
+  });
+  it('calculates a 4x4 determinant',function () {
+    const a=rand(4),da=det(a);
+    expect(det(mult(a,a))).to.almost.equal(da*da);
+    expect(det(product(a,2))).to.almost.equal(da*16);
+  });
+  it('calculates a 8x8 determinant',function () {
+    const a=rand(8),da=det(a);
+    expect(det(mult(a,a))).to.almost.equal(da*da);
+    expect(det(product(a,2))).to.almost.equal(da*256);
+  });
+});
+
 

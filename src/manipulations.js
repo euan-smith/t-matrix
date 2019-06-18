@@ -55,3 +55,10 @@ export function swapCols(matrix, colsA, colsB) {
   }
   return matrix;
 }
+
+export function minor(m, row, col){
+  return new Matrix(
+    m[ROWS].filter((v,r)=>r!==row),
+    m[COLS].filter((v,c)=>c!==col),
+    m[DATA]);
+}

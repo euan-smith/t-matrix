@@ -1,7 +1,7 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {isNum, range, mapIter, zipIters} from '../src/tools';
+import {isNum, range, mapIter, zipIters,drop} from '../src/tools';
 
 describe('range',function(){
   it('creates a range 0:2',function(){
