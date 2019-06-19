@@ -1,6 +1,6 @@
 import {DATA,ROWS,COLS} from "./const";
 
-import {isNum, range, isFunction, isArray} from "./tools";
+import {isNum, range, isFunction, isArray, mapIter} from "./tools";
 
 import {rows} from "./conversions";
 
@@ -83,7 +83,9 @@ export class Matrix{
     return new Matrix(this[ROWS].length, this[COLS].length, this);
   }
 
-  map(fn){return this.clone().set(fn)}
+  map(fn){
+    return new Matrix(this[ROWS].length,this[COLS].length,mapIter(this,fn))
+  }
 
   toJSON(){
     return [...rows(this)];
@@ -91,8 +93,7 @@ export class Matrix{
 }
 
 /**
- * @function from
- * If a matrix is given, this is cloned.
+ * If a matrix is given, this is cloned.\n
  * If an array of numbers, a column matrix is created.
  * If an array of arrays of numbers these must all be the same length and a matrix is created.
  * @param data {Array<Number>|Array<Array<Number>>|Matrix}

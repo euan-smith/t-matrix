@@ -180,3 +180,7 @@ export function div(a,b){
 export function inv(a){
   return ldiv(a,eye(a.size[0]));
 }
+
+export function abs(m){
+  return m.map(Math.abs);
+}

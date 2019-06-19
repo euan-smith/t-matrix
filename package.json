@@ -8,7 +8,8 @@
     "test": "mocha --require reify test/*.js",
     "cover": "nyc npm test",
     "build": "rollup -c",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "docs": "jsdoc2md --template jsdoc2md/README.hbs --files src/*.js > README.md"
   },
   "repository": {
     "type": "git",
