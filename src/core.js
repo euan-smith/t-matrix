@@ -93,18 +93,20 @@ export class Matrix{
 }
 
 /**
- * If a matrix is given, this is cloned.\n
- * If an array of numbers, a column matrix is created.
- * If an array of arrays of numbers these must all be the same length and a matrix is created.
- * @param data {Array<Number>|Array<Array<Number>>|Matrix}
+ * Create a matrix from the supplied data.
+ * @param data {(Matrix|Array<Number>|Array<Array<Number>>)}
+ * If `data` is a matrix then it is just returned.
+ * An array of numbers becomes a column matrix.
+ * An array of an array of numbers becomes a row matrix.
+ * An array of arrays of numbers becomes a general matrix.  The inner arrays must all have the same length.
  * @returns {Matrix}
- * @example
+ * @example <caption>Creating a column matrix</caption>
  * Matrix.from([1,2,3,4])
- * //a column matrix [1;2;3;4]
- * @example
+ * //[1;2;3;4]
+ * @example <caption>Creating a row matrix</caption>
  * Matrix.from([[1,2,3,4]])
- * //a row matrix [1,2,3,4]
- * @example
+ * //[1,2,3,4]
+ * @example <caption>
  * Matrix.from([[1,2],[3,4]]
  * //a 2x2 matrix [1,2;3,4]
  */

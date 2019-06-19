@@ -68,9 +68,7 @@ console.log([...a]);
 
 <dl>
 <dt><a href="#from">from(data)</a> ⇒ <code>Matrix</code></dt>
-<dd><p>If a matrix is given, this is cloned.\n
-If an array of numbers, a column matrix is created.
-If an array of arrays of numbers these must all be the same length and a matrix is created.</p>
+<dd><p>Create a matrix from the supplied data.</p>
 </dd>
 <dt><a href="#zeroscreates a new matrix filled with zeros">zeroscreates a new matrix filled with zeros(rows, [cols])</a> ⇒ <code>Matrix</code></dt>
 <dd></dd>
@@ -91,25 +89,27 @@ If an array of arrays of numbers these must all be the same length and a matrix 
 <a name="from"></a>
 
 ## from(data) ⇒ <code>Matrix</code>
-If a matrix is given, this is cloned.\nIf an array of numbers, a column matrix is created.If an array of arrays of numbers these must all be the same length and a matrix is created.
+Create a matrix from the supplied data.
 
 **Kind**: global function  
 
-| Param | Type |
-| --- | --- |
-| data | <code>Array.&lt;Number&gt;</code> \| <code>Array.&lt;Array.&lt;Number&gt;&gt;</code> \| <code>Matrix</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| data | <code>Matrix</code> \| <code>Array.&lt;Number&gt;</code> \| <code>Array.&lt;Array.&lt;Number&gt;&gt;</code> | If `data` is a matrix then it is just returned. An array of numbers becomes a column matrix. An array of an array of numbers becomes a row matrix. An array of arrays of numbers becomes a general matrix.  The inner arrays must all have the same length. |
 
-**Example**  
+**Example** *(Creating a column matrix)*  
 ```js
-Matrix.from([1,2,3,4])//a column matrix [1;2;3;4]
+Matrix.from([1,2,3,4])
+//[1;2;3;4]
+```
+**Example** *(Creating a row matrix)*  
+```js
+Matrix.from([[1,2,3,4]])
+//[1,2,3,4]
 ```
 **Example**  
 ```js
-Matrix.from([[1,2,3,4]])//a row matrix [1,2,3,4]
-```
-**Example**  
-```js
-Matrix.from([[1,2],[3,4]]//a 2x2 matrix [1,2;3,4]
+<caption>Matrix.from([[1,2],[3,4]]//a 2x2 matrix [1,2;3,4]
 ```
 <a name="zeroscreates a new matrix filled with zeros"></a>
 
