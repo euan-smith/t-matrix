@@ -4,9 +4,23 @@ import {isNum, range, isFunction, isArray, mapIter} from "./tools";
 
 import {rows} from "./conversions";
 
+
+/**
+ * Tests if a value is an instance of a Matrix
+ * @function
+ * @param m {*} The value to test.
+ * @returns {boolean} 'true' if `m` is an instance of Matrix, 'false' otherwise.
+ */
 export const isMatrix = (m)=> m instanceof Matrix;
 
-export class Matrix{
+
+/**
+ * The core matrix class
+ */
+class Matrix{
+  /**
+   * @hideconstructor
+   */
   constructor(rows,cols,data){
     if (isNum(cols)) cols = [':',cols-1];
     if (Array.isArray(cols)) cols = Uint32Array.from([...range(cols)]);
@@ -27,16 +41,50 @@ export class Matrix{
     })
   }
 
+  /**
+   * Iterates through the matrix data in row-major order
+   * @method @@Iterator
+   * @memberOf Matrix#
+   * @returns {IterableIterator<Number>}
+   * @example
+   * //Calculate the 2-norm of a matrix
+   * function norm(matrix){
+   *   let tot=0;
+   *   for(let v of matrix) tot+=v*v;
+   *   return Math.sqrt(tot);
+   * }
+   */
   * [Symbol.iterator](){
     for(let r of this[ROWS])
       for(let c of this[COLS])
         yield this[DATA][r+c];
   }
 
+  /**
+   * The matrix height and width in an array.
+   * @returns {Array<Number>}
+   * @example
+   * const m=Matrix.from([1,2,3]);
+   * console.log(m.size);
+   * //[3,1]
+   */
   get size(){return [this[ROWS].length,this[COLS].length]}
 
+  /**
+   * The transpose of the matrix
+   * @returns {Matrix}
+   * @example
+   * const m=Matrix.from([[1,2],[3,4]]);
+   * console.log(m.t.toJSON()); // [[1,3],[2,4]]
+   */
   get t(){return new Matrix(this[COLS],this[ROWS],this[DATA])}
 
+  /**
+   * The a value or subset of a matrix
+   * @param rows
+   * @param cols
+   * @returns {Matrix|Number}
+   */
   get(rows,cols){
     const D=this[DATA], R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
     if (isNum(rows) && isNum(cols)) return D[R[(rows+Rl)%Rl]+C[(cols+Cl)%Cl]];
@@ -93,6 +141,13 @@ export class Matrix{
 }
 
 /**
+ * A range specifier.
+ * @typeDef Range
+ * @type Array<*>
+ *
+ */
+
+/**
  * Create a matrix from the supplied data.
  * @param data {(Matrix|Array<Number>|Array<Array<Number>>)}
  * If `data` is a matrix then it is just returned.
@@ -102,13 +157,16 @@ export class Matrix{
  * @returns {Matrix}
  * @example <caption>Creating a column matrix</caption>
  * Matrix.from([1,2,3,4])
- * //[1;2;3;4]
+ * //[1; 2; 3; 4]
  * @example <caption>Creating a row matrix</caption>
  * Matrix.from([[1,2,3,4]])
  * //[1,2,3,4]
- * @example <caption>
- * Matrix.from([[1,2],[3,4]]
- * //a 2x2 matrix [1,2;3,4]
+ * @example <caption>Creating an arbitrary matrix</caption>
+ * Matrix.from([[1,2],[3,4],[5,6]]
+ * //a 3x2 matrix [1,2; 3,4; 5,6]
+ * @example <caption>A matrix is just passed through</caption>
+ * const m = Matrix.from([[1,2],[3,4]]);
+ * Matrix.from(m) === m; //true
  */
 export function from(data){
   if (isMatrix(data)) return data;
@@ -129,3 +187,5 @@ export function mixin(...methods){
     };
   }
 }
+
+export {Matrix}
