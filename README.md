@@ -106,11 +106,11 @@ console.log([...a]);
 ## Typedefs
 
 <dl>
-<dt><a href="#Range">Range</a> : <code>Array.&lt;(Number|String)&gt;</code> | <code>Number</code> | <code>String</code></dt>
-<dd><p>A range specifies indices of the row or column of a matrix.  In general this is just an array of number, however
-there are two special elements which can be used, <code>&#39;:&#39;</code> and <code>&#39;::&#39;</code>.  <code>&#39;:&#39;</code> indicates a range from the previous
-index to the subsequent index. If <code>&#39;:&#39;</code> is at the start of the array, then a range from the start of the indices
-is assumed, similarly if at the end then to the end is assumed.  <code>[&#39;:&#39;]</code> thus indicates the entire range.</p>
+<dt><a href="#Range">Range</a> : <code><a href="#RangeItem">Array.&lt;RangeItem&gt;</a></code> | <code><a href="#RangeItem">RangeItem</a></code></dt>
+<dd><p>A Specification of indices of the row or column of a matrix. For use with <code>.get</code> or <code>.set</code>.</p>
+</dd>
+<dt><a href="#RangeItem">RangeItem</a> : <code>Number</code> | <code>String</code></dt>
+<dd><p>Either an index or one of <code>&#39;:&#39;</code> or <code>&#39;::&#39;</code> to specify a range of indeces</p>
 </dd>
 </dl>
 
@@ -310,11 +310,20 @@ Sum the matrix in the direction specified or sum the set of matrices.
 
 <a name="Range"></a>
 
-## Range : <code>Array.&lt;(Number\|String)&gt;</code> \| <code>Number</code> \| <code>String</code>
-A range specifies indices of the row or column of a matrix.  In general this is just an array of number, howeverthere are two special elements which can be used, `':'` and `'::'`.  `':'` indicates a range from the previousindex to the subsequent index. If `':'` is at the start of the array, then a range from the start of the indicesis assumed, similarly if at the end then to the end is assumed.  `[':']` thus indicates the entire range.
+## Range : [<code>Array.&lt;RangeItem&gt;</code>](#RangeItem) \| [<code>RangeItem</code>](#RangeItem)
+A Specification of indices of the row or column of a matrix. For use with `.get` or `.set`.
 
 **Kind**: global typedef  
-**Summary**: A range specifier.  
+**Example**  
+```js
+matrix.get(1,5) //just the number specifies a single indexmatrix.get([1],[5]) //this does exactly the same thingmatrix.get(':',5) //all rows of the 5th columnmatrix.get([2,':'],[':',5]) //rows 2 to the end of columns up to column 5.matrix.get([':',3,5,':'],':') //all rows up to 3 and from 5 onwards of all columns.matrix.get([1,'::',2,5],['::',-1]) //rows 1,3,5 of all columns in reverse order
+```
+<a name="RangeItem"></a>
+
+## RangeItem : <code>Number</code> \| <code>String</code>
+Either an index or one of `':'` or `'::'` to specify a range of indeces
+
+**Kind**: global typedef  
 
 * * *
 
