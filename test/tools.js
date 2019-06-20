@@ -2,7 +2,6 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {isNum, range, mapIter, zipIters} from '../src/tools';
-import {from} from "../src/core";
 
 describe('range',function(){
   it('returns a sequence of values',function(){
