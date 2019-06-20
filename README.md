@@ -81,19 +81,35 @@ console.log([...a]);
 <dt><a href="#from">from(data)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>Create a matrix from the supplied data.</p>
 </dd>
-<dt><a href="#zeroscreates a new matrix filled with zeros">zeroscreates a new matrix filled with zeros(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt><a href="#zeros
+creates a new matrix filled with zeros">zeros
+creates a new matrix filled with zeros(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd></dd>
-<dt><a href="#onescreates a new matrix filled with ones">onescreates a new matrix filled with ones(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt><a href="#ones
+creates a new matrix filled with ones">ones
+creates a new matrix filled with ones(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd></dd>
-<dt><a href="#eyecreates a new identity matrix of size n">eyecreates a new identity matrix of size n(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt><a href="#eye
+creates a new identity matrix of size n">eye
+creates a new identity matrix of size n(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd></dd>
-<dt><a href="#randcreates a new matrix filled with random values [0|1)">randcreates a new matrix filled with random values [0|1)(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt><a href="#rand
+creates a new matrix filled with random values [0|1)">rand
+creates a new matrix filled with random values [0|1)(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd></dd>
 <dt><a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>gets, sets or creates diagonal matrices</p>
 </dd>
 <dt><a href="#sum">sum(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
 <dd><p>Sum the matrix in the direction specified or sum the set of matrices.</p>
+</dd>
+</dl>
+
+## Typedefs
+
+<dl>
+<dt><a href="#Range">Range</a> : <code>Array.&lt;*&gt;</code></dt>
+<dd><p>A range specifier.</p>
 </dd>
 </dl>
 
@@ -105,22 +121,34 @@ The core matrix class
 **Kind**: global class  
 
 * [Matrix](#Matrix)
+    * [.size](#Matrix+size) ⇒ <code>Array.&lt;Number&gt;</code>
     * [.t](#Matrix+t) ⇒ [<code>Matrix</code>](#Matrix)
-    * [.size](#Matrix+size) : <code>Array.&lt;Number&gt;</code>
     * [.@@Iterator()](#Matrix+@@Iterator) ⇒ <code>IterableIterator.&lt;Number&gt;</code>
+    * [.get(rows, cols)](#Matrix+get) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
 
+<a name="Matrix+size"></a>
+
+### matrix.size ⇒ <code>Array.&lt;Number&gt;</code>
+The matrix height and width in an array.
+
+**Kind**: instance property of [<code>Matrix</code>](#Matrix)  
+**Example**  
+```js
+const m=Matrix.from([1,2,3]);
+console.log(m.size);
+//[3,1]
+```
 <a name="Matrix+t"></a>
 
 ### matrix.t ⇒ [<code>Matrix</code>](#Matrix)
 The transpose of the matrix
 
 **Kind**: instance property of [<code>Matrix</code>](#Matrix)  
-<a name="Matrix+size"></a>
-
-### matrix.size : <code>Array.&lt;Number&gt;</code>
-The matrix height and width in an array.
-
-**Kind**: instance constant of [<code>Matrix</code>](#Matrix)  
+**Example**  
+```js
+const m=Matrix.from([[1,2],[3,4]]);
+console.log(m.t.toJSON()); // [[1,3],[2,4]]
+```
 <a name="Matrix+@@Iterator"></a>
 
 ### matrix.@@Iterator() ⇒ <code>IterableIterator.&lt;Number&gt;</code>
@@ -129,8 +157,25 @@ Iterates through the matrix data in row-major order
 **Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 **Example**  
 ```js
-//Calculate the 2-norm of a matrixfunction norm(matrix){  let tot=0;  for(let v of matrix) tot+=v*v;  return Math.sqrt(tot);}
+//Calculate the 2-norm of a matrix
+function norm(matrix){
+  let tot=0;
+  for(let v of matrix) tot+=v*v;
+  return Math.sqrt(tot);
+}
 ```
+<a name="Matrix+get"></a>
+
+### matrix.get(rows, cols) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+The a value or subset of a matrix
+
+**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
+
+| Param |
+| --- |
+| rows | 
+| cols | 
+
 <a name="isMatrix"></a>
 
 ## isMatrix(m) ⇒ <code>boolean</code>
@@ -174,9 +219,11 @@ Matrix.from([[1,2],[3,4],[5,6]]
 const m = Matrix.from([[1,2],[3,4]]);
 Matrix.from(m) === m; //true
 ```
-<a name="zeroscreates a new matrix filled with zeros"></a>
+<a name="zeros
+creates a new matrix filled with zeros"></a>
 
-## zeroscreates a new matrix filled with zeros(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+## zeros
+creates a new matrix filled with zeros(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
 **Kind**: global function  
 
 | Param | Type | Description |
@@ -184,9 +231,11 @@ Matrix.from(m) === m; //true
 | rows | <code>number</code> | number of rows |
 | [cols] | <code>number</code> | number of columns |
 
-<a name="onescreates a new matrix filled with ones"></a>
+<a name="ones
+creates a new matrix filled with ones"></a>
 
-## onescreates a new matrix filled with ones(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+## ones
+creates a new matrix filled with ones(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
 **Kind**: global function  
 
 | Param | Type | Description |
@@ -194,18 +243,22 @@ Matrix.from(m) === m; //true
 | rows | <code>number</code> | number of rows |
 | [cols] | <code>number</code> | number of columns |
 
-<a name="eyecreates a new identity matrix of size n"></a>
+<a name="eye
+creates a new identity matrix of size n"></a>
 
-## eyecreates a new identity matrix of size n(n) ⇒ [<code>Matrix</code>](#Matrix)
+## eye
+creates a new identity matrix of size n(n) ⇒ [<code>Matrix</code>](#Matrix)
 **Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | n | <code>number</code> | number of rows and columns |
 
-<a name="randcreates a new matrix filled with random values [0|1)"></a>
+<a name="rand
+creates a new matrix filled with random values [0|1)"></a>
 
-## randcreates a new matrix filled with random values [0\|1)(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+## rand
+creates a new matrix filled with random values [0\|1)(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
 **Kind**: global function  
 
 | Param | Type | Description |
@@ -227,7 +280,14 @@ gets, sets or creates diagonal matrices
 
 **Example**  
 ```js
-//Create a random matrixconst mRand = random(20);//Extract the diagonal of the matrix (as a column vector)const vect = diag(mRand);//Create a new matrix with the same diagonalconst mDiag = diag(vect);//Set the diagonal of the original to zerodiag(mRand,0);
+//Create a random matrix
+const mRand = random(20);
+//Extract the diagonal of the matrix (as a column vector)
+const vect = diag(mRand);
+//Create a new matrix with the same diagonal
+const mDiag = diag(vect);
+//Set the diagonal of the original to zero
+diag(mRand,0);
 ```
 <a name="sum"></a>
 
@@ -240,6 +300,12 @@ Sum the matrix in the direction specified or sum the set of matrices.
 | --- | --- |
 | matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> \| <code>null</code> | 
 
+<a name="Range"></a>
+
+## Range : <code>Array.&lt;\*&gt;</code>
+A range specifier.
+
+**Kind**: global typedef  
 
 * * *
 
