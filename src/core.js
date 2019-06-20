@@ -8,10 +8,10 @@ import {rows} from "./conversions";
 /**
  * Tests if a value is an instance of a Matrix
  * @function
- * @param m {*} The value to test.
- * @returns {boolean} 'true' if `m` is an instance of Matrix, 'false' otherwise.
+ * @param val {*} The value to test.
+ * @returns {boolean} 'true' if `val` is an instance of Matrix, 'false' otherwise.
  */
-export const isMatrix = (m)=> m instanceof Matrix;
+export const isMatrix = val => val instanceof Matrix;
 
 
 /**
@@ -43,11 +43,11 @@ class Matrix{
 
   /**
    * Iterates through the matrix data in row-major order
-   * @method @@Iterator
-   * @memberOf Matrix#
-   * @returns {IterableIterator<Number>}
+   * @generator
+   * @function Matrix#\[Symbol-Iterator\]
+   * @yields {Number}
    * @example
-   * //Calculate the 2-norm of a matrix
+   * //Calculate the L²-norm of a matrix
    * function norm(matrix){
    *   let tot=0;
    *   for(let v of matrix) tot+=v*v;
@@ -141,10 +141,13 @@ class Matrix{
 }
 
 /**
- * A range specifier.
+ * A range specifies indices of the row or column of a matrix.  In general this is just an array of number, however
+ * there are two special elements which can be used, `':'` and `'::'`.  `':'` indicates a range from the previous
+ * index to the subsequent index. If `':'` is at the start of the array, then a range from the start of the indices
+ * is assumed, similarly if at the end then to the end is assumed.  `[':']` thus indicates the entire range.
+ * @summary A range specifier.
  * @typeDef Range
- * @type Array<*>
- *
+ * @type {Array<Number|String>|Number|String}
  */
 
 /**

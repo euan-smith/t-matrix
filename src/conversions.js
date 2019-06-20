@@ -5,21 +5,9 @@ import {COLS, DATA, ROWS} from "./const";
  * @param matrix {Matrix}
  * @returns {IterableIterator<Array<Number>>}
  * @example
- * //Return the L2 Norm of each row
- * function rowNorm(matrix){
- *   const norms=[];
- *   for(let row of Matrix.rows(matrix)){
- *     let tot;
- *     for(let v of row) tot+=v*v;
- *     norms.push(Math.sqrt(tot));
- *   }
- *   return Matrix.from(norms);
- * }
- * //A second implementation of the same function using aa more functional approach
- * function rowNoemV2(matrix){
- *   return Matrix.from([...Matrix.rows(matrix)]
- *     .map(row=>row.reduce((tot,v)=>tot+v*v,0))
- *     .map(tot=>Math.sqrt(tot)));
+ * //Log each matrix row
+ * for(let row of Matrix.rows(matrix)){
+ *   console.log(row);
  * }
  */
 export function *rows(matrix){
@@ -28,9 +16,18 @@ export function *rows(matrix){
     yield cols.map(c=>matrix[DATA][r+c]);
 }
 
-export function *cols(m){
-  const rows = Array.from(m[ROWS]);
-  for(let c of m[COLS])
-    yield rows.map(r=>m[DATA][r+c]);
+/**
+ * Iterate over the columns.
+ * @param matrix {Matrix}
+ * @returns {IterableIterator<Array<Number>>}
+ * @example
+ * //Log the range of each column
+ * for(let col of Matrix.cols(matrix)){
+ *   console.log(`Range [${Math.min(...col)}|${Math.max(...col)}]`);
+ * }
+ */
+export function *cols(matrix){
+  const rows = Array.from(matrix[ROWS]);
+  for(let c of matrix[COLS])
+    yield rows.map(r=>matrix[DATA][r+c]);
 }
-
