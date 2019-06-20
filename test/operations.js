@@ -2,7 +2,7 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
-import {sum,max,min,trace,product,mult,det,ldiv,div,inv} from "../src/operations";
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs} from "../src/operations";
 import {from} from "../src/core"
 
 const m=from([[1,2,4],[8,16,32],[64,128,256]]);
@@ -117,10 +117,16 @@ describe('mult',function(){
   });
   it("throws an error if the matrix dimensions don't agree",function(){
     expect(()=>mult(ones(2,3),ones(4,5),ones(5,4)).size).to.throw();
+  });
+  it("multiplies a matrix by scalars",function(){
+    expect([...mult(3,[1,2,3],2)]).to.eql([6,12,18]);
   })
 });
 
 describe('det',function () {
+  it('returns zero if the matrix is not square',function(){
+    expect(det([1,2,3])).to.equal(0);
+  });
   it('calculates a 2x2 determinant',function () {
     expect(det(from([[1,2],[3,4]]))).to.equal(-2);
     const a=rand(2),da=det(a);
@@ -193,5 +199,11 @@ describe('inv',function(){
   });
   it('throws an error with a singular matrix',function(){
     expect(()=>inv(m)).to.throw();
+  })
+});
+
+describe('abs',function(){
+  it('returns a matrix with absolute values',function(){
+    expect([...abs(from([-2,-1,0,1,2]))]).to.eql([2,1,0,1,2]);
   })
 });

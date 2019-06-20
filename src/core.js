@@ -141,16 +141,6 @@ class Matrix{
 }
 
 /**
- * A range specifies indices of the row or column of a matrix.  In general this is just an array of number, however
- * there are two special elements which can be used, `':'` and `'::'`.  `':'` indicates a range from the previous
- * index to the subsequent index. If `':'` is at the start of the array, then a range from the start of the indices
- * is assumed, similarly if at the end then to the end is assumed.  `[':']` thus indicates the entire range.
- * @summary A range specifier.
- * @typeDef Range
- * @type {Array<Number|String>|Number|String}
- */
-
-/**
  * Create a matrix from the supplied data.
  * @param data {(Matrix|Array<Number>|Array<Array<Number>>)}
  * If `data` is a matrix then it is just returned.

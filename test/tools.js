@@ -1,9 +1,13 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {isNum, range, mapIter, zipIters,drop} from '../src/tools';
+import {isNum, range, mapIter, zipIters} from '../src/tools';
+import {from} from "../src/core";
 
 describe('range',function(){
+  it('returns a sequence of values',function(){
+    expect([...range([0,1,2])]).to.eql([0,1,2]);
+  });
   it('creates a range 0:2',function(){
     expect([...range([0,':',2])]).to.eql([0,1,2]);
   });
@@ -15,6 +19,27 @@ describe('range',function(){
   });
   it('creates a range : for length 3',function(){
     expect([...range([':'],3)]).to.eql([0,1,2]);
+  });
+  it('creates a range stepping back from the end',function(){
+    expect([...range(['::',-1],3)]).to.eql([2,1,0]);
+  });
+  it('creates a range with a circular shift',function(){
+    expect([...range([3,':',':',2],5)]).to.eql([3,4,0,1,2]);
+    expect([...range([3,':',4,':',2])]).to.eql([3,4,0,1,2]);
+    expect([...range([1,':',null,0],5)]).to.eql([1,2,3,4,0]);
+    expect([...range([4,'|',':',3],5)]).to.eql([4,0,1,2,3]);
+  });
+  it('returns an empty list when it should',function(){
+    expect([...range([])]).to.eql([]);
+    expect([...range([null])]).to.eql([]);
+    expect([...range(['|'])]).to.eql([]);
+    expect([...range([2,':',0])]).to.eql([]);
+  });
+  it('throws an error when it should',function(){
+    expect(()=>[...range(['::'])]).to.throw();
+    expect(()=>[...range(['::',':'])]).to.throw();
+    expect(()=>[...range([0,'::',0,3])]).to.throw();
+    expect(()=>[...range([-1])]).to.throw();
   });
 });
 
@@ -50,4 +75,7 @@ describe('zipIters',function(){
   it('zips together two arrays',function(){
     expect([...zipIters([1,2,3],[4,5,6])]).to.eql([[1,4],[2,5],[3,6]])
   });
+  it('zips an array and a non-array iterable',function(){
+    expect([...zipIters([1,2,3],range([4,5,6]))]).to.eql([[1,4],[2,5],[3,6]])
+  })
 });

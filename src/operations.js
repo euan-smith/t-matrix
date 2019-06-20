@@ -75,7 +75,6 @@ function pOp(opFn,...matrices){
 }
 
 function *matchSize(m,h,w){
-  if (!isMatrix(m)) m=from(m);
   const [hm,wm]=m.size;
   //size is the same, just yield the matrix
   if (h===hm && w===wm) yield* m;
@@ -95,6 +94,7 @@ export function mult(...matrices){
   for(let matrix of matrices){
     if (isNum(matrix)) s*=matrix;
     else {
+      matrix=from(matrix);
       if (!m){
         m=matrix;
         [h,k]=m.size;
@@ -122,6 +122,7 @@ function *_mult(a,b,K){
 }
 
 export function det(m){
+  m=from(m);
   const [h,w] = m.size;
   if (h!==w) return 0;
   if (h<4){
@@ -138,6 +139,7 @@ export function det(m){
 }
 
 export function ldiv(a,b){
+  a=from(a);b=from(b);
   const working = a.clone(), {[ROWS]:Rw,[COLS]:Cw,[DATA]:Dw}=working;
   const rtn = b.clone(), {[ROWS]:Rr,[COLS]:Cr,[DATA]:Dr}=rtn;
   const [h,w] = b.size;
@@ -182,5 +184,5 @@ export function inv(a){
 }
 
 export function abs(m){
-  return m.map(Math.abs);
+  return from(m).map(Math.abs);
 }
