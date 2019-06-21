@@ -81,9 +81,15 @@ class Matrix{
 
   /**
    * The a value or subset of a matrix
-   * @param rows
-   * @param cols
+   * @param rows {Range|Number} Row index or indices.  zero-based
+   * @param cols {Range|Number} Column index or indices.  zero-based
    * @returns {Matrix|Number}
+   * @example
+   * const m=Matrix.from([[1,2],[3,4]]);
+   * m.get(0,0) //1
+   * m.get(':',0) //Matrix [1;3]
+   * m.get(':',':') //The original matrix.
+   * m.get(['::',-1],':') //Return a matrix flipped vertically
    */
   get(rows,cols){
     const D=this[DATA], R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
@@ -164,7 +170,8 @@ class Matrix{
 export function from(data){
   if (isMatrix(data)) return data;
   if (isArray(data) && data.length){
-    if (isNum(data[0])) return new Matrix(data.length, [0], data);
+    if (isNum(data[0])) return new Matrix(data.length, [0], range(data));
+    data = data.map(a=>[...range(a)]);
     if (isArray(data[0])){
       const rows = data.length, cols = data[0].length;
       if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,data.flat());

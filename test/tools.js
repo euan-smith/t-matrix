@@ -38,8 +38,11 @@ describe('range',function(){
     expect(()=>[...range(['::'])]).to.throw();
     expect(()=>[...range(['::',':'])]).to.throw();
     expect(()=>[...range([0,'::',0,3])]).to.throw();
-    expect(()=>[...range([-1])]).to.throw();
   });
+  it('returns an sequence of numbers unchanged when no limit is supplied',function(){
+    const a=[-2,-1,0,1,2];
+    expect([...range(a)]).to.eql(a);
+  })
 });
 
 describe('isNum', function(){

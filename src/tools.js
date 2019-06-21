@@ -3,28 +3,47 @@ export const isArray = Array.isArray;
 export const isFunction = f => typeof f === "function";
 
 /**
- * A Specification of indices of the row or column of a matrix. For use with `.get` or `.set`.
+ * A Specification of indices of the row or column of a matrix, or a range of array values.
  * @typeDef Range
- * @type {Array<RangeItem>|RangeItem}
+ * @type {Array<Number|String>|Number|String}
  * @example
- * matrix.get(1,5) //just the number specifies a single index
- * matrix.get([1],[5]) //this does exactly the same thing
- * matrix.get(':',5) //all rows of the 5th column
- * matrix.get([2,':'],[':',5]) //rows 2 to the end of columns up to column 5.
- * matrix.get([':',3,5,':'],':') //all rows up to 3 and from 5 onwards of all columns.
- * matrix.get([1,'::',2,5],['::',-1]) //rows 1,3,5 of all columns in reverse order
- */
-
-/**
- * Either an index or one of `':'` or `'::'` to specify a range of indeces
- * @typeDef RangeItem
- * @type {Number|String}
+ * //An arbitrary sequence of indices or numbers can be expressed
+ * [1,2,3] //=> expands to the same list of indices: 1,2,3
+ * [-1,-2,-3] //=> -1,-2,-3
+ * //If specifying indices, negative numbers index from the end of an array.
+ * [-1,-2,-3] //for an array of length 10, => 9,8,7
+ * //Ranges can be expressed with the special character ':'
+ * [1,':',5] //=> 1,2,3,4,5
+ * //Therefore to express the full range
+ * [0,':',-1] // for length 10, => 0,1,2,3,4,5,6,7,8,9
+ * //When used at the start of a range definition, the range start is assumed
+ * [':',-1] // equivalent to [0,':',-1]
+ * //When used at the end of a range definition, the range end is assumed
+ * [':'] // equivalent to [0,':'] and [':',-1] and [0,':',-1]
+ * //Ranges with a larger step can be expressed using '::'
+ * [1,'::',2,5] //=> 1,3,5
+ * //Similar to ':' start and end limits can be implied
+ * ['::',2] // equivalent to [0,'::',2,-1]
+ * //Negative steps can also be used
+ * [5,'::',-2,1] //=> 5,3,1
+ * //Similarly end limits can be implied
+ * ['::',-1] //=> [-1,'::',-1,0] which for length 10 => 9,8,7,6,5,4,3,2,1,0
+ * //However if the step size is missing, an error will be thrown
+ * ['::'] //will throw an error when used
+ * //Many ranges can be used in one definition
+ * [5,':',-1,0,':',4] //for length 10=> 5,6,7,8,9,0,1,2,3,4
+ * //Wherever a range definition is truncated by a second definition, end points are implied
+ * [5,':',':',4] //equivalent to [5,':',-1,0,':',4]
+ * //The same is true of the '::' operator
+ * [4,'::',-1,'::',-1,5] // for length 10=>4,3,2,1,0,9,8,7,6,5
+ * //Where there is only one entry, this can be expressed outside of an array
+ * 4 //equivalent to [4]
+ * ':' //specifies the full range
  */
 
 function fixNum(n,lim,def){
   if (!isNum(n)) n=def;
-  if (n<0 && !lim) throw new Error('Matrix:: Invalid range specification.');
-  return n<0 ? n+lim : n;
+  return n<0 && lim ? n+lim : n;
 }
 
 export function *range(def, lim){
