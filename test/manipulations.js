@@ -2,7 +2,7 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {zeros,rand,eye} from "../src/create";
-import {diag,reshape,swapCols,swapRows,repmat} from "../src/manipulations";
+import {diag,reshape,swapCols,swapRows,repmat,hcat,vcat,cat} from "../src/manipulations";
 import {sum} from "../src/operations";
 import {from} from "../src/core";
 
@@ -69,5 +69,22 @@ describe('repmat',function(){
   it('defaults to no repeat on rows and/or cols',function(){
     const m=from([[1,2],[3,4]]);
     expect([...repmat(m)]).to.eql([...m]);
+  });
+});
+
+describe('concat',function(){
+  it('hcat concats horizontally',function(){
+    const m=from([[1,2],[3,4]]);
+    expect(hcat(m,m).toJSON()).to.eql([[1,2,1,2],[3,4,3,4]]);
+  });
+  it("hcat throws an error if the sizes don't match",function(){
+    expect(()=>hcat([1,2],[1,2,3])).to.throw();
+  });
+  it('vcat concats vertically',function(){
+    const m=from([[1,2],[3,4]]);
+    expect(vcat(m,m).toJSON()).to.eql([[1,2],[3,4],[1,2],[3,4]]);
+  });
+  it("vcat throws an error if the sizes don't match",function(){
+    expect(()=>vcat([[1,2]],[[1,2,3]])).to.throw();
   });
 });

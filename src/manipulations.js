@@ -1,6 +1,6 @@
-import {Matrix} from "./core";
+import {Matrix,from} from "./core";
 import {DATA,ROWS,COLS} from "./const";
-import {range, zipIters} from "./tools";
+import {range, zipIters, isArray} from "./tools";
 import {rows} from "./conversions";
 
 /**
@@ -73,4 +73,51 @@ function *_repmat(m,r,c){
   for (let i=0;i<r;i++)
     for(let row of rows(m))
       for (let j=0;j<c;j++) yield* row;
+}
+
+/**
+ * Vertically concatenate matrices together
+ * @param matrices {Array<Matrix>}
+ * @returns {Matrix}
+ */
+export function vcat(...matrices){
+  matrices=matrices.map(m=>from(m));
+  const sizes = matrices.map(m=>m.size);
+  const width = sizes[0][1];
+  if (sizes.some(s=>s[1]!==width)) throw new Error('Matrix::vcat Matrices must have the same width.');
+  const height = sizes.reduce((h,s)=>h+s[0],0);
+  return new Matrix(height, width, _vcat(matrices));
+}
+
+/**
+ * @param matrices {Array<Matrix>}
+ * @returns {IterableIterator<Number>}
+ * @private
+ */
+function * _vcat(matrices){
+  for(let matrix of matrices) yield* matrix;
+}
+
+/**
+ * Vertically concatenate matrices together
+ * @param matrices {Array<Matrix>}
+ * @returns {Matrix}
+ */
+export function hcat(...matrices){
+  matrices=matrices.map(m=>from(m));
+  const sizes = matrices.map(m=>m.size);
+  const height = sizes[0][0];
+  if (sizes.some(s=>s[0]!==height)) throw new Error('Matrix::vcat Matrices must have the same width.');
+  const width = sizes.reduce((w,s)=>w+s[1],0);
+  return new Matrix(height, width, _hcat(matrices));
+}
+
+/**
+ * @param matrices {Array<Matrix>}
+ * @returns {IterableIterator<Number>}
+ * @private
+ */
+function * _hcat(matrices){
+  for(let mRows of zipIters(...matrices.map(m=>rows(m))))
+    for(let row of mRows) yield*row;
 }
