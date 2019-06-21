@@ -2,8 +2,9 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {zeros,rand,eye} from "../src/create";
-import {diag,reshape,swapCols,swapRows} from "../src/manipulations";
+import {diag,reshape,swapCols,swapRows,repmat} from "../src/manipulations";
 import {sum} from "../src/operations";
+import {from} from "../src/core";
 
 function *skip(iter,N){
   let n=0;
@@ -57,5 +58,12 @@ describe('swapCols',function(){
     const m=eye(4);
     m.set(0,3,1);
     expect([...swapCols(m,0,3)]).to.eql([1,0,0,1, 0,1,0,0, 0,0,1,0, 1,0,0,0]);
+  })
+});
+
+describe('repmat',function(){
+  it('repeats a matrix',function(){
+    const m=from([[1,2],[3,4]]);
+    expect([...repmat(m,2,2)]).to.eql([1,2,1,2, 3,4,3,4, 1,2,1,2, 3,4,3,4]);
   })
 });

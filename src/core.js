@@ -170,7 +170,10 @@ class Matrix{
 export function from(data){
   if (isMatrix(data)) return data;
   if (isArray(data) && data.length){
-    if (isNum(data[0])) return new Matrix(data.length, [0], range(data));
+    if (isNum(data[0])) {
+      data = [...range(data)];
+      return new Matrix(data.length, [0], data);
+    }
     data = data.map(a=>[...range(a)]);
     if (isArray(data[0])){
       const rows = data.length, cols = data[0].length;

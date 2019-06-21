@@ -1,4 +1,5 @@
 import {COLS, DATA, ROWS} from "./const";
+import {from} from "./core";
 
 /**
  * Iterate over the rows.
@@ -11,6 +12,7 @@ import {COLS, DATA, ROWS} from "./const";
  * }
  */
 export function *rows(matrix){
+  matrix=from(matrix);
   const cols = Array.from(matrix[COLS]);
   for(let r of matrix[ROWS])
     yield cols.map(c=>matrix[DATA][r+c]);
@@ -27,6 +29,7 @@ export function *rows(matrix){
  * }
  */
 export function *cols(matrix){
+  matrix=from(matrix);
   const rows = Array.from(matrix[ROWS]);
   for(let c of matrix[COLS])
     yield rows.map(r=>matrix[DATA][r+c]);

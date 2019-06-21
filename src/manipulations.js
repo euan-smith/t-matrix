@@ -1,6 +1,7 @@
 import {Matrix} from "./core";
 import {DATA,ROWS,COLS} from "./const";
 import {range, zipIters} from "./tools";
+import {rows} from "./conversions";
 
 /**
  * gets, sets or creates diagonal matrices
@@ -61,4 +62,17 @@ export function minor(m, row, col){
     m[ROWS].filter((v,r)=>r!==row),
     m[COLS].filter((v,c)=>c!==col),
     m[DATA]);
+}
+
+export function repmat(m,r,c){
+  if (!r) r=1;
+  if (!c) c=1;
+  const size=m.size;
+  return new Matrix(size[0]*r,size[1]*c,_repmat(m,r,c));
+}
+
+function *_repmat(m,r,c){
+  for (let i=0;i<r;i++)
+    for(let row of rows(m))
+      for (let j=0;j<c;j++) yield* row;
 }

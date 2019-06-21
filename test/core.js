@@ -103,7 +103,10 @@ describe('from',function(){
   it('returns a matrix when passed',function(){
     const m=eye(4);
     expect(from(m)).to.equal(m);
-  })
+  });
+  it('can create a matrix from a range specification',function(){
+    expect([...from([1,':',5])]).to.eql([1,2,3,4,5])
+  });
 });
 describe('mixin',function(){
   it('adds to the matrix prototype',function(){

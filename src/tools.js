@@ -139,3 +139,7 @@ export function *zipIters(...iters){
     r=iters.map(i=>i.next());
   }
 }
+
+export function toList(o){
+  return [...range([...o])];
+}

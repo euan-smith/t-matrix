@@ -1,8 +1,8 @@
 import {Matrix, isMatrix, from} from "./core";
 import {ROWS,COLS,DATA} from "./const";
 import {rows, cols} from "./conversions";
-import {mapIter, zipIters, isNum} from "./tools";
-import {diag, minor} from "./manipulations";
+import {mapIter, zipIters, isNum, toList} from "./tools";
+import {diag, minor,repmat} from "./manipulations";
 import {eye} from "./create";
 
 const
@@ -185,4 +185,14 @@ export function inv(a){
 
 export function abs(m){
   return from(m).map(Math.abs);
+}
+
+export function grid(rows,cols){
+  rows = toList(rows);
+  if (!cols) cols=rows;
+  else cols = toList(cols);
+  return [
+    repmat(new Matrix(rows.length,1,rows),1,cols.length),
+    repmat(new Matrix(1,cols.length,cols),rows.length,1),
+  ]
 }

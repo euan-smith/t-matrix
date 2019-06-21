@@ -2,7 +2,7 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
-import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs} from "../src/operations";
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid} from "../src/operations";
 import {from} from "../src/core"
 
 const m=from([[1,2,4],[8,16,32],[64,128,256]]);
@@ -205,5 +205,13 @@ describe('inv',function(){
 describe('abs',function(){
   it('returns a matrix with absolute values',function(){
     expect([...abs(from([-2,-1,0,1,2]))]).to.eql([2,1,0,1,2]);
+  })
+});
+
+describe('grid',function(){
+  it('generates a meshgrid', function(){
+    const [R,C] = grid([1,':',3]);
+    expect(R.toJSON()).to.eql([[1,1,1],[2,2,2],[3,3,3]]);
+    expect(C.toJSON()).to.eql([[1,2,3],[1,2,3],[1,2,3]]);
   })
 });
