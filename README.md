@@ -98,6 +98,12 @@ console.log([...a]);
 <dt><a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>gets, sets or creates diagonal matrices</p>
 </dd>
+<dt><a href="#vcat">vcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>Vertically concatenate matrices together</p>
+</dd>
+<dt><a href="#hcat">hcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>Horizontally concatenate matrices together</p>
+</dd>
 <dt><a href="#sum">sum(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
 <dd><p>Sum the matrix in the direction specified or sum the set of matrices.</p>
 </dd>
@@ -106,11 +112,8 @@ console.log([...a]);
 ## Typedefs
 
 <dl>
-<dt><a href="#Range">Range</a> : <code><a href="#RangeItem">Array.&lt;RangeItem&gt;</a></code> | <code><a href="#RangeItem">RangeItem</a></code></dt>
-<dd><p>A Specification of indices of the row or column of a matrix. For use with <code>.get</code> or <code>.set</code>.</p>
-</dd>
-<dt><a href="#RangeItem">RangeItem</a> : <code>Number</code> | <code>String</code></dt>
-<dd><p>Either an index or one of <code>&#39;:&#39;</code> or <code>&#39;::&#39;</code> to specify a range of indeces</p>
+<dt><a href="#Range">Range</a> : <code>Array.&lt;(Number|String)&gt;</code> | <code>Number</code> | <code>String</code></dt>
+<dd><p>A Specification of indices of the row or column of a matrix, or a range of array values.</p>
 </dd>
 </dl>
 
@@ -164,11 +167,15 @@ The a value or subset of a matrix
 
 **Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 
-| Param |
-| --- |
-| rows | 
-| cols | 
+| Param | Type | Description |
+| --- | --- | --- |
+| rows | [<code>Range</code>](#Range) \| <code>Number</code> | Row index or indices.  zero-based |
+| cols | [<code>Range</code>](#Range) \| <code>Number</code> | Column index or indices.  zero-based |
 
+**Example**  
+```js
+const m=Matrix.from([[1,2],[3,4]]);m.get(0,0) //1m.get(':',0) //Matrix [1;3]m.get(':',':') //The original matrix.m.get(['::',-1],':') //Return a matrix flipped vertically
+```
 <a name="rows"></a>
 
 ## rows(matrix) ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code>
@@ -297,6 +304,28 @@ gets, sets or creates diagonal matrices
 ```js
 //Create a random matrixconst mRand = random(20);//Extract the diagonal of the matrix (as a column vector)const vect = diag(mRand);//Create a new matrix with the same diagonalconst mDiag = diag(vect);//Set the diagonal of the original to zerodiag(mRand,0);
 ```
+<a name="vcat"></a>
+
+## vcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
+Vertically concatenate matrices together
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| matrices | [<code>Array.&lt;Matrix&gt;</code>](#Matrix) | 
+
+<a name="hcat"></a>
+
+## hcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
+Horizontally concatenate matrices together
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| matrices | [<code>Array.&lt;Matrix&gt;</code>](#Matrix) | 
+
 <a name="sum"></a>
 
 ## sum(matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
@@ -310,20 +339,14 @@ Sum the matrix in the direction specified or sum the set of matrices.
 
 <a name="Range"></a>
 
-## Range : [<code>Array.&lt;RangeItem&gt;</code>](#RangeItem) \| [<code>RangeItem</code>](#RangeItem)
-A Specification of indices of the row or column of a matrix. For use with `.get` or `.set`.
+## Range : <code>Array.&lt;(Number\|String)&gt;</code> \| <code>Number</code> \| <code>String</code>
+A Specification of indices of the row or column of a matrix, or a range of array values.
 
 **Kind**: global typedef  
 **Example**  
 ```js
-matrix.get(1,5) //just the number specifies a single indexmatrix.get([1],[5]) //this does exactly the same thingmatrix.get(':',5) //all rows of the 5th columnmatrix.get([2,':'],[':',5]) //rows 2 to the end of columns up to column 5.matrix.get([':',3,5,':'],':') //all rows up to 3 and from 5 onwards of all columns.matrix.get([1,'::',2,5],['::',-1]) //rows 1,3,5 of all columns in reverse order
+//An arbitrary sequence of indices or numbers can be expressed[1,2,3] //=> expands to the same list of indices: 1,2,3[-1,-2,-3] //=> -1,-2,-3//If specifying indices, negative numbers index from the end of an array.[-1,-2,-3] //for an array of length 10, => 9,8,7//Ranges can be expressed with the special character ':'[1,':',5] //=> 1,2,3,4,5//Therefore to express the full range[0,':',-1] // for length 10, => 0,1,2,3,4,5,6,7,8,9//When used at the start of a range definition, the range start is assumed[':',-1] // equivalent to [0,':',-1]//When used at the end of a range definition, the range end is assumed[':'] // equivalent to [0,':'] and [':',-1] and [0,':',-1]//Ranges with a larger step can be expressed using '::'[1,'::',2,5] //=> 1,3,5//Similar to ':' start and end limits can be implied['::',2] // equivalent to [0,'::',2,-1]//Negative steps can also be used[5,'::',-2,1] //=> 5,3,1//Similarly end limits can be implied['::',-1] //=> [-1,'::',-1,0] which for length 10 => 9,8,7,6,5,4,3,2,1,0//However if the step size is missing, an error will be thrown['::'] //will throw an error when used//Many ranges can be used in one definition[5,':',-1,0,':',4] //for length 10=> 5,6,7,8,9,0,1,2,3,4//Wherever a range definition is truncated by a second definition, end points are implied[5,':',':',4] //equivalent to [5,':',-1,0,':',4]//The same is true of the '::' operator[4,'::',-1,'::',-1,5] // for length 10=>4,3,2,1,0,9,8,7,6,5//Where there is only one entry, this can be expressed outside of an array4 //equivalent to [4]':' //specifies the full range
 ```
-<a name="RangeItem"></a>
-
-## RangeItem : <code>Number</code> \| <code>String</code>
-Either an index or one of `':'` or `'::'` to specify a range of indeces
-
-**Kind**: global typedef  
 
 * * *
 

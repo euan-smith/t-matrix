@@ -99,7 +99,7 @@ function * _vcat(matrices){
 }
 
 /**
- * Vertically concatenate matrices together
+ * Horizontally concatenate matrices together
  * @param matrices {Array<Matrix>}
  * @returns {Matrix}
  */
