@@ -4,6 +4,7 @@ import {range,mapIter,zipIters} from "./tools";
 import {zeros} from "./create";
 
 export function magic(n){
+  if (n===2) throw new Error('Matrix::magic there is no magic square with size 2.');
   if (n%2){
     //n is odd
     const [I,J] = grid([1,':',n]);
@@ -27,10 +28,9 @@ export function magic(n){
   O.set([p,':',2*p-1],[0,':',p-1],sum(M,3*p*p));
   O.set([0,':',p-1],[p,':',2*p-1],sum(M,2*p*p));
   O.set([p,':',2*p-1],[p,':',2*p-1],sum(M,p*p));
-  if (n===2) return O;
   let k=(n-2)>>2, j=[':',k-1,n+1-k,':',n-1];
-  O.set(':',j,O.get([p,':',':',p-1],j).clone());
+  O.set(':',j,O.get([p,':',':',p-1],j));
   j=[0,k];
-  O.set([k,k+p],j,O.get([k+p,k],j).clone());
+  O.set([k,k+p],j,O.get([k+p,k],j));
   return O;
 }

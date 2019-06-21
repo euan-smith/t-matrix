@@ -209,9 +209,14 @@ describe('abs',function(){
 });
 
 describe('grid',function(){
-  it('generates a meshgrid', function(){
+  it('generates a square meshgrid', function(){
     const [R,C] = grid([1,':',3]);
     expect(R.toJSON()).to.eql([[1,1,1],[2,2,2],[3,3,3]]);
     expect(C.toJSON()).to.eql([[1,2,3],[1,2,3],[1,2,3]]);
-  })
+  });
+  it('generates a rectangular meshgrid', function(){
+    const [R,C] = grid([1,':',3],[1,':',2]);
+    expect(R.toJSON()).to.eql([[1,1],[2,2],[3,3]]);
+    expect(C.toJSON()).to.eql([[1,2],[1,2],[1,2]]);
+  });
 });

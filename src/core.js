@@ -126,7 +126,9 @@ class Matrix{
     if (!isMatrix(val)) val = from(val);
     const [vRl,vCl] = val.size;
     if (Rl!==vRl || Cl!==vCl) throw new Error('Matrix::set Assignment error, matrix dimensions must agree');
-    const vD = val[DATA], vR=val[ROWS], vC = val[COLS];
+    let vD = val[DATA], vR=val[ROWS], vC = val[COLS];
+    //if this is the same matrix, avoid issues with swaps by copying the data first
+    if (vD===D)vD=D.slice();
     for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
       D[R[i]+C[j]] = vD[vR[i]+vC[j]];
     return this;
@@ -174,7 +176,6 @@ export function from(data){
       data = [...range(data)];
       return new Matrix(data.length, [0], data);
     }
-    data = data.map(a=>[...range(a)]);
     if (isArray(data[0])){
       const rows = data.length, cols = data[0].length;
       if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,data.flat());

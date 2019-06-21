@@ -64,9 +64,7 @@ export function minor(m, row, col){
     m[DATA]);
 }
 
-export function repmat(m,r,c){
-  if (!r) r=1;
-  if (!c) c=1;
+export function repmat(m,r=1,c=1){
   const size=m.size;
   return new Matrix(size[0]*r,size[1]*c,_repmat(m,r,c));
 }

@@ -65,5 +65,9 @@ describe('repmat',function(){
   it('repeats a matrix',function(){
     const m=from([[1,2],[3,4]]);
     expect([...repmat(m,2,2)]).to.eql([1,2,1,2, 3,4,3,4, 1,2,1,2, 3,4,3,4]);
-  })
+  });
+  it('defaults to no repeat on rows and/or cols',function(){
+    const m=from([[1,2],[3,4]]);
+    expect([...repmat(m)]).to.eql([...m]);
+  });
 });
