@@ -3,8 +3,8 @@ import {diag} from "./manipulations";
 
 export const
   /**
-   * @function zeros
    * creates a new matrix filled with zeros
+   * @function zeros
    * @param rows {number} number of rows
    * @param [cols] {number} number of columns
    * @returns {Matrix}
@@ -12,8 +12,8 @@ export const
   zeros = (rows = 1, cols) => new Matrix(rows, cols || rows),
 
   /**
-   * @function ones
    * creates a new matrix filled with ones
+   * @function ones
    * @param rows {number} number of rows
    * @param [cols] {number} number of columns
    * @returns {Matrix}
@@ -21,16 +21,16 @@ export const
   ones = (rows = 1, cols) => new Matrix(rows, cols || rows, 1),
 
   /**
-   * @function eye
    * creates a new identity matrix of size n
+   * @function eye
    * @param n {number} number of rows and columns
    * @returns {Matrix}
    */
   eye = n => diag(zeros(n),1),
 
   /**
-   * @function rand
    * creates a new matrix filled with random values [0|1)
+   * @function rand
    * @param rows {number} number of rows
    * @param [cols] {number} number of columns
    * @returns {Matrix}

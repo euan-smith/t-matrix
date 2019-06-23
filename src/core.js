@@ -44,7 +44,7 @@ class Matrix{
   /**
    * Iterates through the matrix data in row-major order
    * @generator
-   * @function Matrix#\[Symbol-Iterator\]
+   * @function Matrix#[Symbol-Iterator]
    * @yields {Number}
    * @example
    * //Calculate the L²-norm of a matrix
@@ -80,16 +80,27 @@ class Matrix{
   get t(){return new Matrix(this[COLS],this[ROWS],this[DATA])}
 
   /**
-   * The a value or subset of a matrix
+   * Return a value or subset of a matrix.  The matrix subset is a view into the current matrix.
    * @param rows {Range|Number} Row index or indices.  zero-based
    * @param cols {Range|Number} Column index or indices.  zero-based
    * @returns {Matrix|Number}
    * @example
    * const m=Matrix.from([[1,2],[3,4]]);
+   * //Specify single indices to return a value
    * m.get(0,0) //1
+   *
+   * //The same indices in an array will return a matrix
+   * m.get([0],[0]) //Matrix [1]
+   *
+   * //A general {@link Range} can be specified.
    * m.get(':',0) //Matrix [1;3]
    * m.get(':',':') //The original matrix.
    * m.get(['::',-1],':') //Return a matrix flipped vertically
+   *
+   * //Any sub-matrix returned is a view into the source matrix.
+   * const a=zeros(4), b=a.get([1,2],[1,2]);
+   * b.set(2);
+   * console.log(a.toJSON()) //[[0,0,0,0], [0,2,2,0], [0,2,2,0], [0,0,0,0]]
    */
   get(rows,cols){
     const D=this[DATA], R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
@@ -100,7 +111,27 @@ class Matrix{
       D);
   }
 
-  //val can be a number, a function, a matrix, an array or an array of arrays
+  /**
+   * Set a value or range of values of the matrix
+   * @param [rows] {Range|Number} Row index or indices.  zero-based
+   * @param [cols] {Range|Number} Column index or indices.  zero-based
+   * @param val {Number|Matrix|Array} Values to assign to the specified range
+   * @returns this
+   * @example
+   * const m=Matrix.zeros(3);
+   * //Set a single value
+   * m.set(1,1,5) //[0,0,0; 0,5,0; 0,0,0]
+   *
+   * //Set a range to a single value
+   * m.set(0,':',3) //[3,3,3; 0,5,0; 0,0,0]
+   *
+   * //The value can also be a matrix of the matching size, or an array which resolves to such.
+   * m.set(2,':',[[7,8,6]]) //[3,3,3; 0,5,0; 7,8,6]
+   * //If val is an array, {@link from} will be used to convert it to a matrix.
+   *
+   * //If no row and column indices are provided, the value will apply to the whole matrix
+   * m.set(1) //[1,1,1; 1,1,1; 1,1,1]
+   */
   set(rows,cols,val){
     let R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
     const D=this[DATA];
@@ -134,15 +165,31 @@ class Matrix{
     return this;
   }
 
+  /**
+   * Clone the current matrix, or a subset of the current matrix if rows and columns are specified.
+   * @param [rows] {Range|Number} If specified, the rows to clone
+   * @param [cols] {Range|Number} If specified, the columns to clone
+   * @returns {Matrix}
+   */
   clone(rows,cols){
     if (rows) return this.get(rows,cols).clone();
     return new Matrix(this[ROWS].length, this[COLS].length, this);
   }
 
+  /**
+   * Creates a new matrix with the results of calling a provided function on every element in the supplied matrix.
+   * @param fn {Function}
+   * @returns {Matrix}
+   *
+   */
   map(fn){
     return new Matrix(this[ROWS].length,this[COLS].length,mapIter(this,fn))
   }
 
+  /**
+   * Convert the matrix to an array of number arrays.
+   * @returns {Array<Array<Number>>}
+   */
   toJSON(){
     return [...rows(this)];
   }

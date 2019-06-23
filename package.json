@@ -10,7 +10,7 @@
     "build": "rollup -c",
     "prepublish": "npm run build",
     "docs": "jsdoc2md --template jsdoc2md/README.hbs --files src/*.js > README.md",
-    "docs2": "jsdoc -t ./node_modules/better-docs src/matrix.js src/core.js src/operations.js src/create.js src/manipulations.js src/tools.js src/conversions.js"
+    "docs2": "jsdoc src/matrix.js src/core.js src/operations.js src/create.js src/manipulations.js src/tools.js src/conversions.js src/extras.js"
   },
   "repository": {
     "type": "git",
