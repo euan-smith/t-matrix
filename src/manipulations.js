@@ -77,7 +77,7 @@ function *_repmat(m,r,c){
 
 /**
  * Vertically concatenate matrices together
- * @param matrices {Array<Matrix>}
+ * @param matrices {Matrix}
  * @returns {Matrix}
  */
 export function vcat(...matrices){
@@ -100,7 +100,7 @@ function * _vcat(matrices){
 
 /**
  * Horizontally concatenate matrices together
- * @param matrices {Array<Matrix>}
+ * @param matrices {Matrix}
  * @returns {Matrix}
  */
 export function hcat(...matrices){
@@ -120,4 +120,8 @@ export function hcat(...matrices){
 function * _hcat(matrices){
   for(let mRows of zipIters(...matrices.map(m=>rows(m))))
     for(let row of mRows) yield*row;
+}
+
+export function mcat(array){
+  return vcat(...array.map(rowArray=>hcat(...rowArray)));
 }

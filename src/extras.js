@@ -1,34 +1,37 @@
 import {grid,sum,product} from "./operations";
 import {Matrix} from "./core";
 import {range,mapIter,zipIters} from "./tools";
-import {zeros} from "./create";
+import {mcat} from "./manipulations";
 
-export function magic(n){
-  if (n===2) throw new Error('Matrix::magic there is no magic square with size 2.');
-  if (n%2){
-    //n is odd
-    const [I,J] = grid([1,':',n]);
-    const A = sum(I,J,(n-3)>>1).map(v=>v%n);
-    const B = sum(I,product(2,J),-2).map(v=>v%n);
-    return sum(product(n,A),B,1);
+/**
+ * Creates a magic square of the specified size
+ * @param size {Number} The size of the magic square. Must be 1 or an integer 3 or greater.
+ * @returns {Matrix}
+ */
+export function magic(size){
+  if (size===2 || size<1) throw new Error('Matrix::magic size must be one or greater and not equal to two.');
+  if (!Number.isInteger(size)) throw new TypeError('Matrix:magic size must be an integer.');
+  if (size%2){
+    //size is odd
+    const [I,J] = grid([1,':',size]);
+    const A = sum(I,J,(size-3)>>1).map(v=>v%size);
+    const B = sum(I,product(2,J),-2).map(v=>v%size);
+    return sum(product(size,A),B,1);
   }
-  if (!(n%4)){
-    //n is doubly even
-    const vals = range([1,':',n*n]);
-    const [I,J] = grid([1,':',n]);
-    return new Matrix(n,n,mapIter(zipIters(vals,I,J),([v,i,j])=>{
-      return (i%4)>>1===(j%4)>>1 ? n*n+1-v : v
+  if (!(size%4)){
+    //size is doubly even
+    const vals = range([1,':',size*size]);
+    const [I,J] = grid([1,':',size]);
+    return new Matrix(size,size,mapIter(zipIters(vals,I,J),([v,i,j])=>{
+      return (i%4)>>1===(j%4)>>1 ? size*size+1-v : v
     }));
   }
-  //n is singly even
-  const p=n>>1;
+  //size is singly even
+  const p=size>>1;
   const M=magic(p);
-  const O=zeros(n,n);
-  O.set([0,':',p-1],[0,':',p-1],M);
-  O.set([p,':',2*p-1],[0,':',p-1],sum(M,3*p*p));
-  O.set([0,':',p-1],[p,':',2*p-1],sum(M,2*p*p));
-  O.set([p,':',2*p-1],[p,':',2*p-1],sum(M,p*p));
-  let k=(n-2)>>2, j=[':',k-1,n+1-k,':',n-1];
+  const O=mcat([[      M     , sum(M,2*p*p)],
+                [sum(M,3*p*p),  sum(M,p*p) ]]);
+  let k=(size-2)>>2, j=[':',k-1,size+1-k,':',size-1];
   O.set(':',j,O.get([p,':',':',p-1],j));
   j=[0,k];
   O.set([k,k+p],j,O.get([k+p,k],j));
