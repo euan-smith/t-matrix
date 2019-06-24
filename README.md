@@ -4,6 +4,7 @@
 # Aims
 - a small library with no dependencies
 - based on linear double (float64) arrays for precision and speed
+- use row and column offset arrays so common operations, such as transpose or row/column swaps, are 'free' (no copying of data required)
 - an ES6 module - only use the methods you need.  If building with a tree-shaking bundler (e.g. rollup) then you only include what you use.
 - provide what you need for most linear algebra work
 - matrix construction (zeros, ones, eye, rand, diagonal, from arrays)
@@ -26,7 +27,7 @@ The current plan for future versions. Obviously the version numbers further out 
   - Constructors: zeros, ones, eye, rand, diag
   - Core methods: get, set, t (transpose), map, clone, size
   - expressive get and set methods (Matlab/Octave-like range selection and manipulation)
-  - Manipulations: reshape, diag, swapRows, swapCols, minor
+  - Manipulations: reshape, diag, swapRows, swapCols, minor, repmat
   - Matrix operations: mult (matrix), div, ldiv, det, inv, trace
   - Element-wise operations (within and between matrices): product, sum, max, min
   - minimal data copying
@@ -37,14 +38,16 @@ The current plan for future versions. Obviously the version numbers further out 
   - logical matrices
   - logical matrix addressing
   - logical operations (gt, gte, lt, lte, eq, neq, not)
-  - repmat, kron, shift
+  - kron, shift
   - norm, dot, cross
 - v1.2
   - conv, grad, trapz, cumsum
 - v1.3
   - LU and QR decomposition
-- v1.4
+- >v1.3
   - eigen, SVD
+  - fft and supporting methods
+  - sort, unique
 # example usage
 
 ```
@@ -62,6 +65,12 @@ const a=Matrix.ldiv(m,v);
 //the answer should be [-1,1,-1,1];
 console.log([...a]);
 ```
+
+# tutorial
+
+## Creating matrices
+
+## Operations on matrices
 
 # API
 ## Classes
@@ -101,6 +110,9 @@ console.log([...a]);
 </dd>
 <dt><a href="#rand">rand(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>creates a new matrix filled with random values [0|1)</p>
+</dd>
+<dt><a href="#magic">magic(size)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>Creates a magic square of the specified size</p>
 </dd>
 <dt><a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>gets, sets or creates diagonal matrices</p>
@@ -385,6 +397,17 @@ creates a new matrix filled with random values [0|1)
 | rows | <code>number</code> | number of rows |
 | [cols] | <code>number</code> | number of columns |
 
+<a name="magic"></a>
+
+## magic(size) ⇒ [<code>Matrix</code>](#Matrix)
+Creates a magic square of the specified size
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| size | <code>Number</code> | The size of the magic square. Must be 1 or an integer 3 or greater. |
+
 <a name="diag"></a>
 
 ## diag(matrix, [set]) ⇒ [<code>Matrix</code>](#Matrix)
@@ -410,7 +433,7 @@ Vertically concatenate matrices together
 
 | Param | Type |
 | --- | --- |
-| matrices | [<code>Array.&lt;Matrix&gt;</code>](#Matrix) | 
+| matrices | [<code>Matrix</code>](#Matrix) | 
 
 <a name="hcat"></a>
 
@@ -421,7 +444,7 @@ Horizontally concatenate matrices together
 
 | Param | Type |
 | --- | --- |
-| matrices | [<code>Array.&lt;Matrix&gt;</code>](#Matrix) | 
+| matrices | [<code>Matrix</code>](#Matrix) | 
 
 <a name="sum"></a>
 
