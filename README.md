@@ -87,14 +87,21 @@ console.log([...a]);
 <dt><a href="#from">from(data)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>Create a matrix from the supplied data.</p>
 </dd>
-<dt><a href="#zeroscreates a new matrix filled with zeros">zeroscreates a new matrix filled with zeros(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd></dd>
-<dt><a href="#onescreates a new matrix filled with ones">onescreates a new matrix filled with ones(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd></dd>
-<dt><a href="#eyecreates a new identity matrix of size n">eyecreates a new identity matrix of size n(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd></dd>
-<dt><a href="#randcreates a new matrix filled with random values [0|1)">randcreates a new matrix filled with random values [0|1)(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd></dd>
+<dt><a href="#mixin">mixin(methods)</a></dt>
+<dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
+</dd>
+<dt><a href="#zeros">zeros(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>creates a new matrix filled with zeros</p>
+</dd>
+<dt><a href="#ones">ones(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>creates a new matrix filled with ones</p>
+</dd>
+<dt><a href="#eye">eye(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>creates a new identity matrix of size n</p>
+</dd>
+<dt><a href="#rand">rand(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>creates a new matrix filled with random values [0|1)</p>
+</dd>
 <dt><a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>gets, sets or creates diagonal matrices</p>
 </dd>
@@ -127,8 +134,12 @@ The core matrix class
 * [Matrix](#Matrix)
     * [.size](#Matrix+size) ⇒ <code>Array.&lt;Number&gt;</code>
     * [.t](#Matrix+t) ⇒ [<code>Matrix</code>](#Matrix)
-    * [.\[Symbol-Iterator\]()](#Matrix+\[Symbol-Iterator\])
+    * [\[Symbol\.iterator\]()](#Matrix+[Symbol-iterator])
     * [.get(rows, cols)](#Matrix+get) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+    * [.set([rows], [cols], val)](#Matrix+set) ⇒
+    * [.clone([rows], [cols])](#Matrix+clone) ⇒ [<code>Matrix</code>](#Matrix)
+    * [.map(fn)](#Matrix+map) ⇒ [<code>Matrix</code>](#Matrix)
+    * [.toJSON()](#Matrix+toJSON) ⇒ <code>Array.&lt;Array.&lt;Number&gt;&gt;</code>
 
 <a name="Matrix+size"></a>
 
@@ -150,20 +161,30 @@ The transpose of the matrix
 ```js
 const m=Matrix.from([[1,2],[3,4]]);console.log(m.t.toJSON()); // [[1,3],[2,4]]
 ```
-<a name="Matrix+\[Symbol-Iterator\]"></a>
+<a name="Matrix+[Symbol-iterator]"></a>
 
-### matrix.\[Symbol-Iterator\]()
+### matrix\[Symbol\.iterator\]()
 Iterates through the matrix data in row-major order
 
 **Kind**: instance method of [<code>Matrix</code>](#Matrix)  
-**Example**  
+**Example** *(Iterating the matrix values in a for..of loop)*  
 ```js
-//Calculate the L²-norm of a matrixfunction norm(matrix){  let tot=0;  for(let v of matrix) tot+=v*v;  return Math.sqrt(tot);}
+//Calculate the L²-norm of a matrix
+function norm(matrix){
+  let tot=0;
+  for(let v of matrix) tot+=v*v;
+  return Math.sqrt(tot);
+}
+```
+**Example** *(Using the ES6 spread operator with a matrix)*  
+```js
+const m=Matrix.from([[1,2,3],[4,5,6]]);
+console.log([...m]); //=> [1,2,3,4,5,6];
 ```
 <a name="Matrix+get"></a>
 
 ### matrix.get(rows, cols) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-The a value or subset of a matrix
+Return a value or subset of a matrix.  The matrix subset is a view into the current matrix.
 
 **Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 
@@ -174,7 +195,62 @@ The a value or subset of a matrix
 
 **Example**  
 ```js
-const m=Matrix.from([[1,2],[3,4]]);m.get(0,0) //1m.get(':',0) //Matrix [1;3]m.get(':',':') //The original matrix.m.get(['::',-1],':') //Return a matrix flipped vertically
+const m=Matrix.from([[1,2],[3,4]]);//Specify single indices to return a valuem.get(0,0) //1//The same indices in an array will return a matrixm.get([0],[0]) //Matrix [1]//A general [Range](#Range) can be specified.m.get(':',0) //Matrix [1;3]m.get(':',':') //The original matrix.m.get(['::',-1],':') //Return a matrix flipped vertically//Any sub-matrix returned is a view into the source matrix.const a=zeros(4), b=a.get([1,2],[1,2]);b.set(2);console.log(a.toJSON()) //[[0,0,0,0], [0,2,2,0], [0,2,2,0], [0,0,0,0]]
+```
+<a name="Matrix+set"></a>
+
+### matrix.set([rows], [cols], val) ⇒
+Set a value or range of values of the matrix
+
+**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
+**Returns**: this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [rows] | [<code>Range</code>](#Range) \| <code>Number</code> | Row index or indices.  zero-based |
+| [cols] | [<code>Range</code>](#Range) \| <code>Number</code> | Column index or indices.  zero-based |
+| val | <code>Number</code> \| [<code>Matrix</code>](#Matrix) \| <code>Array</code> | Values to assign to the specified range |
+
+**Example**  
+```js
+const m=Matrix.zeros(3);//Set a single valuem.set(1,1,5) //[0,0,0; 0,5,0; 0,0,0]//Set a range to a single valuem.set(0,':',3) //[3,3,3; 0,5,0; 0,0,0]//The value can also be a matrix of the matching size, or an array which resolves to such.m.set(2,':',[[7,8,6]]) //[3,3,3; 0,5,0; 7,8,6]//If val is an array, [from](#from) will be used to convert it to a matrix.//If no row and column indices are provided, the value will apply to the whole matrixm.set(1) //[1,1,1; 1,1,1; 1,1,1]
+```
+<a name="Matrix+clone"></a>
+
+### matrix.clone([rows], [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+Clone the current matrix, or a subset of the current matrix if rows and columns are specified.
+
+**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [rows] | [<code>Range</code>](#Range) \| <code>Number</code> | If specified, the rows to clone |
+| [cols] | [<code>Range</code>](#Range) \| <code>Number</code> | If specified, the columns to clone |
+
+<a name="Matrix+map"></a>
+
+### matrix.map(fn) ⇒ [<code>Matrix</code>](#Matrix)
+Creates a new matrix with the results of calling a provided function on every element in the supplied matrix.
+
+**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
+
+| Param | Type |
+| --- | --- |
+| fn | <code>function</code> | 
+
+**Example**  
+```js
+const m=Matrix.from([0,':',5]).map(v=>Math.pow(2,v));console.log([...m]); //[1,2,4,8,16,32]
+```
+<a name="Matrix+toJSON"></a>
+
+### matrix.toJSON() ⇒ <code>Array.&lt;Array.&lt;Number&gt;&gt;</code>
+Convert the matrix to an array of number arrays.
+
+**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
+**Example**  
+```js
+const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]console.log(m.t.toJSON()); //[0,1,2,3,4,5]console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]//enables a matrix instance to be serialised by JSON.stringifyconsole.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
 ```
 <a name="rows"></a>
 
@@ -249,9 +325,24 @@ Matrix.from([[1,2],[3,4],[5,6]]
 const m = Matrix.from([[1,2],[3,4]]);
 Matrix.from(m) === m; //true
 ```
-<a name="zeroscreates a new matrix filled with zeros"></a>
+<a name="mixin"></a>
 
-## zeroscreates a new matrix filled with zeros(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+## mixin(methods)
+Add static functions of the form `fn(matrix,...args)` to the [Matrix](#Matrix) prototype as `matrix.fn(args)`
+
+**Kind**: global function  
+**Example&lt;caption&gt;adding**: standard functions</caption>import * as Matrix from 't-matrix';Matrix.mixin(Matrix.max, Matrix.min);const m=Matrix.from([[1,2,3],[4,5,6]]);console.log(m.min() + ', ' + m.max()); //=> 1, 6  
+**Example&lt;caption&gt;adding**: a custom function</caption>import * as Matrix from 't-matrix';const sqrt = matrix => matrix.map(Math.sqrt);Matrix.mixin(sqrt);const m=Matrix.from([1,4,9]);console.log([...m.sqrt()]); //=> [1,2,3]  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| methods | <code>function</code> | The method(s) to add |
+
+<a name="zeros"></a>
+
+## zeros(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+creates a new matrix filled with zeros
+
 **Kind**: global function  
 
 | Param | Type | Description |
@@ -259,9 +350,11 @@ Matrix.from(m) === m; //true
 | rows | <code>number</code> | number of rows |
 | [cols] | <code>number</code> | number of columns |
 
-<a name="onescreates a new matrix filled with ones"></a>
+<a name="ones"></a>
 
-## onescreates a new matrix filled with ones(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+## ones(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+creates a new matrix filled with ones
+
 **Kind**: global function  
 
 | Param | Type | Description |
@@ -269,18 +362,22 @@ Matrix.from(m) === m; //true
 | rows | <code>number</code> | number of rows |
 | [cols] | <code>number</code> | number of columns |
 
-<a name="eyecreates a new identity matrix of size n"></a>
+<a name="eye"></a>
 
-## eyecreates a new identity matrix of size n(n) ⇒ [<code>Matrix</code>](#Matrix)
+## eye(n) ⇒ [<code>Matrix</code>](#Matrix)
+creates a new identity matrix of size n
+
 **Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | n | <code>number</code> | number of rows and columns |
 
-<a name="randcreates a new matrix filled with random values [0|1)"></a>
+<a name="rand"></a>
 
-## randcreates a new matrix filled with random values [0\|1)(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+## rand(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+creates a new matrix filled with random values [0|1)
+
 **Kind**: global function  
 
 | Param | Type | Description |
@@ -345,7 +442,7 @@ A Specification of indices of the row or column of a matrix, or a range of array
 **Kind**: global typedef  
 **Example**  
 ```js
-//An arbitrary sequence of indices or numbers can be expressed[1,2,3] //=> expands to the same list of indices: 1,2,3[-1,-2,-3] //=> -1,-2,-3//If specifying indices, negative numbers index from the end of an array.[-1,-2,-3] //for an array of length 10, => 9,8,7//Ranges can be expressed with the special character ':'[1,':',5] //=> 1,2,3,4,5//Therefore to express the full range[0,':',-1] // for length 10, => 0,1,2,3,4,5,6,7,8,9//When used at the start of a range definition, the range start is assumed[':',-1] // equivalent to [0,':',-1]//When used at the end of a range definition, the range end is assumed[':'] // equivalent to [0,':'] and [':',-1] and [0,':',-1]//Ranges with a larger step can be expressed using '::'[1,'::',2,5] //=> 1,3,5//Similar to ':' start and end limits can be implied['::',2] // equivalent to [0,'::',2,-1]//Negative steps can also be used[5,'::',-2,1] //=> 5,3,1//Similarly end limits can be implied['::',-1] //=> [-1,'::',-1,0] which for length 10 => 9,8,7,6,5,4,3,2,1,0//However if the step size is missing, an error will be thrown['::'] //will throw an error when used//Many ranges can be used in one definition[5,':',-1,0,':',4] //for length 10=> 5,6,7,8,9,0,1,2,3,4//Wherever a range definition is truncated by a second definition, end points are implied[5,':',':',4] //equivalent to [5,':',-1,0,':',4]//The same is true of the '::' operator[4,'::',-1,'::',-1,5] // for length 10=>4,3,2,1,0,9,8,7,6,5//Where there is only one entry, this can be expressed outside of an array4 //equivalent to [4]':' //specifies the full range
+//An arbitrary sequence of indices or numbers can be expressed[1,2,3] //=> expands to the same list of indices: 1,2,3[-1,-2,-3] //=> -1,-2,-3//If specifying indices, negative numbers index from the end of an array.[-1,-2,-3] //for an array of length 10, => 9,8,7//Ranges can be expressed with the special character ':'[1,':',5] //=> 1,2,3,4,5//Therefore to express the full range[0,':',-1] // for length 10, => 0,1,2,3,4,5,6,7,8,9//When used at the start of a range definition, the range start is assumed[':',-1] // equivalent to [0,':',-1]//When used at the end of a range definition, the range end is assumed[':'] // equivalent to [0,':'] and [':',-1] and [0,':',-1]//Ranges with a larger step can be expressed using '::'[1,'::',2,5] //=> 1,3,5//Similar to ':' start and end limits can be implied['::',2] // equivalent to [0,'::',2,-1]//Negative steps can also be used[5,'::',-2,1] //=> 5,3,1//Similarly end limits can be implied['::',-1] //=> [-1,'::',-1,0] which for length 10 => 9,8,7,6,5,4,3,2,1,0//However if the step size is missing, an error will be thrown['::'] //will throw an error when used//Many ranges can be used in one definition[5,':',-1,0,':',4] //for length 10=> 5,6,7,8,9,0,1,2,3,4//Wherever a range definition is truncated by a second definition, end points are implied[5,':',':',4] //equivalent to [5,':',-1,0,':',4]//The same is true of the '::' operator[4,'::',-1,'::',-1,5] // for length 10=>4,3,2,1,0,9,8,7,6,5//Where there is only one entry, this can be expressed outside of an array4 //equivalent to [4]':' //specifies the full range
 ```
 
 * * *
