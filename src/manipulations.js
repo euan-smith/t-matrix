@@ -5,6 +5,7 @@ import {rows} from "./conversions";
 
 /**
  * gets, sets or creates diagonal matrices
+ * @category Matrix manipulation
  * @param matrix {Matrix}
  * @param [set] {Matrix|Array|Function|Number}
  * @returns {Matrix}
