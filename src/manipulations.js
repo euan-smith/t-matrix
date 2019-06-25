@@ -37,10 +37,35 @@ export function diag(matrix, set) {
     new Matrix(C.map((c, i) => R[i] + c), [0], D);
 }
 
+/**
+ * Reshape the matrix to the dimensions specified treating the matrix data in *row-major order*
+ * @param matrix {Matrix} The matrix to reshape.
+ * @param rows {Number} The row count for the new matrix.
+ * @param cols {Number} The column count for the new matrix.
+ * @returns {Matrix}
+ * @example
+ * const m=Matrix.from([1,':',9]);
+ * const m2=Matrix.reshape(m,3,3);
+ * console.log(m2.toJSON()); //[[1,2,3],[4,5,6],[7,8,9]]
+ * //If reshape is used a lot to form new matrices, consider adding it to the matrix prototype with mixin
+ * Matrix.mixin(Matrix.reshape);
+ * console.log(Matrix.from([1,':',4]).reshape(2,2).toJSON()); // [[1,2],[3,4]]
+ */
 export function reshape(matrix, rows, cols) {
   return new Matrix(rows, cols, matrix);
 }
 
+/**
+ * Swap the rows of a matrix.  No data is actually copied here, so this is a very efficient operation.
+ * Two lists of indices are supplied, and these can both be {@link Range} types.  The pairs of rows from rowsA and rowsB
+ * are then swapped in order from the start of each list.  If more indices are specified in one list than the other then
+ * these additional indices are ignored.
+ * @summary Swap the rows of a matrix.
+ * @param matrix {Matrix}
+ * @param rowsA {Range|Number} The first list of rows to swap
+ * @param rowsB {Range|Number} The second list of rows to swap, must be the same length as rowsA
+ * @returns {Matrix}
+ */
 export function swapRows(matrix, rowsA, rowsB) {
   const R = matrix[ROWS];
   for (let i of zipIters(range(rowsA), range(rowsB))) {

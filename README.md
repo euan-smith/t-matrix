@@ -44,7 +44,7 @@ The current plan for future versions. Obviously the version numbers further out 
   - conv, grad, trapz, cumsum
 - v1.3
   - LU and QR decomposition
-- >v1.3
+- after v1.3
   - eigen, SVD
   - fft and supporting methods
   - sort, unique
@@ -56,7 +56,7 @@ import * as Matrix from 't-matrix';
 //create a 4x4 square matrix
 const m=Matrix.from([[1,2,3,4],[2,3,4,1],[3,4,1,2],[4,1,2,3]]);
 
-//and a target vector
+//and a target vector (column matrix)
 const v=Matrix.vect([2,-2,2,-2])
 
 //then solve v = M * a by rearranging to M \ v = a
@@ -116,6 +116,15 @@ console.log([...a]);
 </dd>
 <dt><a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>gets, sets or creates diagonal matrices</p>
+</dd>
+<dt><a href="#reshape">reshape(matrix, rows, cols)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>Reshape the matrix to the dimensions specified treating the matrix data in <em>row-major order</em></p>
+</dd>
+<dt><a href="#swapRows">swapRows(matrix, rowsA, rowsB)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dd><p>Swap the rows of a matrix.  No data is actually copied here, so this is a very efficient operation.
+Two lists of indices are supplied, and these can both be <a href="#Range">Range</a> types.  The pairs of rows from rowsA and rowsB
+are then swapped in order from the start of each list.  If more indices are specified in one list than the other then
+these additional indices are ignored.</p>
 </dd>
 <dt><a href="#vcat">vcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
 <dd><p>Vertically concatenate matrices together</p>
@@ -424,6 +433,37 @@ gets, sets or creates diagonal matrices
 ```js
 //Create a random matrixconst mRand = random(20);//Extract the diagonal of the matrix (as a column vector)const vect = diag(mRand);//Create a new matrix with the same diagonalconst mDiag = diag(vect);//Set the diagonal of the original to zerodiag(mRand,0);
 ```
+<a name="reshape"></a>
+
+## reshape(matrix, rows, cols) ⇒ [<code>Matrix</code>](#Matrix)
+Reshape the matrix to the dimensions specified treating the matrix data in *row-major order*
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| matrix | [<code>Matrix</code>](#Matrix) | The matrix to reshape. |
+| rows | <code>Number</code> | The row count for the new matrix. |
+| cols | <code>Number</code> | The column count for the new matrix. |
+
+**Example**  
+```js
+const m=Matrix.from([1,':',9]);const m2=Matrix.reshape(m,3,3);console.log(m2.toJSON()); //[[1,2,3],[4,5,6],[7,8,9]]//If reshape is used a lot to form new matrices, consider adding it to the matrix prototype with mixinMatrix.mixin(Matrix.reshape);console.log(Matrix.from([1,':',4]).reshape(2,2).toJSON()); // [[1,2],[3,4]]
+```
+<a name="swapRows"></a>
+
+## swapRows(matrix, rowsA, rowsB) ⇒ [<code>Matrix</code>](#Matrix)
+Swap the rows of a matrix.  No data is actually copied here, so this is a very efficient operation.Two lists of indices are supplied, and these can both be [Range](#Range) types.  The pairs of rows from rowsA and rowsBare then swapped in order from the start of each list.  If more indices are specified in one list than the other thenthese additional indices are ignored.
+
+**Kind**: global function  
+**Summary**: Swap the rows of a matrix.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| matrix | [<code>Matrix</code>](#Matrix) |  |
+| rowsA | [<code>Range</code>](#Range) \| <code>Number</code> | The first list of rows to swap |
+| rowsB | [<code>Range</code>](#Range) \| <code>Number</code> | The second list of rows to swap, must be the same length as rowsA |
+
 <a name="vcat"></a>
 
 ## vcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
