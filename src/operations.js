@@ -38,15 +38,59 @@ const
   };
 
 /**
- * Sum the matrix in the direction specified or sum the set of matrices.
- * @param matrices {...Matrix|Number|null}
+ * @summary Return the sum of the matrix in the direction specified or the element-wise sum of the set of matrices.
+ * @description
+ * `Matrix.sum(m)` or `m.sum()` will sum all the values of a matrix, returning a number.
+ *
+ * `Matrix.sum(m,null,1)` or `m.sum(null,1)` will sum the matrix columns, returning a row matrix.
+ *
+ * `Matrix.sum(m,null,2)` or `m.sum(null,2)` will sum the matrix rows, returning a column matrix.
+ *
+ * `Matrix.sum(m1,m2,m3,...)` or `m1.sum(m2,m3,...)` will calculate an element-wise sum over all the matrices.
+ *
+ * For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and the
+ * same column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.
+ * Arrays can also be provided and these will be converted to matrices using Matrix.{@link from}.  Row matrices will be
+ * added to every row, column matrices to every column and scalar values to every matrix element.
+ * @param matrices {...(?Matrix|Number)}
  * @returns {Matrix|Number}
+ * @example
+ * import * as Matrix from 't-matrix';
+ * Matrix.mixin(Matrix);
+ * console.log(Matrix.magic(3).sum(null,1).toJSON());//[[15,15,15]];
+ * console.log(Matrix.magic(3).sum().toJSON());//45
+ * console.log(Matrix.sum([[0,1,2]], [6,3,0], 1));//[[7,8,9],[4,5,6],[1,2,3]];
  */
 export function sum(...matrices){
   return pOp(sumFn, ...matrices);
 }
 sum[METHOD]='sum';
 
+/**
+ * @summary Return the maximum of the matrix in the direction specified or the element-wise maximum of the set of matrices.
+ * @description
+ * `Matrix.max(m)` or `m.max()` will return the max of all the values of a matrix.
+ *
+ * `Matrix.max(m,null,1)` or `m.max(null,1)` will return a row matrix containing max of each matrix column.
+ *
+ * `Matrix.max(m,null,2)` or `m.max(null,2)` will return a column matrix containing max of each matrix row.
+ *
+ * `Matrix.max(m1,m2,m3,...)` or `m1.max(m2,m3,...)` will calculate an element-wise max over all the matrices.
+ *
+ * For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and the
+ * same column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.
+ * Arrays can also be provided and these will be converted to matrices using Matrix.{@link from}.  An element of the
+ * returned matrix of a given row and column will be the max of that row and column of all regular matrices, of that row of all
+ * column matrices, of that column of all row matrices and of all scalar values.
+ * @param matrices {...(?Matrix|Number)}
+ * @returns {Matrix|Number}
+ * @example
+ * import * as Matrix from 't-matrix';
+ * Matrix.mixin(Matrix);
+ * console.log(Matrix.magic(3).max(null,1).toJSON());//[[8,9,7]];
+ * console.log(Matrix.magic(3).max().toJSON());//9
+ * console.log(Matrix.max([[0,1,2]], [6,3,0], 1));//[[6,6,6],[3,3,3],[1,1,2];
+ */
 export function max(...matrices){
   return pOp(maxFn, ...matrices);
 }

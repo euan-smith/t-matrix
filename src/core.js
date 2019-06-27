@@ -249,7 +249,7 @@ export function from(data){
 
 /**
  * Add static functions of the form `fn(matrix,...args)` to the {@link Matrix} prototype as `matrix.fn(args)`
- * @param methods {Function} The method(s) to add
+ * @param methods {...(Function|Object|Function[])} The method(s) to add
  * @example <caption>Adding standard functions</caption>
  * import * as Matrix from 't-matrix';
  * Matrix.mixin(Matrix.max, Matrix.min);

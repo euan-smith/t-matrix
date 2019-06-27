@@ -143,11 +143,14 @@ console.log([...a]);
 <dt>Matrix.<a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
     <dd><p>Tests if a value is an instance of a Matrix</p>
 </dd>
-<dt>Matrix.<a href="#mixin">mixin(methods)</a></dt>
+<dt>Matrix.<a href="#mixin">mixin(...methods)</a></dt>
     <dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
 </dd>
-<dt>Matrix.<a href="#sum">sum(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
-    <dd><p>Sum the matrix in the direction specified or sum the set of matrices.</p>
+<dt>Matrix.<a href="#sum">sum(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
+    <dd><p>Return the sum of the matrix in the direction specified or the element-wise sum of the set of matrices.</p>
+</dd>
+<dt>Matrix.<a href="#max">max(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
+    <dd><p>Return the maximum of the matrix in the direction specified or the element-wise maximum of the set of matrices.</p>
 </dd>
 </dl>
 
@@ -345,13 +348,13 @@ const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJS
 <br>
   <a name="mixin"></a>
 
-  ## Matrix.mixin(methods)
+  ## Matrix.mixin(...methods)
   Add static functions of the form `fn(matrix,...args)` to the [Matrix](#Matrix) prototype as `matrix.fn(args)`
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| methods | <code>function</code> | The method(s) to add |
+| ...methods | <code>function</code> \| <code>Object</code> \| <code>Array.&lt;function()&gt;</code> | The method(s) to add |
 
 **Example** *(Adding standard functions)*  
 ```js
@@ -388,14 +391,37 @@ console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,
 <br>
   <a name="sum"></a>
 
-  ## Matrix.sum(matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  Sum the matrix in the direction specified or sum the set of matrices.
+  ## Matrix.sum(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+  *Return the sum of the matrix in the direction specified or the element-wise sum of the set of matrices.*
+
+`Matrix.sum(m)` or `m.sum()` will sum all the values of a matrix, returning a number.`Matrix.sum(m,null,1)` or `m.sum(null,1)` will sum the matrix columns, returning a row matrix.`Matrix.sum(m,null,2)` or `m.sum(null,2)` will sum the matrix rows, returning a column matrix.`Matrix.sum(m1,m2,m3,...)` or `m1.sum(m2,m3,...)` will calculate an element-wise sum over all the matrices.For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and thesame column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.Arrays can also be provided and these will be converted to matrices using Matrix.[from](#from).  Row matrices will beadded to every row, column matrices to every column and scalar values to every matrix element.
 
 
 | Param | Type |
 | --- | --- |
-| matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> \| <code>null</code> | 
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
 
+**Example**  
+```js
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).sum(null,1).toJSON());//[[15,15,15]];console.log(Matrix.magic(3).sum().toJSON());//45console.log(Matrix.sum([[0,1,2]], [6,3,0], 1));//[[7,8,9],[4,5,6],[1,2,3]];
+```
+<br>
+  <a name="max"></a>
+
+  ## Matrix.max(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+  *Return the maximum of the matrix in the direction specified or the element-wise maximum of the set of matrices.*
+
+`Matrix.max(m)` or `m.max()` will return the max of all the values of a matrix.`Matrix.max(m,null,1)` or `m.max(null,1)` will return a row matrix containing max of each matrix column.`Matrix.max(m,null,2)` or `m.max(null,2)` will return a column matrix containing max of each matrix row.`Matrix.max(m1,m2,m3,...)` or `m1.max(m2,m3,...)` will calculate an element-wise max over all the matrices.For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and thesame column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.Arrays can also be provided and these will be converted to matrices using Matrix.[from](#from).  An element of thereturned matrix of a given row and column will be the max of that row and column of all regular matrices, of that row of allcolumn matrices, of that column of all row matrices and of all scalar values.
+
+
+| Param | Type |
+| --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[8,9,7]];console.log(Matrix.magic(3).max().toJSON());//9console.log(Matrix.max([[0,1,2]], [6,3,0], 1));//[[6,6,6],[3,3,3],[1,1,2];
+```
 <br>
   <a name="Range"></a>
 
