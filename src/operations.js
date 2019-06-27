@@ -1,5 +1,5 @@
 import {Matrix, isMatrix, from} from "./core";
-import {ROWS,COLS,DATA} from "./const";
+import {ROWS,COLS,DATA,METHOD} from "./const";
 import {rows, cols} from "./conversions";
 import {mapIter, zipIters, isNum, toList} from "./tools";
 import {diag, minor,repmat} from "./manipulations";
@@ -45,22 +45,27 @@ const
 export function sum(...matrices){
   return pOp(sumFn, ...matrices);
 }
+sum[METHOD]='sum';
 
 export function max(...matrices){
   return pOp(maxFn, ...matrices);
 }
+max[METHOD]='max';
 
 export function min(...matrices){
   return pOp(minFn, ...matrices);
 }
+min[METHOD]='min';
 
 export function product(...matrices){
   return pOp(prodFn, ...matrices);
 }
+product[METHOD]='product';
 
 export function trace(m){
   return sum(diag(m))
 }
+trace[METHOD]='trace';
 
 function pOp(opFn,...matrices){
   if (matrices[1] == null) return op(matrices[0], matrices[2], opFn);
@@ -110,6 +115,8 @@ export function mult(...matrices){
   }
   return s===1?m:product(m,s);
 }
+mult[METHOD]='mult';
+
 
 function *_mult(a,b,K){
   const Ca=a[COLS],Da=a[DATA];
@@ -137,6 +144,8 @@ export function det(m){
   }
   return dt;
 }
+det[METHOD]='det';
+
 
 export function ldiv(a,b){
   a=from(a);b=from(b);
@@ -174,18 +183,23 @@ export function ldiv(a,b){
   }
   return rtn;
 }
+ldiv[METHOD]='ldiv';
+
 
 export function div(a,b){
   return ldiv(b.t,a.t).t;
 }
+div[METHOD]='div';
 
 export function inv(a){
   return ldiv(a,eye(a.size[0]));
 }
+inv[METHOD]='inv';
 
 export function abs(m){
   return from(m).map(Math.abs);
 }
+abs[METHOD]='abs';
 
 export function grid(rows,cols){
   rows = toList(rows);

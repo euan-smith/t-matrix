@@ -2,6 +2,7 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {Matrix,from,mixin} from "../src/core";
+import {METHOD} from "../src/const";
 import {eye,zeros} from "../src/create";
 
 
@@ -111,6 +112,7 @@ describe('from',function(){
 describe('mixin',function(){
   it('adds to the matrix prototype',function(){
     const foo=()=>"foo";
+    foo[METHOD]="foo";
     const m=zeros(4);
     expect(m).to.not.have.a.property('foo');
     mixin(foo);

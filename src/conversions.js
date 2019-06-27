@@ -1,4 +1,4 @@
-import {COLS, DATA, ROWS} from "./const";
+import {COLS, DATA, ROWS, METHOD} from "./const";
 import {from} from "./core";
 
 /**
@@ -17,6 +17,7 @@ export function *rows(matrix){
   for(let r of matrix[ROWS])
     yield cols.map(c=>matrix[DATA][r+c]);
 }
+rows[METHOD]='rows';
 
 /**
  * Iterate over the columns.
@@ -34,3 +35,4 @@ export function *cols(matrix){
   for(let c of matrix[COLS])
     yield rows.map(r=>matrix[DATA][r+c]);
 }
+cols[METHOD]='cols';

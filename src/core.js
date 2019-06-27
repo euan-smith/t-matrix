@@ -258,6 +258,7 @@ export function from(data){
  * @example <caption>Adding a custom function</caption>
  * import * as Matrix from 't-matrix';
  * const sqrt = matrix => matrix.map(Math.sqrt);
+ * sqrt[Matrix.METHOD]='sqrt';
  * Matrix.mixin(sqrt);
  * const m=Matrix.from([1,4,9]);
  * console.log([...m.sqrt()]); //=> [1,2,3]

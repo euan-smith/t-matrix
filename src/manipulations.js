@@ -121,6 +121,7 @@ export function minor(matrix, row, col){
     matrix[COLS].filter((v,c)=>c!==col),
     matrix[DATA]);
 }
+minor[METHOD]='minor';
 
 /**
  * Repeat the supplied matrix the specified number of times horizontally and vertically.
@@ -134,6 +135,7 @@ export function repmat(matrix,vRepeat=1,hRepeat=1){
   const size=matrix.size;
   return new Matrix(size[0]*vRepeat,size[1]*hRepeat,_repmat(matrix,vRepeat,hRepeat));
 }
+repmat[METHOD]='repmat';
 
 function *_repmat(m,v,h){
   for (let i=0;i<v;i++)
@@ -155,6 +157,7 @@ export function vcat(...matrices){
   const height = sizes.reduce((h,s)=>h+s[0],0);
   return new Matrix(height, width, _vcat(matrices));
 }
+vcat[METHOD]='vcat';
 
 /**
  * @param matrices {Array<Matrix>}
@@ -179,6 +182,7 @@ export function hcat(...matrices){
   const width = sizes.reduce((w,s)=>w+s[1],0);
   return new Matrix(height, width, _hcat(matrices));
 }
+hcat[METHOD]='hcat';
 
 /**
  * @param matrices {Array<Matrix>}
