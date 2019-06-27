@@ -58,8 +58,8 @@ const
  * import * as Matrix from 't-matrix';
  * Matrix.mixin(Matrix);
  * console.log(Matrix.magic(3).sum(null,1).toJSON());//[[15,15,15]];
- * console.log(Matrix.magic(3).sum().toJSON());//45
- * console.log(Matrix.sum([[0,1,2]], [6,3,0], 1));//[[7,8,9],[4,5,6],[1,2,3]];
+ * console.log(Matrix.magic(3).sum());//45
+ * console.log(Matrix.sum([[0,1,2]], [6,3,0], 1).toJSON());//[[7,8,9],[4,5,6],[1,2,3]];
  */
 export function sum(...matrices){
   return pOp(sumFn, ...matrices);
@@ -88,26 +88,57 @@ sum[METHOD]='sum';
  * import * as Matrix from 't-matrix';
  * Matrix.mixin(Matrix);
  * console.log(Matrix.magic(3).max(null,1).toJSON());//[[8,9,7]];
- * console.log(Matrix.magic(3).max().toJSON());//9
- * console.log(Matrix.max([[0,1,2]], [6,3,0], 1));//[[6,6,6],[3,3,3],[1,1,2];
+ * console.log(Matrix.magic(3).max());//9
+ * console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[6,6,6],[3,3,3],[1,1,2];
  */
 export function max(...matrices){
   return pOp(maxFn, ...matrices);
 }
 max[METHOD]='max';
 
+/**
+ * @summary Return the minimum of the matrix in the direction specified or the element-wise minimum of the set of matrices.
+ * @description
+ * Works the same way as other similar operations.  See Matrix.{@link max} for more details.
+ * @param matrices {...(?Matrix|Number)}
+ * @returns {Matrix|Number}
+ * @example
+ * import * as Matrix from 't-matrix';
+ * Matrix.mixin(Matrix);
+ * console.log(Matrix.magic(3).max(null,1).toJSON());//[[3,1,2]];
+ * console.log(Matrix.magic(3).max());//1
+ * console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[0,1,1],[0,1,1],[0,0,0];
+ */
 export function min(...matrices){
   return pOp(minFn, ...matrices);
 }
 min[METHOD]='min';
 
+/**
+ * @summary Return the product of the matrix values in the direction specified or the element-wise product of the set of matrices.
+ * @description
+ * Works the same way as other similar operations.  See Matrix.{@link sum} for more details.
+ * @param matrices {...(?Matrix|Number)}
+ * @returns {Matrix|Number}
+ * @example
+ * import * as Matrix from 't-matrix';
+ * Matrix.mixin(Matrix);
+ * console.log(Matrix.magic(3).product(null,1).toJSON());//[[96,45,84]];
+ * console.log(Matrix.magic(3).product());//362880
+ * console.log(Matrix.product([[0,1,2]], [6,3,0], 1).toJSON());//[[0,6,12],[0,3,6],[0,0,0]];
+ */
 export function product(...matrices){
   return pOp(prodFn, ...matrices);
 }
 product[METHOD]='product';
 
-export function trace(m){
-  return sum(diag(m))
+/**
+ * Returns the trace of a matrix (the sum of the diagonal elements)
+ * @param matrix
+ * @returns {Number}
+ */
+export function trace(matrix){
+  return sum(diag(matrix))
 }
 trace[METHOD]='trace';
 
@@ -137,6 +168,15 @@ function *matchSize(m,h,w){
   else throw new Error('Matrix:: Matrix dimensions must match.');
 }
 
+/**
+ * Performs matrix multiplication on a list of matrices and/or scalars
+ * @param matrices {...(Matrix|Number)} At least one parameter must be a matrix or convertible to a matrix through Matrix.{@link from}
+ * @returns {Matrix}
+ * @example
+ * import * as Matrix from 't-matrix';
+ * const mag = Matrix.magic(3);
+ * console.log(mag.mult(mag.inv()).toJSON());//a 3x3 identity matrix (plus some round-off error)
+ */
 export function mult(...matrices){
   let m,h,k,s=1;
   // let m=matrices[0],[h,k]=m.size;

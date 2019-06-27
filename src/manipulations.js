@@ -5,21 +5,27 @@ import {rows} from "./conversions";
 
 /**
  * gets, sets or creates diagonal matrices
- * @param matrix {Matrix}
+ * @param matrix {Matrix|Array}
  * @param [set] {Matrix|Array|Function|Number}
  * @returns {Matrix}
  * @category creationAndManipulation
- * @example
- * //Create a random matrix
- * const mRand = random(20);
- * //Extract the diagonal of the matrix (as a column vector)
- * const vect = diag(mRand);
- * //Create a new matrix with the same diagonal
- * const mDiag = diag(vect);
- * //Set the diagonal of the original to zero
- * diag(mRand,0);
+ * @example <caption>Extract the diagonal elements from a matrix</caption>
+ * import * as Matrix from 't-matrix';
+ * //Create a magic square
+ * const mag = Matrix.magic(3);
+ * //Get the sum of the diagonal elements - should add up to 15 for a 3x3 magic square
+ * console.log(Matrix.sum(Matrix.diag(mag)); //15
+ * @example <caption>Set the diagonal elements of a matrix</caption>
+ * import * as Matrix from 't-matrix';
+ * Matrix.mixin(Matrix); //just add everything in for ease
+ * //Create a new matrix with a diagonal 1,2,3,4
+ * const mDiag = Matrix.zeros(4).diag([1,2,3,4]);
+ * console.log(mDiag.toJSON());//[[1,0,0,0],[0,2,0,0],[0,0,3,0],[0,0,0,4]]
+ * //Create it using the diag call directly
+ * console.log(Matrix.diag([1,2,3,4]).toJSON());//returns the same as above
  */
 export function diag(matrix, set) {
+  matrix = from(matrix);
   const R = matrix[ROWS], C = matrix[COLS], D = matrix[DATA], Cl = C.length, Rl = R.length;
   if (Cl === 1) {
     if (Rl === 1) {
@@ -37,6 +43,7 @@ export function diag(matrix, set) {
     new Matrix(R.map((r, i) => r + C[i]), [0], D) :
     new Matrix(C.map((c, i) => R[i] + c), [0], D);
 }
+diag[METHOD]="diag";
 
 /**
  * Reshape the matrix to the dimensions specified treating the matrix data in *row-major order*

@@ -4,6 +4,7 @@ chai.use(chaiAlmost());
 import {Matrix,from,mixin} from "../src/core";
 import {METHOD} from "../src/const";
 import {eye,zeros} from "../src/create";
+import * as Operations from "../src/operations";
 
 
 
@@ -110,7 +111,7 @@ describe('from',function(){
   });
 });
 describe('mixin',function(){
-  it('adds to the matrix prototype',function(){
+  it('adds a METHOD to the matrix prototype',function(){
     const foo=()=>"foo";
     foo[METHOD]="foo";
     const m=zeros(4);
@@ -118,5 +119,17 @@ describe('mixin',function(){
     mixin(foo);
     expect(m).to.have.a.property('foo');
     expect(m.foo()).to.equal("foo");
+  });
+  it('adds a custom function to the matrix prototype',function(){
+    const bar=()=>"bar";
+    const m=zeros(4);
+    expect(m).to.not.have.a.property('bar');
+    mixin('bar',bar);
+    expect(m).to.have.a.property('bar');
+    expect(m.bar()).to.equal("bar");
+  });
+  it('adds a load of in-built methods at a time',function(){
+    mixin(Operations);
+    expect(zeros(4)).to.have.a.property('sum');
   })
 });

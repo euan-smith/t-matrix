@@ -367,8 +367,7 @@ console.log(m.min() + ', ' + m.max()); //=> 1, 6
 ```js
 import * as Matrix from 't-matrix';
 const sqrt = matrix => matrix.map(Math.sqrt);
-sqrt[Matrix.METHOD]='sqrt';
-Matrix.mixin(sqrt);
+Matrix.mixin('sqrt',sqrt);
 const m=Matrix.from([1,4,9]);
 console.log([...m.sqrt()]); //=> [1,2,3]
 ```
@@ -376,11 +375,12 @@ console.log([...m.sqrt()]); //=> [1,2,3]
 ```js
 // inside 'matrix-setup.js'
 import {mixin, reshape} from 't-matrix';
-mixin(reshape);
+const neg = matrix => matrix.map(v=>-v);
+mixin(reshape,'neg',neg);
 
 // inside other modules
 import * as Matrix from 't-matrix';
-console.log(Matrix.from([1,':',9).reshape(3,3).toJSON());//[[1,2,3],[4,5,6],[7,8,9]]
+console.log(Matrix.from([1,':',9]).reshape(3,3).neg().toJSON());//[[-1,-2,-3],[-4,-5,-6],[-7,-8,-9]]
 ```
 **Example** *(Just include everything which can be included)*  
 ```js
@@ -537,12 +537,26 @@ Matrix.from(m) === m; //true
 
 | Param | Type |
 | --- | --- |
-| matrix | [<code>Matrix</code>](#Matrix) | 
+| matrix | [<code>Matrix</code>](#Matrix) \| <code>Array</code> | 
 | [set] | [<code>Matrix</code>](#Matrix) \| <code>Array</code> \| <code>function</code> \| <code>Number</code> | 
 
-**Example**  
+**Example** *(Extract the diagonal elements from a matrix)*  
 ```js
-//Create a random matrixconst mRand = random(20);//Extract the diagonal of the matrix (as a column vector)const vect = diag(mRand);//Create a new matrix with the same diagonalconst mDiag = diag(vect);//Set the diagonal of the original to zerodiag(mRand,0);
+import * as Matrix from 't-matrix';
+//Create a magic square
+const mag = Matrix.magic(3);
+//Get the sum of the diagonal elements - should add up to 15 for a 3x3 magic square
+console.log(Matrix.sum(Matrix.diag(mag)); //15
+```
+**Example** *(Set the diagonal elements of a matrix)*  
+```js
+import * as Matrix from 't-matrix';
+Matrix.mixin(Matrix); //just add everything in for ease
+//Create a new matrix with a diagonal 1,2,3,4
+const mDiag = Matrix.zeros(4).diag([1,2,3,4]);
+console.log(mDiag.toJSON());//[[1,0,0,0],[0,2,0,0],[0,0,3,0],[0,0,0,4]]
+//Create it using the diag call directly
+console.log(Matrix.diag([1,2,3,4]).toJSON());//returns the same as above
 ```
 <br>
   <a name="mcat"></a>

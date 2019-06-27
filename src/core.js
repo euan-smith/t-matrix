@@ -258,29 +258,41 @@ export function from(data){
  * @example <caption>Adding a custom function</caption>
  * import * as Matrix from 't-matrix';
  * const sqrt = matrix => matrix.map(Math.sqrt);
- * sqrt[Matrix.METHOD]='sqrt';
- * Matrix.mixin(sqrt);
+ * Matrix.mixin('sqrt',sqrt);
  * const m=Matrix.from([1,4,9]);
  * console.log([...m.sqrt()]); //=> [1,2,3]
  * @example <caption>Using a config file for the Matrix class</caption>
  * // inside 'matrix-setup.js'
  * import {mixin, reshape} from 't-matrix';
- * mixin(reshape);
+ * const neg = matrix => matrix.map(v=>-v);
+ * mixin(reshape,'neg',neg);
  *
  * // inside other modules
  * import * as Matrix from 't-matrix';
- * console.log(Matrix.from([1,':',9).reshape(3,3).toJSON());//[[1,2,3],[4,5,6],[7,8,9]]
+ * console.log(Matrix.from([1,':',9]).reshape(3,3).neg().toJSON());//[[-1,-2,-3],[-4,-5,-6],[-7,-8,-9]]
  * @example <caption>Just include everything which can be included</caption>
  * import * as Matrix from 't-matrix';
  * Matrix.mixin(Matrix);
  * console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,10,12],[14,16,18]]
  */
 export function mixin(...methods){
-  for(let method of methods.map(method=>typeof method === "function" ? method : Object.keys(method).map(k=>method[k])).flat()){
-    if (method[METHOD])
-    Matrix.prototype[method[METHOD]]=function(...args){
-      return method(this, ...args);
-    };
+  let prev=null;
+  for(let method of _mixin(methods)){
+    if (typeof method === "function" && (prev || method[METHOD])){
+      Matrix.prototype[method[METHOD]||prev]=function(...args){
+        return method(this, ...args);
+      };
+    }
+    prev = typeof method === "string" ? method : null;
+  }
+}
+
+function * _mixin(methods){
+  for (let method of methods){
+    if (typeof method === "function" || typeof method === "string") yield method;
+    else{
+      for (let k of Object.keys(method)) if (typeof method[k] === "function") yield method[k];
+    }
   }
 }
 
