@@ -79,54 +79,57 @@ console.log([...a]);
 <dt>Matrix.<a href="#from">from(data)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Create a matrix from the supplied data.</p>
 </dd>
-  <dt>Matrix.<a href="#zeros">zeros(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#zeros">zeros(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>creates a new matrix filled with zeros</p>
 </dd>
-  <dt>Matrix.<a href="#ones">ones(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#ones">ones(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>creates a new matrix filled with ones</p>
 </dd>
-  <dt>Matrix.<a href="#eye">eye(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#eye">eye(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>creates a new identity matrix of size n</p>
 </dd>
-  <dt>Matrix.<a href="#rand">rand(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#rand">rand(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>creates a new matrix filled with random values [0|1)</p>
 </dd>
-  <dt>Matrix.<a href="#magic">magic(size)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#magic">magic(size)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Creates a magic square of the specified size</p>
 </dd>
-  </dl>
+<dt>Matrix.<a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+          <dd><p>gets, sets or creates diagonal matrices</p>
+</dd>
+</dl>
 
 ## Matrix Manipulation
 
   <dl>
-<dt>Matrix.<a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>gets, sets or creates diagonal matrices</p>
-</dd>
-  <dt>Matrix.<a href="#reshape">reshape(matrix, rows, cols)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#reshape">reshape(matrix, rows, cols)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Reshape the matrix to the dimensions specified treating the matrix data in <em>row-major order</em></p>
 </dd>
-  <dt>Matrix.<a href="#swapRows">swapRows(matrix, rowsA, rowsB)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#swapRows">swapRows(matrix, rowsA, rowsB)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Swap the rows of a matrix.</p>
 </dd>
-  <dt>Matrix.<a href="#swapCols">swapCols(matrix, colsA, colsB)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#swapCols">swapCols(matrix, colsA, colsB)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Swap the columns of a matrix.</p>
 </dd>
-  <dt>Matrix.<a href="#minor">minor(matrix, row, col)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#minor">minor(matrix, row, col)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Get the minor of a matrix</p>
 </dd>
-  <dt>Matrix.<a href="#repmat">repmat(matrix, vRepeat, hRepeat)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#repmat">repmat(matrix, vRepeat, hRepeat)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Repeat the supplied matrix the specified number of times horizontally and vertically.</p>
 </dd>
-  <dt>Matrix.<a href="#vcat">vcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#vcat">vcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Vertically concatenate matrices together</p>
 </dd>
-  <dt>Matrix.<a href="#hcat">hcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#hcat">hcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Horizontally concatenate matrices together</p>
 </dd>
-  <dt>Matrix.<a href="#mcat">mcat(array)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+<dt>Matrix.<a href="#mcat">mcat(array)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Concatenate matrices horizontally and vertically</p>
 </dd>
-  </dl>
+<dt>Matrix.<a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+          <dd><p>gets, sets or creates diagonal matrices</p>
+</dd>
+</dl>
 
 ## Functions
 
@@ -134,19 +137,19 @@ console.log([...a]);
 <dt>Matrix.<a href="#rows">rows(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
     <dd><p>Iterate over the rows.</p>
 </dd>
-  <dt>Matrix.<a href="#cols">cols(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
+<dt>Matrix.<a href="#cols">cols(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
     <dd><p>Iterate over the columns.</p>
 </dd>
-  <dt>Matrix.<a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
+<dt>Matrix.<a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
     <dd><p>Tests if a value is an instance of a Matrix</p>
 </dd>
-  <dt>Matrix.<a href="#mixin">mixin(methods)</a></dt>
+<dt>Matrix.<a href="#mixin">mixin(methods)</a></dt>
     <dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
 </dd>
-  <dt>Matrix.<a href="#sum">sum(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
+<dt>Matrix.<a href="#sum">sum(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
     <dd><p>Sum the matrix in the direction specified or sum the set of matrices.</p>
 </dd>
-  </dl>
+</dl>
 
 ## Classes
 
@@ -154,7 +157,7 @@ console.log([...a]);
 <dt><a href="#Matrix">Matrix</a></dt>
     <dd><p>The core matrix class</p>
 </dd>
-  </dl>
+</dl>
 
 ## Typedefs
 
@@ -162,7 +165,7 @@ console.log([...a]);
 <dt><a href="#Range">Range</a> : <code>Array.&lt;(Number|String)&gt;</code> | <code>Number</code> | <code>String</code></dt>
     <dd><p>A Specification of indices of the row or column of a matrix, or a range of array values.</p>
 </dd>
-  </dl>
+</dl>
 
 <a name="Matrix"></a>
 
@@ -468,7 +471,7 @@ Matrix.from(m) === m; //true
   ## Matrix.diag(matrix, [set]) ⇒ [<code>Matrix</code>](#Matrix)
   gets, sets or creates diagonal matrices
 
-**Category**: manipulation  
+**Category**: creationAndManipulation  
 
 | Param | Type |
 | --- | --- |

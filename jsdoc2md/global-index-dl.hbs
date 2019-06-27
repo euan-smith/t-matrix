@@ -9,7 +9,18 @@
   {{else}}
     <dd>{{{md (inlineLinks description)}}}</dd>
   {{/if}}
-  {{#if @last~}}</dl>
+  {{#if @last~}}
+    {{#if ../category2~}}
+    {{#globals kind=../kind category=../category2~}}
+        <dt>{{../../prefix}}{{>sig-link-html}}</dt>
+      {{#if summary}}
+          <dd>{{{md (inlineLinks summary)}}}</dd>
+      {{else}}
+          <dd>{{{md (inlineLinks description)}}}</dd>
+      {{/if}}
+    {{/globals~}}
+    {{/if~}}
+    </dl>
 
   {{/if~}}
 {{/globals~}}

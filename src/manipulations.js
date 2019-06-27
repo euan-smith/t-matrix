@@ -8,7 +8,7 @@ import {rows} from "./conversions";
  * @param matrix {Matrix}
  * @param [set] {Matrix|Array|Function|Number}
  * @returns {Matrix}
- * @category manipulation
+ * @category creationAndManipulation
  * @example
  * //Create a random matrix
  * const mRand = random(20);
