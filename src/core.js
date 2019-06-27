@@ -215,6 +215,7 @@ class Matrix{
  * An array of an array of numbers becomes a row matrix.
  * An array of arrays of numbers becomes a general matrix.  The inner arrays must all have the same length.
  * @returns {Matrix}
+ * @category creation
  * @example <caption>Creating a column matrix</caption>
  * Matrix.from([1,2,3,4])
  * //[1; 2; 3; 4]

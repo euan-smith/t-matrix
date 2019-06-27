@@ -73,85 +73,104 @@ console.log([...a]);
 ## Operations on matrices
 
 # API
-## Classes
+## Matrix Creation
 
-<dl>
-<dt><a href="#Matrix">Matrix</a></dt>
-<dd><p>The core matrix class</p>
+  <dl>
+<dt>Matrix.<a href="#from">from(data)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Create a matrix from the supplied data.</p>
 </dd>
-</dl>
+  <dt>Matrix.<a href="#zeros">zeros(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>creates a new matrix filled with zeros</p>
+</dd>
+  <dt>Matrix.<a href="#ones">ones(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>creates a new matrix filled with ones</p>
+</dd>
+  <dt>Matrix.<a href="#eye">eye(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>creates a new identity matrix of size n</p>
+</dd>
+  <dt>Matrix.<a href="#rand">rand(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>creates a new matrix filled with random values [0|1)</p>
+</dd>
+  <dt>Matrix.<a href="#magic">magic(size)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Creates a magic square of the specified size</p>
+</dd>
+  </dl>
+
+## Matrix Manipulation
+
+  <dl>
+<dt>Matrix.<a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>gets, sets or creates diagonal matrices</p>
+</dd>
+  <dt>Matrix.<a href="#reshape">reshape(matrix, rows, cols)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Reshape the matrix to the dimensions specified treating the matrix data in <em>row-major order</em></p>
+</dd>
+  <dt>Matrix.<a href="#swapRows">swapRows(matrix, rowsA, rowsB)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Swap the rows of a matrix.</p>
+</dd>
+  <dt>Matrix.<a href="#swapCols">swapCols(matrix, colsA, colsB)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Swap the columns of a matrix.</p>
+</dd>
+  <dt>Matrix.<a href="#minor">minor(matrix, row, col)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Get the minor of a matrix</p>
+</dd>
+  <dt>Matrix.<a href="#repmat">repmat(matrix, vRepeat, hRepeat)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Repeat the supplied matrix the specified number of times horizontally and vertically.</p>
+</dd>
+  <dt>Matrix.<a href="#vcat">vcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Vertically concatenate matrices together</p>
+</dd>
+  <dt>Matrix.<a href="#hcat">hcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Horizontally concatenate matrices together</p>
+</dd>
+  <dt>Matrix.<a href="#mcat">mcat(array)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Concatenate matrices horizontally and vertically</p>
+</dd>
+  </dl>
 
 ## Functions
 
-<dl>
-<dt><a href="#rows">rows(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
-<dd><p>Iterate over the rows.</p>
+  <dl>
+<dt>Matrix.<a href="#rows">rows(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
+    <dd><p>Iterate over the rows.</p>
 </dd>
-<dt><a href="#cols">cols(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
-<dd><p>Iterate over the columns.</p>
+  <dt>Matrix.<a href="#cols">cols(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
+    <dd><p>Iterate over the columns.</p>
 </dd>
-<dt><a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
-<dd><p>Tests if a value is an instance of a Matrix</p>
+  <dt>Matrix.<a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
+    <dd><p>Tests if a value is an instance of a Matrix</p>
 </dd>
-<dt><a href="#from">from(data)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>Create a matrix from the supplied data.</p>
+  <dt>Matrix.<a href="#mixin">mixin(methods)</a></dt>
+    <dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
 </dd>
-<dt><a href="#mixin">mixin(methods)</a></dt>
-<dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
+  <dt>Matrix.<a href="#sum">sum(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
+    <dd><p>Sum the matrix in the direction specified or sum the set of matrices.</p>
 </dd>
-<dt><a href="#zeros">zeros(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>creates a new matrix filled with zeros</p>
+  </dl>
+
+## Classes
+
+  <dl>
+<dt><a href="#Matrix">Matrix</a></dt>
+    <dd><p>The core matrix class</p>
 </dd>
-<dt><a href="#ones">ones(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>creates a new matrix filled with ones</p>
-</dd>
-<dt><a href="#eye">eye(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>creates a new identity matrix of size n</p>
-</dd>
-<dt><a href="#rand">rand(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>creates a new matrix filled with random values [0|1)</p>
-</dd>
-<dt><a href="#magic">magic(size)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>Creates a magic square of the specified size</p>
-</dd>
-<dt><a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>gets, sets or creates diagonal matrices</p>
-</dd>
-<dt><a href="#reshape">reshape(matrix, rows, cols)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>Reshape the matrix to the dimensions specified treating the matrix data in <em>row-major order</em></p>
-</dd>
-<dt><a href="#swapRows">swapRows(matrix, rowsA, rowsB)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>Swap the rows of a matrix.  No data is actually copied here, so this is a very efficient operation.
-Two lists of indices are supplied, and these can both be <a href="#Range">Range</a> types.  The pairs of rows from rowsA and rowsB
-are then swapped in order from the start of each list.  If more indices are specified in one list than the other then
-these additional indices are ignored.</p>
-</dd>
-<dt><a href="#vcat">vcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>Vertically concatenate matrices together</p>
-</dd>
-<dt><a href="#hcat">hcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-<dd><p>Horizontally concatenate matrices together</p>
-</dd>
-<dt><a href="#sum">sum(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
-<dd><p>Sum the matrix in the direction specified or sum the set of matrices.</p>
-</dd>
-</dl>
+  </dl>
 
 ## Typedefs
 
-<dl>
+  <dl>
 <dt><a href="#Range">Range</a> : <code>Array.&lt;(Number|String)&gt;</code> | <code>Number</code> | <code>String</code></dt>
-<dd><p>A Specification of indices of the row or column of a matrix, or a range of array values.</p>
+    <dd><p>A Specification of indices of the row or column of a matrix, or a range of array values.</p>
 </dd>
-</dl>
+  </dl>
 
 <a name="Matrix"></a>
 
-## Matrix
-The core matrix class
+  ## Matrix
+  The core matrix class
 
-**Kind**: global class  
-
+<br>
+  
 * [Matrix](#Matrix)
     * [.size](#Matrix+size) ⇒ <code>Array.&lt;Number&gt;</code>
     * [.t](#Matrix+t) ⇒ [<code>Matrix</code>](#Matrix)
@@ -162,32 +181,31 @@ The core matrix class
     * [.map(fn)](#Matrix+map) ⇒ [<code>Matrix</code>](#Matrix)
     * [.toJSON()](#Matrix+toJSON) ⇒ <code>Array.&lt;Array.&lt;Number&gt;&gt;</code>
 
-<a name="Matrix+size"></a>
+    <a name="Matrix+size"></a>
 
 ### matrix.size ⇒ <code>Array.&lt;Number&gt;</code>
 The matrix height and width in an array.
 
-**Kind**: instance property of [<code>Matrix</code>](#Matrix)  
 **Example**  
 ```js
 const m=Matrix.from([1,2,3]);console.log(m.size);//[3,1]
 ```
-<a name="Matrix+t"></a>
+<br>
+    <a name="Matrix+t"></a>
 
 ### matrix.t ⇒ [<code>Matrix</code>](#Matrix)
 The transpose of the matrix
 
-**Kind**: instance property of [<code>Matrix</code>](#Matrix)  
 **Example**  
 ```js
 const m=Matrix.from([[1,2],[3,4]]);console.log(m.t.toJSON()); // [[1,3],[2,4]]
 ```
-<a name="Matrix+[Symbol-iterator]"></a>
+<br>
+    <a name="Matrix+[Symbol-iterator]"></a>
 
 ### matrix\[Symbol\.iterator\]()
 Iterates through the matrix data in row-major order
 
-**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 **Example** *(Iterating the matrix values in a for..of loop)*  
 ```js
 //Calculate the L²-norm of a matrix
@@ -202,12 +220,12 @@ function norm(matrix){
 const m=Matrix.from([[1,2,3],[4,5,6]]);
 console.log([...m]); //=> [1,2,3,4,5,6];
 ```
-<a name="Matrix+get"></a>
+<br>
+    <a name="Matrix+get"></a>
 
 ### matrix.get(rows, cols) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
 Return a value or subset of a matrix.  The matrix subset is a view into the current matrix.
 
-**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -218,12 +236,12 @@ Return a value or subset of a matrix.  The matrix subset is a view into the curr
 ```js
 const m=Matrix.from([[1,2],[3,4]]);//Specify single indices to return a valuem.get(0,0) //1//The same indices in an array will return a matrixm.get([0],[0]) //Matrix [1]//A general [Range](#Range) can be specified.m.get(':',0) //Matrix [1;3]m.get(':',':') //The original matrix.m.get(['::',-1],':') //Return a matrix flipped vertically//Any sub-matrix returned is a view into the source matrix.const a=zeros(4), b=a.get([1,2],[1,2]);b.set(2);console.log(a.toJSON()) //[[0,0,0,0], [0,2,2,0], [0,2,2,0], [0,0,0,0]]
 ```
-<a name="Matrix+set"></a>
+<br>
+    <a name="Matrix+set"></a>
 
 ### matrix.set([rows], [cols], val) ⇒
 Set a value or range of values of the matrix
 
-**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 **Returns**: this  
 
 | Param | Type | Description |
@@ -236,24 +254,24 @@ Set a value or range of values of the matrix
 ```js
 const m=Matrix.zeros(3);//Set a single valuem.set(1,1,5) //[0,0,0; 0,5,0; 0,0,0]//Set a range to a single valuem.set(0,':',3) //[3,3,3; 0,5,0; 0,0,0]//The value can also be a matrix of the matching size, or an array which resolves to such.m.set(2,':',[[7,8,6]]) //[3,3,3; 0,5,0; 7,8,6]//If val is an array, [from](#from) will be used to convert it to a matrix.//If no row and column indices are provided, the value will apply to the whole matrixm.set(1) //[1,1,1; 1,1,1; 1,1,1]
 ```
-<a name="Matrix+clone"></a>
+<br>
+    <a name="Matrix+clone"></a>
 
 ### matrix.clone([rows], [cols]) ⇒ [<code>Matrix</code>](#Matrix)
 Clone the current matrix, or a subset of the current matrix if rows and columns are specified.
 
-**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | [rows] | [<code>Range</code>](#Range) \| <code>Number</code> | If specified, the rows to clone |
 | [cols] | [<code>Range</code>](#Range) \| <code>Number</code> | If specified, the columns to clone |
 
-<a name="Matrix+map"></a>
+<br>
+    <a name="Matrix+map"></a>
 
 ### matrix.map(fn) ⇒ [<code>Matrix</code>](#Matrix)
 Creates a new matrix with the results of calling a provided function on every element in the supplied matrix.
 
-**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 
 | Param | Type |
 | --- | --- |
@@ -263,251 +281,17 @@ Creates a new matrix with the results of calling a provided function on every el
 ```js
 const m=Matrix.from([0,':',5]).map(v=>Math.pow(2,v));console.log([...m]); //[1,2,4,8,16,32]
 ```
-<a name="Matrix+toJSON"></a>
+<br>
+    <a name="Matrix+toJSON"></a>
 
 ### matrix.toJSON() ⇒ <code>Array.&lt;Array.&lt;Number&gt;&gt;</code>
 Convert the matrix to an array of number arrays.
 
-**Kind**: instance method of [<code>Matrix</code>](#Matrix)  
 **Example**  
 ```js
 const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]console.log(m.t.toJSON()); //[0,1,2,3,4,5]console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]//enables a matrix instance to be serialised by JSON.stringifyconsole.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
 ```
-<a name="rows"></a>
-
-## rows(matrix) ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code>
-Iterate over the rows.
-
-**Kind**: global function  
-
-| Param | Type |
-| --- | --- |
-| matrix | [<code>Matrix</code>](#Matrix) | 
-
-**Example**  
-```js
-//Log each matrix rowfor(let row of Matrix.rows(matrix)){  console.log(row);}
-```
-<a name="cols"></a>
-
-## cols(matrix) ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code>
-Iterate over the columns.
-
-**Kind**: global function  
-
-| Param | Type |
-| --- | --- |
-| matrix | [<code>Matrix</code>](#Matrix) | 
-
-**Example**  
-```js
-//Log the range of each columnfor(let col of Matrix.cols(matrix)){  console.log(`Range [${Math.min(...col)}|${Math.max(...col)}]`);}
-```
-<a name="isMatrix"></a>
-
-## isMatrix(val) ⇒ <code>boolean</code>
-Tests if a value is an instance of a Matrix
-
-**Kind**: global function  
-**Returns**: <code>boolean</code> - 'true' if `val` is an instance of Matrix, 'false' otherwise.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| val | <code>\*</code> | The value to test. |
-
-<a name="from"></a>
-
-## from(data) ⇒ [<code>Matrix</code>](#Matrix)
-Create a matrix from the supplied data.
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| data | [<code>Matrix</code>](#Matrix) \| <code>Array.&lt;Number&gt;</code> \| <code>Array.&lt;Array.&lt;Number&gt;&gt;</code> | If `data` is a matrix then it is just returned. An array of numbers becomes a column matrix. An array of an array of numbers becomes a row matrix. An array of arrays of numbers becomes a general matrix.  The inner arrays must all have the same length. |
-
-**Example** *(Creating a column matrix)*  
-```js
-Matrix.from([1,2,3,4])
-//[1; 2; 3; 4]
-```
-**Example** *(Creating a row matrix)*  
-```js
-Matrix.from([[1,2,3,4]])
-//[1,2,3,4]
-```
-**Example** *(Creating an arbitrary matrix)*  
-```js
-Matrix.from([[1,2],[3,4],[5,6]]
-//a 3x2 matrix [1,2; 3,4; 5,6]
-```
-**Example** *(A matrix is just passed through)*  
-```js
-const m = Matrix.from([[1,2],[3,4]]);
-Matrix.from(m) === m; //true
-```
-<a name="mixin"></a>
-
-## mixin(methods)
-Add static functions of the form `fn(matrix,...args)` to the [Matrix](#Matrix) prototype as `matrix.fn(args)`
-
-**Kind**: global function  
-**Example&lt;caption&gt;adding**: standard functions</caption>import * as Matrix from 't-matrix';Matrix.mixin(Matrix.max, Matrix.min);const m=Matrix.from([[1,2,3],[4,5,6]]);console.log(m.min() + ', ' + m.max()); //=> 1, 6  
-**Example&lt;caption&gt;adding**: a custom function</caption>import * as Matrix from 't-matrix';const sqrt = matrix => matrix.map(Math.sqrt);Matrix.mixin(sqrt);const m=Matrix.from([1,4,9]);console.log([...m.sqrt()]); //=> [1,2,3]  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| methods | <code>function</code> | The method(s) to add |
-
-<a name="zeros"></a>
-
-## zeros(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
-creates a new matrix filled with zeros
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| rows | <code>number</code> | number of rows |
-| [cols] | <code>number</code> | number of columns |
-
-<a name="ones"></a>
-
-## ones(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
-creates a new matrix filled with ones
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| rows | <code>number</code> | number of rows |
-| [cols] | <code>number</code> | number of columns |
-
-<a name="eye"></a>
-
-## eye(n) ⇒ [<code>Matrix</code>](#Matrix)
-creates a new identity matrix of size n
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| n | <code>number</code> | number of rows and columns |
-
-<a name="rand"></a>
-
-## rand(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
-creates a new matrix filled with random values [0|1)
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| rows | <code>number</code> | number of rows |
-| [cols] | <code>number</code> | number of columns |
-
-<a name="magic"></a>
-
-## magic(size) ⇒ [<code>Matrix</code>](#Matrix)
-Creates a magic square of the specified size
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| size | <code>Number</code> | The size of the magic square. Must be 1 or an integer 3 or greater. |
-
-<a name="diag"></a>
-
-## diag(matrix, [set]) ⇒ [<code>Matrix</code>](#Matrix)
-gets, sets or creates diagonal matrices
-
-**Kind**: global function  
-
-| Param | Type |
-| --- | --- |
-| matrix | [<code>Matrix</code>](#Matrix) | 
-| [set] | [<code>Matrix</code>](#Matrix) \| <code>Array</code> \| <code>function</code> \| <code>Number</code> | 
-
-**Example**  
-```js
-//Create a random matrixconst mRand = random(20);//Extract the diagonal of the matrix (as a column vector)const vect = diag(mRand);//Create a new matrix with the same diagonalconst mDiag = diag(vect);//Set the diagonal of the original to zerodiag(mRand,0);
-```
-<a name="reshape"></a>
-
-## reshape(matrix, rows, cols) ⇒ [<code>Matrix</code>](#Matrix)
-Reshape the matrix to the dimensions specified treating the matrix data in *row-major order*
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| matrix | [<code>Matrix</code>](#Matrix) | The matrix to reshape. |
-| rows | <code>Number</code> | The row count for the new matrix. |
-| cols | <code>Number</code> | The column count for the new matrix. |
-
-**Example**  
-```js
-const m=Matrix.from([1,':',9]);const m2=Matrix.reshape(m,3,3);console.log(m2.toJSON()); //[[1,2,3],[4,5,6],[7,8,9]]//If reshape is used a lot to form new matrices, consider adding it to the matrix prototype with mixinMatrix.mixin(Matrix.reshape);console.log(Matrix.from([1,':',4]).reshape(2,2).toJSON()); // [[1,2],[3,4]]
-```
-<a name="swapRows"></a>
-
-## swapRows(matrix, rowsA, rowsB) ⇒ [<code>Matrix</code>](#Matrix)
-Swap the rows of a matrix.  No data is actually copied here, so this is a very efficient operation.Two lists of indices are supplied, and these can both be [Range](#Range) types.  The pairs of rows from rowsA and rowsBare then swapped in order from the start of each list.  If more indices are specified in one list than the other thenthese additional indices are ignored.
-
-**Kind**: global function  
-**Summary**: Swap the rows of a matrix.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| matrix | [<code>Matrix</code>](#Matrix) |  |
-| rowsA | [<code>Range</code>](#Range) \| <code>Number</code> | The first list of rows to swap |
-| rowsB | [<code>Range</code>](#Range) \| <code>Number</code> | The second list of rows to swap, must be the same length as rowsA |
-
-<a name="vcat"></a>
-
-## vcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
-Vertically concatenate matrices together
-
-**Kind**: global function  
-
-| Param | Type |
-| --- | --- |
-| matrices | [<code>Matrix</code>](#Matrix) | 
-
-<a name="hcat"></a>
-
-## hcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
-Horizontally concatenate matrices together
-
-**Kind**: global function  
-
-| Param | Type |
-| --- | --- |
-| matrices | [<code>Matrix</code>](#Matrix) | 
-
-<a name="sum"></a>
-
-## sum(matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-Sum the matrix in the direction specified or sum the set of matrices.
-
-**Kind**: global function  
-
-| Param | Type |
-| --- | --- |
-| matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> \| <code>null</code> | 
-
-<a name="Range"></a>
-
-## Range : <code>Array.&lt;(Number\|String)&gt;</code> \| <code>Number</code> \| <code>String</code>
-A Specification of indices of the row or column of a matrix, or a range of array values.
-
-**Kind**: global typedef  
-**Example**  
-```js
-//An arbitrary sequence of indices or numbers can be expressed[1,2,3] //=> expands to the same list of indices: 1,2,3[-1,-2,-3] //=> -1,-2,-3//If specifying indices, negative numbers index from the end of an array.[-1,-2,-3] //for an array of length 10, => 9,8,7//Ranges can be expressed with the special character ':'[1,':',5] //=> 1,2,3,4,5//Therefore to express the full range[0,':',-1] // for length 10, => 0,1,2,3,4,5,6,7,8,9//When used at the start of a range definition, the range start is assumed[':',-1] // equivalent to [0,':',-1]//When used at the end of a range definition, the range end is assumed[':'] // equivalent to [0,':'] and [':',-1] and [0,':',-1]//Ranges with a larger step can be expressed using '::'[1,'::',2,5] //=> 1,3,5//Similar to ':' start and end limits can be implied['::',2] // equivalent to [0,'::',2,-1]//Negative steps can also be used[5,'::',-2,1] //=> 5,3,1//Similarly end limits can be implied['::',-1] //=> [-1,'::',-1,0] which for length 10 => 9,8,7,6,5,4,3,2,1,0//However if the step size is missing, an error will be thrown['::'] //will throw an error when used//Many ranges can be used in one definition[5,':',-1,0,':',4] //for length 10=> 5,6,7,8,9,0,1,2,3,4//Wherever a range definition is truncated by a second definition, end points are implied[5,':',':',4] //equivalent to [5,':',-1,0,':',4]//The same is true of the '::' operator[4,'::',-1,'::',-1,5] // for length 10=>4,3,2,1,0,9,8,7,6,5//Where there is only one entry, this can be expressed outside of an array4 //equivalent to [4]':' //specifies the full range
-```
-
+<br>
 * * *
 
 &copy; 2019 Euan Smith

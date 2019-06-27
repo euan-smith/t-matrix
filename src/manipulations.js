@@ -5,10 +5,10 @@ import {rows} from "./conversions";
 
 /**
  * gets, sets or creates diagonal matrices
- * @category Matrix manipulation
  * @param matrix {Matrix}
  * @param [set] {Matrix|Array|Function|Number}
  * @returns {Matrix}
+ * @category manipulation
  * @example
  * //Create a random matrix
  * const mRand = random(20);
@@ -44,6 +44,7 @@ export function diag(matrix, set) {
  * @param rows {Number} The row count for the new matrix.
  * @param cols {Number} The column count for the new matrix.
  * @returns {Matrix}
+ * @category manipulation
  * @example
  * const m=Matrix.from([1,':',9]);
  * const m2=Matrix.reshape(m,3,3);
@@ -57,15 +58,18 @@ export function reshape(matrix, rows, cols) {
 }
 
 /**
- * Swap the rows of a matrix.  No data is actually copied here, so this is a very efficient operation.
+ * @summary Swap the rows of a matrix.
+ * @description No data is actually copied here, so this is a very efficient operation.
  * Two lists of indices are supplied, and these can both be {@link Range} types.  The pairs of rows from rowsA and rowsB
  * are then swapped in order from the start of each list.  If more indices are specified in one list than the other then
  * these additional indices are ignored.
- * @summary Swap the rows of a matrix.
+ *
+ * This function can be added to the Matrix prototype as a method using Matrix.{@link mixin}, it returns the matrix object for chaining.
  * @param matrix {Matrix}
  * @param rowsA {Range|Number} The first list of rows to swap
  * @param rowsB {Range|Number} The second list of rows to swap, must be the same length as rowsA
  * @returns {Matrix}
+ * @category manipulation
  */
 export function swapRows(matrix, rowsA, rowsB) {
   const R = matrix[ROWS];
@@ -74,6 +78,20 @@ export function swapRows(matrix, rowsA, rowsB) {
   }
   return matrix;
 }
+/**
+ * @summary Swap the columns of a matrix.
+ * @description No data is actually copied here, so this is a very efficient operation.
+ * Two lists of indices are supplied, and these can both be {@link Range} types.  The pairs of columns from colsA and colsB
+ * are then swapped in order from the start of each list.  If more indices are specified in one list than the other then
+ * these additional indices are ignored.
+ *
+ * This function can be added to the Matrix prototype as a method using Matrix.{@link mixin}, it returns the matrix object for chaining.
+ * @param matrix {Matrix}
+ * @param colsA {Range|Number} The first list of columns to swap
+ * @param colsB {Range|Number} The second list of columns to swap, must be the same length as rowsA
+ * @returns {Matrix}
+ * @category manipulation
+ */
 
 export function swapCols(matrix, colsA, colsB) {
   const C = matrix[COLS];
@@ -83,28 +101,47 @@ export function swapCols(matrix, colsA, colsB) {
   return matrix;
 }
 
-export function minor(m, row, col){
+/**
+ * @summary Get the minor of a matrix
+ * @description The minor of a matrix is the matrix with the specified row and column removed.  The matrix returned by this function
+ * is a new matrix, but references the same data.  No data is copied so this is a fast operation.
+ * @param matrix {Matrix}
+ * @param row {Number}
+ * @param col {Number}
+ * @returns {Matrix}
+ * @category manipulation
+ */
+export function minor(matrix, row, col){
   return new Matrix(
-    m[ROWS].filter((v,r)=>r!==row),
-    m[COLS].filter((v,c)=>c!==col),
-    m[DATA]);
+    matrix[ROWS].filter((v,r)=>r!==row),
+    matrix[COLS].filter((v,c)=>c!==col),
+    matrix[DATA]);
 }
 
-export function repmat(m,r=1,c=1){
-  const size=m.size;
-  return new Matrix(size[0]*r,size[1]*c,_repmat(m,r,c));
+/**
+ * Repeat the supplied matrix the specified number of times horizontally and vertically.
+ * @param matrix {Matrix}
+ * @param vRepeat {Number}
+ * @param hRepeat {Number}
+ * @returns {Matrix}
+ * @category manipulation
+ */
+export function repmat(matrix,vRepeat=1,hRepeat=1){
+  const size=matrix.size;
+  return new Matrix(size[0]*vRepeat,size[1]*hRepeat,_repmat(matrix,vRepeat,hRepeat));
 }
 
-function *_repmat(m,r,c){
-  for (let i=0;i<r;i++)
+function *_repmat(m,v,h){
+  for (let i=0;i<v;i++)
     for(let row of rows(m))
-      for (let j=0;j<c;j++) yield* row;
+      for (let j=0;j<h;j++) yield* row;
 }
 
 /**
  * Vertically concatenate matrices together
  * @param matrices {Matrix}
  * @returns {Matrix}
+ * @category manipulation
  */
 export function vcat(...matrices){
   matrices=matrices.map(m=>from(m));
@@ -128,6 +165,7 @@ function * _vcat(matrices){
  * Horizontally concatenate matrices together
  * @param matrices {Matrix}
  * @returns {Matrix}
+ * @category manipulation
  */
 export function hcat(...matrices){
   matrices=matrices.map(m=>from(m));
@@ -148,6 +186,17 @@ function * _hcat(matrices){
     for(let row of mRows) yield*row;
 }
 
+/**
+ * @summary Concatenate matrices horizontally and vertically
+ * @description The matrices to be concatenated must be supplied as an array of arrays of matrices.  The inner arrays
+ * are concatenated horizontally and the outer arrays are concatenated vertically.
+ * @param array {Array<Array<Matrix>>}
+ * @returns {Matrix}
+ * @example
+ * const m = Matrix.mcat([[Matrix.ones(2),Matrix.zeros(2)],[Matrix.zeros(2),Matrix.ones(2)]]);
+ * console.log(m.toJSON()); //[[1,1,0,0],[1,1,0,0],[0,0,1,1],[0,0,1,1]]
+ * @category manipulation
+ */
 export function mcat(array){
   return vcat(...array.map(rowArray=>hcat(...rowArray)));
 }

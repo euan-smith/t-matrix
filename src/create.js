@@ -5,6 +5,7 @@ export const
   /**
    * creates a new matrix filled with zeros
    * @function zeros
+   * @category creation
    * @param rows {number} number of rows
    * @param [cols] {number} number of columns
    * @returns {Matrix}
@@ -14,6 +15,7 @@ export const
   /**
    * creates a new matrix filled with ones
    * @function ones
+   * @category creation
    * @param rows {number} number of rows
    * @param [cols] {number} number of columns
    * @returns {Matrix}
@@ -23,6 +25,7 @@ export const
   /**
    * creates a new identity matrix of size n
    * @function eye
+   * @category creation
    * @param n {number} number of rows and columns
    * @returns {Matrix}
    */
@@ -31,6 +34,7 @@ export const
   /**
    * creates a new matrix filled with random values [0|1)
    * @function rand
+   * @category creation
    * @param rows {number} number of rows
    * @param [cols] {number} number of columns
    * @returns {Matrix}

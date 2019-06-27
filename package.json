@@ -9,7 +9,7 @@
     "cover": "nyc npm test",
     "build": "rollup -c",
     "prepublish": "npm run build",
-    "docs": "jsdoc2md --template jsdoc2md/README.hbs --files src/*.js > README.md & node ./jsdoc2md/post-process.js"
+    "docs": "jsdoc2md --template jsdoc2md/README.hbs --partial jsdoc2md/global-index-dl.hbs --partial jsdoc2md/body.hbs --files src/*.js > README.md & node ./jsdoc2md/post-process.js"
   },
   "repository": {
     "type": "git",

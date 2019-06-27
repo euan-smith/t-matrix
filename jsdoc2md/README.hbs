@@ -73,7 +73,26 @@ console.log([...a]);
 ## Operations on matrices
 
 # API
-{{>main}}
+{{>global-index-dl kind="function" category="creation" title="Matrix Creation" prefix="Matrix." ~}}
+{{>global-index-dl kind="function" category="manipulation" title="Matrix Manipulation" prefix="Matrix." ~}}
+{{>global-index-dl kind="function" category="operation" title="Matrix Operations" prefix="Matrix." ~}}
+{{>global-index-dl kind="function" title="Functions" prefix="Matrix." ~}}
+{{>global-index-dl kind="class" title="Classes" ~}}
+{{>global-index-dl kind="typedef" title="Typedefs" ~}}
+{{#orphans kind="class" ~}}
+  <a name="{{{anchorName}}}"></a>
+
+  {{>heading-indent~}}
+  {{#if (equal name "Matrix")}}{{else}}{{#if (equal name "Range")}}{{else}}Matrix.{{/if~}}{{/if~}}
+  {{>sig-name}}
+
+  {{>body}}
+  {{>member-index~}}
+  {{>separator~}}
+  {{#children inherited=undefined ~}}
+    {{>docs~}}
+  {{/children~}}
+{{/orphans~}}
 
 * * *
 

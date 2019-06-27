@@ -6,6 +6,7 @@ import {mcat} from "./manipulations";
 /**
  * Creates a magic square of the specified size
  * @param size {Number} The size of the magic square. Must be 1 or an integer 3 or greater.
+ * @category creation
  * @returns {Matrix}
  */
 export function magic(size){
