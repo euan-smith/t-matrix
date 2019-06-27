@@ -102,6 +102,9 @@ console.log([...a]);
 ## Matrix Manipulation
 
   <dl>
+<dt>Matrix.<a href="#mcat">mcat(array)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Concatenate matrices horizontally and vertically</p>
+</dd>
 <dt>Matrix.<a href="#reshape">reshape(matrix, rows, cols)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Reshape the matrix to the dimensions specified treating the matrix data in <em>row-major order</em></p>
 </dd>
@@ -122,9 +125,6 @@ console.log([...a]);
 </dd>
 <dt>Matrix.<a href="#hcat">hcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Horizontally concatenate matrices together</p>
-</dd>
-<dt>Matrix.<a href="#mcat">mcat(array)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>Concatenate matrices horizontally and vertically</p>
 </dd>
 <dt>Matrix.<a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
           <dd><p>gets, sets or creates diagonal matrices</p>
@@ -170,20 +170,27 @@ console.log([...a]);
 <a name="Matrix"></a>
 
   ## Matrix
-  The core matrix class
+  *The core matrix class*
 
 <br>
   
 * [Matrix](#Matrix)
+    * [new Matrix()](#new_Matrix_new)
     * [.size](#Matrix+size) ⇒ <code>Array.&lt;Number&gt;</code>
     * [.t](#Matrix+t) ⇒ [<code>Matrix</code>](#Matrix)
     * [\[Symbol\.iterator\]()](#Matrix+[Symbol-iterator])
     * [.get(rows, cols)](#Matrix+get) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-    * [.set([rows], [cols], val)](#Matrix+set) ⇒
+    * [.set([rows], [cols], val)](#Matrix+set) ⇒ [<code>Matrix</code>](#Matrix)
     * [.clone([rows], [cols])](#Matrix+clone) ⇒ [<code>Matrix</code>](#Matrix)
     * [.map(fn)](#Matrix+map) ⇒ [<code>Matrix</code>](#Matrix)
     * [.toJSON()](#Matrix+toJSON) ⇒ <code>Array.&lt;Array.&lt;Number&gt;&gt;</code>
 
+    <a name="new_Matrix_new"></a>
+
+### new Matrix()
+This class is not intended to be directly created by a user of this library, rather it is returnedby the various creation functions (such as [zeros](#zeros), [eye](#eye) or [from](#from)) and as a returned result fromvarious operation and manipulation methods and functions.
+
+<br>
     <a name="Matrix+size"></a>
 
 ### matrix.size ⇒ <code>Array.&lt;Number&gt;</code>
@@ -242,10 +249,9 @@ const m=Matrix.from([[1,2],[3,4]]);//Specify single indices to return a valuem
 <br>
     <a name="Matrix+set"></a>
 
-### matrix.set([rows], [cols], val) ⇒
+### matrix.set([rows], [cols], val) ⇒ [<code>Matrix</code>](#Matrix)
 Set a value or range of values of the matrix
 
-**Returns**: this  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -342,13 +348,42 @@ const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJS
   ## Matrix.mixin(methods)
   Add static functions of the form `fn(matrix,...args)` to the [Matrix](#Matrix) prototype as `matrix.fn(args)`
 
-**Example&lt;caption&gt;adding**: standard functions</caption>import * as Matrix from 't-matrix';Matrix.mixin(Matrix.max, Matrix.min);const m=Matrix.from([[1,2,3],[4,5,6]]);console.log(m.min() + ', ' + m.max()); //=> 1, 6  
-**Example&lt;caption&gt;adding**: a custom function</caption>import * as Matrix from 't-matrix';const sqrt = matrix => matrix.map(Math.sqrt);Matrix.mixin(sqrt);const m=Matrix.from([1,4,9]);console.log([...m.sqrt()]); //=> [1,2,3]  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | methods | <code>function</code> | The method(s) to add |
 
+**Example** *(Adding standard functions)*  
+```js
+import * as Matrix from 't-matrix';
+Matrix.mixin(Matrix.max, Matrix.min);
+const m=Matrix.from([[1,2,3],[4,5,6]]);
+console.log(m.min() + ', ' + m.max()); //=> 1, 6
+```
+**Example** *(Adding a custom function)*  
+```js
+import * as Matrix from 't-matrix';
+const sqrt = matrix => matrix.map(Math.sqrt);
+Matrix.mixin(sqrt);
+const m=Matrix.from([1,4,9]);
+console.log([...m.sqrt()]); //=> [1,2,3]
+```
+**Example** *(Using a config file for the Matrix class)*  
+```js
+// inside 'matrix-setup.js'
+import {mixin, reshape} from 't-matrix';
+mixin(reshape);
+
+// inside other modules
+import * as Matrix from 't-matrix';
+console.log(Matrix.from([1,':',9).reshape(3,3).toJSON());//[[1,2,3],[4,5,6],[7,8,9]]
+```
+**Example** *(Just include everything which can be included)*  
+```js
+import * as Matrix from 't-matrix';
+Matrix.mixin(Matrix);
+console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,10,12],[14,16,18]]
+```
 <br>
   <a name="sum"></a>
 
@@ -483,6 +518,24 @@ Matrix.from(m) === m; //true
 //Create a random matrixconst mRand = random(20);//Extract the diagonal of the matrix (as a column vector)const vect = diag(mRand);//Create a new matrix with the same diagonalconst mDiag = diag(vect);//Set the diagonal of the original to zerodiag(mRand,0);
 ```
 <br>
+  <a name="mcat"></a>
+
+  ## Matrix.mcat(array) ⇒ [<code>Matrix</code>](#Matrix)
+  *Concatenate matrices horizontally and vertically*
+
+The matrices to be concatenated must be supplied as an array of arrays of matrices.  The inner arraysare concatenated horizontally and the outer arrays are concatenated vertically.
+
+**Category**: manipulation  
+
+| Param | Type |
+| --- | --- |
+| array | <code>Array.&lt;Array.&lt;Matrix&gt;&gt;</code> | 
+
+**Example**  
+```js
+const m = Matrix.mcat([[Matrix.ones(2),Matrix.zeros(2)],[Matrix.zeros(2),Matrix.ones(2)]]);console.log(m.toJSON()); //[[1,1,0,0],[1,1,0,0],[0,0,1,1],[0,0,1,1]]
+```
+<br>
   <a name="reshape"></a>
 
   ## Matrix.reshape(matrix, rows, cols) ⇒ [<code>Matrix</code>](#Matrix)
@@ -586,24 +639,6 @@ The minor of a matrix is the matrix with the specified row and column removed.  
 | --- | --- |
 | matrices | [<code>Matrix</code>](#Matrix) | 
 
-<br>
-  <a name="mcat"></a>
-
-  ## Matrix.mcat(array) ⇒ [<code>Matrix</code>](#Matrix)
-  *Concatenate matrices horizontally and vertically*
-
-The matrices to be concatenated must be supplied as an array of arrays of matrices.  The inner arraysare concatenated horizontally and the outer arrays are concatenated vertically.
-
-**Category**: manipulation  
-
-| Param | Type |
-| --- | --- |
-| array | <code>Array.&lt;Array.&lt;Matrix&gt;&gt;</code> | 
-
-**Example**  
-```js
-const m = Matrix.mcat([[Matrix.ones(2),Matrix.zeros(2)],[Matrix.zeros(2),Matrix.ones(2)]]);console.log(m.toJSON()); //[[1,1,0,0],[1,1,0,0],[0,0,1,1],[0,0,1,1]]
-```
 <br>
   * * *
 

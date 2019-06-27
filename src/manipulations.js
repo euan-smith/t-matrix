@@ -1,5 +1,5 @@
 import {Matrix,from} from "./core";
-import {DATA,ROWS,COLS} from "./const";
+import {DATA,ROWS,COLS,METHOD} from "./const";
 import {range, zipIters, isArray} from "./tools";
 import {rows} from "./conversions";
 
@@ -56,6 +56,7 @@ export function diag(matrix, set) {
 export function reshape(matrix, rows, cols) {
   return new Matrix(rows, cols, matrix);
 }
+reshape[METHOD]='reshape';
 
 /**
  * @summary Swap the rows of a matrix.
@@ -78,6 +79,7 @@ export function swapRows(matrix, rowsA, rowsB) {
   }
   return matrix;
 }
+swapRows[METHOD]='swapRows';
 /**
  * @summary Swap the columns of a matrix.
  * @description No data is actually copied here, so this is a very efficient operation.
@@ -100,6 +102,8 @@ export function swapCols(matrix, colsA, colsB) {
   }
   return matrix;
 }
+swapCols[METHOD]='swapCols';
+
 
 /**
  * @summary Get the minor of a matrix
@@ -184,19 +188,4 @@ export function hcat(...matrices){
 function * _hcat(matrices){
   for(let mRows of zipIters(...matrices.map(m=>rows(m))))
     for(let row of mRows) yield*row;
-}
-
-/**
- * @summary Concatenate matrices horizontally and vertically
- * @description The matrices to be concatenated must be supplied as an array of arrays of matrices.  The inner arrays
- * are concatenated horizontally and the outer arrays are concatenated vertically.
- * @param array {Array<Array<Matrix>>}
- * @returns {Matrix}
- * @example
- * const m = Matrix.mcat([[Matrix.ones(2),Matrix.zeros(2)],[Matrix.zeros(2),Matrix.ones(2)]]);
- * console.log(m.toJSON()); //[[1,1,0,0],[1,1,0,0],[0,0,1,1],[0,0,1,1]]
- * @category manipulation
- */
-export function mcat(array){
-  return vcat(...array.map(rowArray=>hcat(...rowArray)));
 }

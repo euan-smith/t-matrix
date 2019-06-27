@@ -1,7 +1,7 @@
 import {grid,sum,product} from "./operations";
 import {Matrix} from "./core";
 import {range,mapIter,zipIters} from "./tools";
-import {mcat} from "./manipulations";
+import {hcat, vcat} from "./manipulations";
 
 /**
  * Creates a magic square of the specified size
@@ -37,4 +37,20 @@ export function magic(size){
   j=[0,k];
   O.set([k,k+p],j,O.get([k+p,k],j));
   return O;
+}
+
+
+/**
+ * @summary Concatenate matrices horizontally and vertically
+ * @description The matrices to be concatenated must be supplied as an array of arrays of matrices.  The inner arrays
+ * are concatenated horizontally and the outer arrays are concatenated vertically.
+ * @param array {Array<Array<Matrix>>}
+ * @returns {Matrix}
+ * @example
+ * const m = Matrix.mcat([[Matrix.ones(2),Matrix.zeros(2)],[Matrix.zeros(2),Matrix.ones(2)]]);
+ * console.log(m.toJSON()); //[[1,1,0,0],[1,1,0,0],[0,0,1,1],[0,0,1,1]]
+ * @category manipulation
+ */
+export function mcat(array){
+  return vcat(...array.map(rowArray=>hcat(...rowArray)));
 }

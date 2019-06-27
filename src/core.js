@@ -1,4 +1,4 @@
-import {DATA,ROWS,COLS} from "./const";
+import {DATA,ROWS,COLS,METHOD} from "./const";
 
 import {isNum, range, isFunction, isArray, mapIter} from "./tools";
 
@@ -15,7 +15,10 @@ export const isMatrix = val => val instanceof Matrix;
 
 
 /**
- * The core matrix class
+ * @summary The core matrix class
+ * @description This class is not intended to be directly created by a user of this library, rather it is returned
+ * by the various creation functions (such as {@link zeros}, {@link eye} or {@link from}) and as a returned result from
+ * various operation and manipulation methods and functions.
  */
 class Matrix{
   /**
@@ -119,7 +122,7 @@ class Matrix{
    * @param [rows] {Range|Number} Row index or indices.  zero-based
    * @param [cols] {Range|Number} Column index or indices.  zero-based
    * @param val {Number|Matrix|Array} Values to assign to the specified range
-   * @returns this
+   * @returns {Matrix}
    * @example
    * const m=Matrix.zeros(3);
    * //Set a single value
@@ -247,21 +250,34 @@ export function from(data){
 /**
  * Add static functions of the form `fn(matrix,...args)` to the {@link Matrix} prototype as `matrix.fn(args)`
  * @param methods {Function} The method(s) to add
- * @example<caption>Adding standard functions</caption>
+ * @example <caption>Adding standard functions</caption>
  * import * as Matrix from 't-matrix';
  * Matrix.mixin(Matrix.max, Matrix.min);
  * const m=Matrix.from([[1,2,3],[4,5,6]]);
  * console.log(m.min() + ', ' + m.max()); //=> 1, 6
- * @example<caption>Adding a custom function</caption>
+ * @example <caption>Adding a custom function</caption>
  * import * as Matrix from 't-matrix';
  * const sqrt = matrix => matrix.map(Math.sqrt);
  * Matrix.mixin(sqrt);
  * const m=Matrix.from([1,4,9]);
  * console.log([...m.sqrt()]); //=> [1,2,3]
+ * @example <caption>Using a config file for the Matrix class</caption>
+ * // inside 'matrix-setup.js'
+ * import {mixin, reshape} from 't-matrix';
+ * mixin(reshape);
+ *
+ * // inside other modules
+ * import * as Matrix from 't-matrix';
+ * console.log(Matrix.from([1,':',9).reshape(3,3).toJSON());//[[1,2,3],[4,5,6],[7,8,9]]
+ * @example <caption>Just include everything which can be included</caption>
+ * import * as Matrix from 't-matrix';
+ * Matrix.mixin(Matrix);
+ * console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,10,12],[14,16,18]]
  */
 export function mixin(...methods){
-  for(let method of methods){
-    Matrix.prototype[method.name]=function(...args){
+  for(let method of methods.map(method=>typeof method === "function" ? method : Object.keys(method).map(k=>method[k])).flat()){
+    if (method[METHOD])
+    Matrix.prototype[method[METHOD]]=function(...args){
       return method(this, ...args);
     };
   }
