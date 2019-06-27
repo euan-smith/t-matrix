@@ -364,6 +364,7 @@ console.log(m.min() + ', ' + m.max()); //=> 1, 6
 ```js
 import * as Matrix from 't-matrix';
 const sqrt = matrix => matrix.map(Math.sqrt);
+sqrt[Matrix.METHOD]='sqrt';
 Matrix.mixin(sqrt);
 const m=Matrix.from([1,4,9]);
 console.log([...m.sqrt()]); //=> [1,2,3]
