@@ -152,6 +152,18 @@ console.log([...a]);
 <dt>Matrix.<a href="#max">max(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
     <dd><p>Return the maximum of the matrix in the direction specified or the element-wise maximum of the set of matrices.</p>
 </dd>
+<dt>Matrix.<a href="#min">min(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
+    <dd><p>Return the minimum of the matrix in the direction specified or the element-wise minimum of the set of matrices.</p>
+</dd>
+<dt>Matrix.<a href="#product">product(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
+    <dd><p>Return the product of the matrix values in the direction specified or the element-wise product of the set of matrices.</p>
+</dd>
+<dt>Matrix.<a href="#trace">trace(matrix)</a> ⇒ <code>Number</code></dt>
+    <dd><p>Returns the trace of a matrix (the sum of the diagonal elements)</p>
+</dd>
+<dt>Matrix.<a href="#mult">mult(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Performs matrix multiplication on a list of matrices and/or scalars</p>
+</dd>
 </dl>
 
 ## Classes
@@ -403,7 +415,7 @@ console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,
 
 **Example**  
 ```js
-import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).sum(null,1).toJSON());//[[15,15,15]];console.log(Matrix.magic(3).sum().toJSON());//45console.log(Matrix.sum([[0,1,2]], [6,3,0], 1));//[[7,8,9],[4,5,6],[1,2,3]];
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).sum(null,1).toJSON());//[[15,15,15]];console.log(Matrix.magic(3).sum());//45console.log(Matrix.sum([[0,1,2]], [6,3,0], 1).toJSON());//[[7,8,9],[4,5,6],[1,2,3]];
 ```
 <br>
   <a name="max"></a>
@@ -420,7 +432,67 @@ import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.mag
 
 **Example**  
 ```js
-import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[8,9,7]];console.log(Matrix.magic(3).max().toJSON());//9console.log(Matrix.max([[0,1,2]], [6,3,0], 1));//[[6,6,6],[3,3,3],[1,1,2];
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[8,9,7]];console.log(Matrix.magic(3).max());//9console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[6,6,6],[3,3,3],[1,1,2];
+```
+<br>
+  <a name="min"></a>
+
+  ## Matrix.min(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+  *Return the minimum of the matrix in the direction specified or the element-wise minimum of the set of matrices.*
+
+Works the same way as other similar operations.  See Matrix.[max](#max) for more details.
+
+
+| Param | Type |
+| --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[3,1,2]];console.log(Matrix.magic(3).max());//1console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[0,1,1],[0,1,1],[0,0,0];
+```
+<br>
+  <a name="product"></a>
+
+  ## Matrix.product(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+  *Return the product of the matrix values in the direction specified or the element-wise product of the set of matrices.*
+
+Works the same way as other similar operations.  See Matrix.[sum](#sum) for more details.
+
+
+| Param | Type |
+| --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).product(null,1).toJSON());//[[96,45,84]];console.log(Matrix.magic(3).product());//362880console.log(Matrix.product([[0,1,2]], [6,3,0], 1).toJSON());//[[0,6,12],[0,3,6],[0,0,0]];
+```
+<br>
+  <a name="trace"></a>
+
+  ## Matrix.trace(matrix) ⇒ <code>Number</code>
+  Returns the trace of a matrix (the sum of the diagonal elements)
+
+
+| Param |
+| --- |
+| matrix | 
+
+<br>
+  <a name="mult"></a>
+
+  ## Matrix.mult(...matrices) ⇒ [<code>Matrix</code>](#Matrix)
+  Performs matrix multiplication on a list of matrices and/or scalars
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | At least one parameter must be a matrix or convertible to a matrix through Matrix.[from](#from) |
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';const mag = Matrix.magic(3);console.log(mag.mult(mag.inv()).toJSON());//a 3x3 identity matrix (plus some round-off error)
 ```
 <br>
   <a name="Range"></a>
