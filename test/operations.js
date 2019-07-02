@@ -3,7 +3,8 @@ import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
 import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid} from "../src/operations";
-import {from} from "../src/core"
+import {from} from "../src/core";
+import * as E from "../src/errors";
 
 const m=from([[1,2,4],[8,16,32],[64,128,256]]);
 
@@ -83,8 +84,12 @@ describe('sum',function(){
     expect([...ma]).to.eql([2,3,5,9,17,33,65,129,257]);
   });
   it("throws an error if the dimensions don't match",function(){
-    expect(()=>sum(m,ones(3,4))).to.throw();
-    expect(()=>sum(m,ones(4,3))).to.throw();
+    expect(()=>sum(m,ones(3,4))).to.throw(E.InvalidDimensions);
+    expect(()=>sum(m,ones(4,3))).to.throw(E.InvalidDimensions);
+    expect(()=>sum(m,ones(1,4))).to.throw(E.InvalidDimensions);
+    expect(()=>sum(m,ones(4,1))).to.throw(E.InvalidDimensions);
+    expect(()=>sum(m,ones(1,2))).to.throw(E.InvalidDimensions);
+    expect(()=>sum(m,ones(2,1))).to.throw(E.InvalidDimensions);
   });
   it("adds together many matrices",function(){
     const m1=ones(2,3);
@@ -116,7 +121,7 @@ describe('mult',function(){
     expect(mult(ones(2,3),ones(3,5),ones(5,4)).size).to.eql([2,4]);
   });
   it("throws an error if the matrix dimensions don't agree",function(){
-    expect(()=>mult(ones(2,3),ones(4,5),ones(5,4)).size).to.throw();
+    expect(()=>mult(ones(2,3),ones(4,5),ones(5,4)).size).to.throw(E.InvalidDimensions);
   });
   it("multiplies a matrix by scalars",function(){
     expect([...mult(3,[1,2,3],2)]).to.eql([6,12,18]);
@@ -164,8 +169,8 @@ describe('ldiv',function(){
     expect([...ldiv(m,v)]).to.eql([-1,1,-1,1]);
   });
   it('throws an error when the matrix sizes are wrong',function(){
-    expect(()=>ldiv(zeros(3),zeros(4))).to.throw();
-    expect(()=>ldiv(zeros(2,4),zeros(4))).to.throw();
+    expect(()=>ldiv(zeros(3),zeros(4))).to.throw(E.InvalidDimensions);
+    expect(()=>ldiv(zeros(2,4),zeros(4))).to.throw(E.InvalidDimensions);
   });
   it('can handle matrices with zeros in the diagonal',function(){
     const m=sum(eye(4),-1);
@@ -198,7 +203,7 @@ describe('inv',function(){
     expect([...mult(m,inv(m))]).to.almost.eql([...eye(4)]);
   });
   it('throws an error with a singular matrix',function(){
-    expect(()=>inv(m)).to.throw();
+    expect(()=>inv(m)).to.throw(E.IsSingular);
   })
 });
 

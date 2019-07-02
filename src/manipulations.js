@@ -167,7 +167,7 @@ export function vcat(...matrices){
 vcat[METHOD]='vcat';
 
 /**
- * @param matrices {Array<Matrix>}
+ * @param matrices {Array.Matrix}
  * @returns {IterableIterator<Number>}
  * @private
  */
@@ -192,7 +192,7 @@ export function hcat(...matrices){
 hcat[METHOD]='hcat';
 
 /**
- * @param matrices {Array<Matrix>}
+ * @param matrices {Array.Matrix}
  * @returns {IterableIterator<Number>}
  * @private
  */

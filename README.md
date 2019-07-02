@@ -3,6 +3,7 @@
 
 # Aims
 - a small library with no dependencies
+- Be a familiar as possible to those used to other tools, in particular [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
 - based on linear double (float64) arrays for precision and speed
 - use row and column offset arrays so common operations, such as transpose or row/column swaps, are 'free' (no copying of data required)
 - an ES6 module - only use the methods you need.  If building with a tree-shaking bundler (e.g. rollup) then you only include what you use.
@@ -12,7 +13,7 @@
 - submatrices and transpose without copying data
 - a good balance between speed and ease of use (if you need super-fast operations on large matrices you may want to look elsewhere).
 - LU decomposition-based operations - inv, div, ldiv, det, solve
-- provide simple means of extension
+- flexible, expressive, extendable.
 
 # Status
 Nearing a V1 release.  Some changes from the initial version are breaking as all of the code has been rewritten.
@@ -26,7 +27,7 @@ The current plan for future versions. Obviously the version numbers further out 
     - A `mixin` function can be used to add methods to the class prototype.
   - Constructors: zeros, ones, eye, rand, diag
   - Core methods: get, set, t (transpose), map, clone, size
-  - expressive get and set methods (Matlab/Octave-like range selection and manipulation)
+  - expressive get and set methods ([Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)-like range selection and manipulation)
   - Manipulations: reshape, diag, swapRows, swapCols, minor, repmat
   - Matrix operations: mult (matrix), div, ldiv, det, inv, trace
   - Element-wise operations (within and between matrices): product, sum, max, min
@@ -66,11 +67,131 @@ const a=Matrix.ldiv(m,v);
 console.log([...a]);
 ```
 
-# tutorial
+# Guide
 
 ## Creating matrices
+There is no way to create a [Matrix](#Matrix) class instance directly (using a `new` operator), instead there are five
+standard (and one less standard) way of creating a matrix - [`zeros`](#zeros), [`ones`](#ones), [`eye`](#eye),
+[`rand`](#rand) and [`from`](#from) (the less standard one is [`magic`](#magic)).
 
+[`zeros`](#zeros), [`ones`](#ones) and [`rand`](#rand) all have the same general form:
+```
+import {zeros,ones,rand} from 't-matrix';
+const m1=zeros(3); //a 3x3 square matrix filled with zeros
+const m2=ones(4,5); //a matrix with 4 rows and 5 columns filled with ones
+const m3=rand([6,5]); //a matrix with 6 rows and 5 columns filled with random values in the range [0,1)
+const m4=zeros(m3.size); //a matrix the same size as m4 filled with zeros.
+```
+
+[`eye`](#eye) and [`magic`](#magic) both take just one number which is the matrix size as both produce only square matrices:
+```
+import {eye,magic} from 't-matrix';
+const m5=eye(3); //a 3x3 identity matrix
+console.log(JSON.stringify(m5));
+//'[[1,0,0],[0,1,0],[0,0,1]]'
+const m6=magic(4); //a 4x4 magic square
+console.log(JSON.stringify(m6));
+//'[[16,2,3,13],[5,11,10,8],[9,7,6,12],[4,14,15,1]]'
+```
+
+[`from`](#from) is the more general purpose function and will try and convert arrays into a matrix:
+```
+import * as Matrix from 't-matrix';
+const m7=Matrix.from([1,2,3]); //An array of numbers becomes a column matrix
+const m8=Matrix.from([[1,2,3]]); //An array of arrays assumes row-major order, so this becomes a row matrix
+const m9=Matrix.from([[1,2],[3,4]]); //and this is a 2x2 matrix.
+```
+
+There is one final function which can be used to create matrices, but in this case is not purely a creation function, and that is [diag](#diag).
+To use it to create a matrix, provide a single parameter which is an array or a column or row matrix:
+```
+import {diag} from 't-matrix';
+const m10=Matrix.diag([1,2,3,4]);//a 4x4 matrix with 1,2,3,4 on the diagonal.
+```
+In addition [diag](#diag) can als be used to get or set the diagonal elements of a matrix.  See the API help for more details.
+
+## Matrix methods and properties
+
+### Core methods
+The [Matrix](#Matrix) class has a few core methods and properties to provide information regarding a matrix and
+examine and manipulate its values:
+- [matrix.get](#Matrix+get) gets one or more values of a matrix
+- [matrix.set](#Matrix+set) sets one or more values
+- [matrix.size](#Matrix+size) returns a 2-element array containing the matrix height and width
+- [matrix.clone](#Matrix+clone) returns a copy of the matrix
+- [matrix.map](#Matrix+map) map the values of a matrix to a new matrix.
+
+You can use the `.get` and `.set` methods to retrieve and assign single values, for example `m.get(0,1)` would get the
+value in row 0, column 1, and `m.set(0,1,5)` would set that same value to the number 5.  However `.get` and `.set` become
+much more useful when used with a [Range](#Range) to set the row and column indices.
+
+The was to define a range should be (at least somewhat) familiar to those used to [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/).
+For example `m.set(0,':',1)` will set all the values in row 0 to 1, or `m.get([1,2],[':',4])` will return a matrix which
+contains all columns up to (and including) column 4 of rows 1 and 2 (a 2x5 matrix).
+
+An important point to note is that `.get`, when it returns a matrix, returns one which maps onto the same underlying data
+array as the original matrix - any changes to either matrix will be reflected in each other.  There are many more examples
+in the documentation for the [Range](#Range) data type and the [get](#Matrix+get) and [set](#Matrix+set) methods, however
+a couple of basic examples:
+```
+import * as Matrix from 't-matrix';
+const m=Matrix.zeros(4); //a 4x4 matrix filled with zeros
+m.set([1,2],':',5)  //fill the middle two rows with fives.
+ .set([0,1],[1,2],eye(2)); //set the top three elements of column 2 to ones.
+console.log(JSON.stringify(m.get(':',[1,2])));
+//'[[1,0],[0,1],[5,5],[0,0]]'
+
+m.set([1,2],':',m.get([2,1],':'));//swap rows 1 and 2
+console.log(JSON.stringify(m));
+//'[[0,1,0,0],[5,5,5,5],[5,0,1,5],[0,0,0,0]]'
+```
+Note on that last example that the library is aware when `set`ting a range to a `get` derived from the same data, so it
+is safe to use this to (for example) swap or rotate data within a matrix.
+
+To get or set the diagonal of a matrix see [diag](#diag).
+### Iterables
+A matrix is itself an iterable, iterating in a row-major order over all values:
+```
+import * as Matrix from 't-matrix';
+let t=0;
+for(let v of Matrix.magic(3)) t+=v;
+console.log('Total of a 3x3 magic square = '+t);
+//Total of a 3x3 magic square = 45
+```
+There are also helper functions, [Matrix.rows](#rows) and [Matrix.cols](#cols), to iterate over rows and columns:
+```
+import * as Matrix from 't-matrix';
+const tots=[];
+for(let r of Matrix.rows(Matrix.magic(3))) tots.push(Matrix.sum(r));
+console.log('Row sums = '+tots);
+//Row sums = 15,15,15
+```
+These functions can be mixed-in to become methods
+```
+import * as Matrix from 't-matrix';
+Matrix.mixin(Matrix.cols);
+const tots=[];
+for(let r of Matrix.magic(3).cols()) tots.push(Matrix.sum(r));
+console.log('Column sums = '+tots);
+//Column sums = 15,15,15
+```
 ## Operations on matrices
+So far there are only a small set of the basic matrix arithmetic operations.  More will follow in time.
+- [Matrix.sum](#sum), [Matrix.max](#max), [Matrix.min](#min), [Matrix.product](#product) are all element-wise operations.  They can operate:
+  - Over an entire matrix, returning a single value.
+  - Along the rows of a matrix, returning a column matrix with a result per row.
+  - Down the columns of a matrix, returning a row matrix with a result per column.
+  - Over a set of matrices and/or scalars (see the API reference for more details).
+- [matrix.t](#matrix+t) is the matrix transpose.
+- [Matrix.mult](#mult), [Matrix.div](#div), [Matrix.ldiv](#ldiv) and [Matrix.inv](#inv).
+  - `inv` is a unary operation.
+  - `div` and `ldiv` are binary operations.
+    - `div(a,b)` is equivalent to `a/b`.
+    - `ldiv(a,b)` is equivalent to `a\b` which is equivalent to `(b'/a')'` where `'` is the transpose.
+  - `mult` can take an arbitrary number of matrices and scalars and will multiply them together.  There must be at least
+one matrix, and the matrix dimensions must agree with standard matrix multiplication rules.
+
+
 
 # API
 ## Matrix Creation
@@ -86,7 +207,7 @@ console.log([...a]);
     <dd><p>creates a new matrix filled with ones</p>
 </dd>
 <dt>Matrix.<a href="#eye">eye(n)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>creates a new identity matrix of size n</p>
+    <dd><p>creates a new <a href="https://en.wikipedia.org/wiki/Identity_matrix">identity matrix</a> of size n</p>
 </dd>
 <dt>Matrix.<a href="#rand">rand(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>creates a new matrix filled with random values [0|1)</p>
@@ -134,10 +255,10 @@ console.log([...a]);
 ## Functions
 
   <dl>
-<dt>Matrix.<a href="#rows">rows(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
+<dt>Matrix.<a href="#rows">rows(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code></dt>
     <dd><p>Iterate over the rows.</p>
 </dd>
-<dt>Matrix.<a href="#cols">cols(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code></dt>
+<dt>Matrix.<a href="#cols">cols(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code></dt>
     <dd><p>Iterate over the columns.</p>
 </dd>
 <dt>Matrix.<a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
@@ -193,12 +314,12 @@ console.log([...a]);
     * [new Matrix()](#new_Matrix_new)
     * [.size](#Matrix+size) ⇒ <code>Array.&lt;Number&gt;</code>
     * [.t](#Matrix+t) ⇒ [<code>Matrix</code>](#Matrix)
-    * [\[Symbol\.iterator\]()](#Matrix+[Symbol-iterator])
+    * [\[Symbol\.iterator\]()](#Matrix+[Symbol-iterator]) ⇒ <code>IterableIterator.&lt;Number&gt;</code>
     * [.get(rows, cols)](#Matrix+get) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
     * [.set([rows], [cols], val)](#Matrix+set) ⇒ [<code>Matrix</code>](#Matrix)
     * [.clone([rows], [cols])](#Matrix+clone) ⇒ [<code>Matrix</code>](#Matrix)
     * [.map(fn)](#Matrix+map) ⇒ [<code>Matrix</code>](#Matrix)
-    * [.toJSON()](#Matrix+toJSON) ⇒ <code>Array.&lt;Array.&lt;Number&gt;&gt;</code>
+    * [.toJSON()](#Matrix+toJSON) ⇒ <code>Array.Array.Number</code>
 
     <a name="new_Matrix_new"></a>
 
@@ -228,7 +349,7 @@ const m=Matrix.from([[1,2],[3,4]]);console.log(m.t.toJSON()); // [[1,3],[2,4]]
 <br>
     <a name="Matrix+[Symbol-iterator]"></a>
 
-### matrix\[Symbol\.iterator\]()
+### matrix\[Symbol\.iterator\]() ⇒ <code>IterableIterator.&lt;Number&gt;</code>
 Iterates through the matrix data in row-major order
 
 **Example** *(Iterating the matrix values in a for..of loop)*  
@@ -308,7 +429,7 @@ const m=Matrix.from([0,':',5]).map(v=>Math.pow(2,v));console.log([...m]); //[1,
 <br>
     <a name="Matrix+toJSON"></a>
 
-### matrix.toJSON() ⇒ <code>Array.&lt;Array.&lt;Number&gt;&gt;</code>
+### matrix.toJSON() ⇒ <code>Array.Array.Number</code>
 Convert the matrix to an array of number arrays.
 
 **Example**  
@@ -318,7 +439,7 @@ const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJS
 <br>
 <a name="rows"></a>
 
-  ## Matrix.rows(matrix) ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code>
+  ## Matrix.rows(matrix) ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code>
   Iterate over the rows.
 
 
@@ -333,7 +454,7 @@ const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJS
 <br>
   <a name="cols"></a>
 
-  ## Matrix.cols(matrix) ⇒ <code>IterableIterator.&lt;Array.&lt;Number&gt;&gt;</code>
+  ## Matrix.cols(matrix) ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code>
   Iterate over the columns.
 
 
@@ -514,7 +635,7 @@ import * as Matrix from 't-matrix';const mag = Matrix.magic(3);console.log(mag
 
 | Param | Type | Description |
 | --- | --- | --- |
-| data | [<code>Matrix</code>](#Matrix) \| <code>Array.&lt;Number&gt;</code> \| <code>Array.&lt;Array.&lt;Number&gt;&gt;</code> | If `data` is a matrix then it is just returned. An array of numbers becomes a column matrix. An array of an array of numbers becomes a row matrix. An array of arrays of numbers becomes a general matrix.  The inner arrays must all have the same length. |
+| data | [<code>Matrix</code>](#Matrix) \| <code>Array.Number</code> \| <code>Array.Array.Number</code> | If `data` is a matrix then it is just returned. An array of numbers becomes a column matrix. An array of an array of numbers becomes a row matrix. An array of arrays of numbers becomes a general matrix.  The inner arrays must all have the same length. |
 
 **Example** *(Creating a column matrix)*  
 ```js
@@ -566,7 +687,7 @@ Matrix.from(m) === m; //true
   <a name="eye"></a>
 
   ## Matrix.eye(n) ⇒ [<code>Matrix</code>](#Matrix)
-  creates a new identity matrix of size n
+  creates a new [identity matrix](https://en.wikipedia.org/wiki/Identity_matrix) of size n
 
 **Category**: creation  
 

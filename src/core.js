@@ -48,7 +48,7 @@ class Matrix{
    * Iterates through the matrix data in row-major order
    * @generator
    * @function Matrix#[Symbol-iterator]
-   * @yields {Number}
+   * @returns {IterableIterator<Number>}
    * @example <caption>Iterating the matrix values in a for..of loop</caption>
    * //Calculate the L²-norm of a matrix
    * function norm(matrix){
@@ -196,7 +196,7 @@ class Matrix{
 
   /**
    * Convert the matrix to an array of number arrays.
-   * @returns {Array<Array<Number>>}
+   * @returns {Array.Array.Number}
    * @example
    * const m=Matrix.from([0,':',5]); //will create a column vector
    * console.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]
@@ -212,7 +212,7 @@ class Matrix{
 
 /**
  * Create a matrix from the supplied data.
- * @param data {(Matrix|Array<Number>|Array<Array<Number>>)}
+ * @param data {(Matrix|Array.Number|Array.Array.Number)}
  * If `data` is a matrix then it is just returned.
  * An array of numbers becomes a column matrix.
  * An array of an array of numbers becomes a row matrix.

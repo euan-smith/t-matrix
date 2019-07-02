@@ -4,6 +4,7 @@ import {rows, cols} from "./conversions";
 import {mapIter, zipIters, isNum, toList} from "./tools";
 import {diag, minor,repmat} from "./manipulations";
 import {eye} from "./create";
+import * as E from "./errors";
 
 const
   op = (m, dir, opFn) => {
@@ -157,15 +158,15 @@ function pOp(opFn,...matrices){
 function *matchSize(m,h,w){
   const [hm,wm]=m.size;
   //size is the same, just yield the matrix
-  if (h===hm && w===wm) yield* m;
+  if (hm===h && wm===w) yield* m;
   //1x1 matrix, yield it's value h*w times
   else if (hm===1 && wm===1) for(let i=h*w,v=m.get(0,0);i--;) yield v;
   //A row matrix, yield the row h times
-  else if (hm===1) for(let i=h;i--;) yield* m;
+  else if (hm===1 && wm===w) for(let i=h;i--;) yield* m;
   //A column matrix, yield each value w times
-  else if (wm===1) for(let v of m) for(let i=w;i--;) yield v;
+  else if (hm===h && wm===1) for(let v of m) for(let i=w;i--;) yield v;
   //none of the above, so throw an error
-  else throw new Error('Matrix:: Matrix dimensions must match.');
+  else throw new E.MatrixError(E.InvalidDimensions);
 }
 
 /**
@@ -190,7 +191,7 @@ export function mult(...matrices){
       } else {
         const [k2,w]=matrix.size;
         //ensure dimensions agree
-        if (k!==k2) throw new Error('Matrix::mult invalid matrix dimensions');
+        if (k!==k2) throw new E.MatrixError(E.InvalidDimensions);
         //and chain multiply the matrices together (note: unoptimised order)
         m=new Matrix(h,w,_mult(m,matrix,k));
         k=w;
@@ -237,7 +238,7 @@ export function ldiv(a,b){
   const rtn = b.clone(), {[ROWS]:Rr,[COLS]:Cr,[DATA]:Dr}=rtn;
   const [h,w] = b.size;
   const [hc,wc] = a.size;
-  if (hc!==wc || hc!==h) throw new Error('Matrix::div matrix dimensions incompatible with operation');
+  if (hc!==wc || hc!==h) throw new E.MatrixError(E.InvalidDimensions);
   for (let r=0;r<h;r++){
     //ensure that the pivot element is not too small
     if (Math.abs(Dw[Rw[r]+Cw[r]])< 1e-10){
@@ -251,7 +252,7 @@ export function ldiv(a,b){
           break;
         }
       }
-      if (r2>=h) throw new Error('Matrix::div matrix is singular to working precision.')
+      if (r2>=h) throw new E.MatrixError(E.IsSingular);
     }
     const rw=Rw[r],rr=Rr[r];
     const p = 1 / Dw[rw+Cw[r]];
