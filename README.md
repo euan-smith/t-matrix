@@ -1,7 +1,23 @@
 [![view on npm](http://img.shields.io/npm/v/example.svg)](https://www.npmjs.org/package/example)
 # t-matrix
+- [Aims](#aims)
+- [Status](#status)
+  - [Roadmap](#roadmap)
+- [Example Usage](#example-usage)
+- [Guide](#guide)
+  - [Creating Matrices](#guide-creating)
+  - [Matrix Methods and Properties](#guide-matrix)
+    - [Core Methods](#guide-matrix-core)
+    - [Iterables](#guide-matrix-iterables)
+  - [Operations on matrices](#guide-operations)
+  - [Matrix manipulation](#guide-manipulation)
+  - [Helpers and Mixins](#guide-other)
+- [Tutorial - making magic squares](#tutorial)
+- [API reference](#api)
 
-# Aims
+
+
+# <a id="aims"></a> Aims
 - a small library with no dependencies
 - Be a familiar as possible to those used to other tools, in particular [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
 - based on linear double (float64) arrays for precision and speed
@@ -15,9 +31,9 @@
 - LU decomposition-based operations - inv, div, ldiv, det, solve
 - flexible, expressive, extendable.
 
-# Status
+# <a id="status"></a> Status
 Nearing a V1 release.  Some changes from the initial version are breaking as all of the code has been rewritten.
-## Roadmap
+## <a id="roadmap"></a> Roadmap
 The current plan for future versions. Obviously the version numbers further out are more speculative.
 - v1.0
   - Breaking from v0.x.x
@@ -49,7 +65,7 @@ The current plan for future versions. Obviously the version numbers further out 
   - eigen, SVD
   - fft and supporting methods
   - sort, unique
-# example usage
+# <a id="example-usage"></a> example usage
 
 ```
 import * as Matrix from 't-matrix';
@@ -67,9 +83,9 @@ const a=Matrix.ldiv(m,v);
 console.log([...a]);
 ```
 
-# Guide
+# <a id="guide"></a> Guide
 
-## Creating matrices
+## <a id="guide-creating"></a> Creating matrices
 There is no way to create a [Matrix](#Matrix) class instance directly (using a `new` operator), instead there are five
 standard (and one less standard) way of creating a matrix - [`zeros`](#zeros), [`ones`](#ones), [`eye`](#eye),
 [`rand`](#rand) and [`from`](#from) (the less standard one is [`magic`](#magic)).
@@ -110,9 +126,9 @@ const m10=Matrix.diag([1,2,3,4]);//a 4x4 matrix with 1,2,3,4 on the diagonal.
 ```
 In addition [diag](#diag) can als be used to get or set the diagonal elements of a matrix.  See the API help for more details.
 
-## Matrix methods and properties
+## <a id="guide-matrix"></a> Matrix methods and properties
 
-### Core methods
+### <a id="guide-matrix-core"></a> Core methods
 The [Matrix](#Matrix) class has a few core methods and properties to provide information regarding a matrix and
 examine and manipulate its values:
 - [matrix.get](#Matrix+get) gets one or more values of a matrix
@@ -149,7 +165,7 @@ Note on that last example that the library is aware when `set`ting a range to a 
 is safe to use this to (for example) swap or rotate data within a matrix.
 
 To get or set the diagonal of a matrix see [diag](#diag).
-### Iterables
+### <a id="guide-matrix-iterables"></a> Iterables
 A matrix is itself an iterable, iterating in a row-major order over all values:
 ```
 import * as Matrix from 't-matrix';
@@ -175,7 +191,7 @@ for(let r of Matrix.magic(3).cols()) tots.push(Matrix.sum(r));
 console.log('Column sums = '+tots);
 //Column sums = 15,15,15
 ```
-## Operations on matrices
+## <a id="guide-operations"></a> Operations on matrices
 So far there are only a small set of the basic matrix arithmetic operations.  More will follow in time.
 - [Matrix.sum](#sum), [Matrix.max](#max), [Matrix.min](#min), [Matrix.product](#product) are all element-wise operations.  They can operate:
   - Over an entire matrix, returning a single value.
@@ -190,10 +206,71 @@ So far there are only a small set of the basic matrix arithmetic operations.  Mo
     - `ldiv(a,b)` is equivalent to `a\b` which is equivalent to `(b'/a')'` where `'` is the transpose.
   - `mult` can take an arbitrary number of matrices and scalars and will multiply them together.  There must be at least
 one matrix, and the matrix dimensions must agree with standard matrix multiplication rules.
+- [Matrix.det](#det) returns the determinant of a matrix.
+- [Matrix.trace](#trace) returns the trace (the sum of the diagonal) of a matrix.
+## <a id="guide-manipulation"></a> Matrix manipulation
+Again just the most essential matrix manipulation methods have been implemented so far.  More will follow, however the flexibility
+of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow most others to be composed.
+- [Matrix.hcat](#hcat), [Matrix.vcat](#vcat) and [Matrix.mcat](#mcat) concatenate matrices in various ways
+  - `hcat` and `vcat` are the expected horizontal and vertical concatentation methods
+  - `mcat` is more flexible and allows composition through both horizontal and vertical concatenation.  See the function reference for more details.
+  - For all of these functions the matrix dimensions must appropriately agree.
+- [Matrix.reshape](#reshape) can change the dimensions of a matrix.  Row-major element order is assumed.
+- [Matrix.repmat](#repmat) can repeat a matrix horizontally and vertically.
+- [Matrix.minor](#minor) returns a matrix with a specified row and column removed.
+- [Matrix.swapRows](#swapRows) and [Matrix.swapCols](#swapCols) does pretty much what you might expect.
 
 
 
-# API
+## <a id="guide-other"></a> Helpers and Mixins
+There are two helper generator functions, [Matrix.rows](#rows) and [Matrix.cols](#cols) which are described with the [matrix iterables](#guide-matrix-iterables).
+There is also an [isMatrix](#isMatrix) function to test if an object is a valid matrix.  The potentially most useful helper function is, however, [Matrix.mixin](#mixin).
+
+The `t-matrix` library has intentionally been designed to be tree-shaking friendly.  You can [get the banana without the gorilla holding it](http://ahadb.com/2017/03/08/gorilla-banana/).
+However this means that the matrix object is quite light on methods and instead most of the functionality is wrapped up
+in many functions, which can make some expressions quite cumbersome.  e.g. you want to calculate `(xA + yB)/C` and you have to
+express that as `Matrix.div(Matrix.sum(Matrix.mult(A,x),Matrix.mult(B,y)),C)`. Ugh. Wouldn't it be nicer if you could
+do `A.mult(x).sum(B.mult(y)).div(C)` instead?  This is where [Matrix.mixin](#mixin) comes in.
+
+`Matrix.mixin(fn)` adds functions to the Matrix prototype so that `fn(matrix, ...params)` becomes `matrix.fn(...params)`.
+`mixin` can take any number of functions as arguments.  Each function is added as a method using the name the function
+was originally declared with (using `fn.name`).  Alternatively a string can be included before a function in the list of
+parameters and that string will be used as the name.  As well as adding in-built methods this also allows the addition
+of custom methods.
+
+For example, to add in the arithmetic operations above, have a file which configures `t-matrix` how you want it:
+```
+import {mixin, sum, mult, div, ldiv} from 't-matrix';
+mixin(sum,mult,div,ldiv);
+```
+then from elsewhere in your code:
+```
+import * as Matrix from 't-matrix';
+//Solve A*x = B
+const A = Matrix.magic(3);
+const B = Matrix.from([15,15,15]);
+const x = A.ldiv(B);
+console.log(x.toJSON);
+//[ [ 1 ], [ 1 ], [ 1 ] ]
+```
+
+Alternatively, to add a custom method:
+```
+import * as Matrix from 't-matrix';
+Matrix.mixin('sqrt',m=>m.map(Math.sqrt));
+console.log(Matrix.from([[1,4,9]]).sqrt().toJSON());
+//[ [ 1, 2, 3 ] ]
+```
+
+However, if all of this is too much pain, and you really don't care about tree-shaking, or are only every going to run your code in nodejs, then:
+```
+import * as Matrix from 't-matrix';
+Matrix.mixin(Matrix);
+```
+will just add every standard function which can be a method as a method.
+
+
+# <a id="api"></a> API
 ## Matrix Creation
 
   <dl>
@@ -252,21 +329,9 @@ one matrix, and the matrix dimensions must agree with standard matrix multiplica
 </dd>
 </dl>
 
-## Functions
+## Matrix Operations
 
   <dl>
-<dt>Matrix.<a href="#rows">rows(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code></dt>
-    <dd><p>Iterate over the rows.</p>
-</dd>
-<dt>Matrix.<a href="#cols">cols(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code></dt>
-    <dd><p>Iterate over the columns.</p>
-</dd>
-<dt>Matrix.<a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
-    <dd><p>Tests if a value is an instance of a Matrix</p>
-</dd>
-<dt>Matrix.<a href="#mixin">mixin(...methods)</a></dt>
-    <dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
-</dd>
 <dt>Matrix.<a href="#sum">sum(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code> | <code>Number</code></dt>
     <dd><p>Return the sum of the matrix in the direction specified or the element-wise sum of the set of matrices.</p>
 </dd>
@@ -284,6 +349,41 @@ one matrix, and the matrix dimensions must agree with standard matrix multiplica
 </dd>
 <dt>Matrix.<a href="#mult">mult(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Performs matrix multiplication on a list of matrices and/or scalars</p>
+</dd>
+<dt>Matrix.<a href="#det">det(matrix)</a> ⇒ <code>number</code></dt>
+    <dd><p>Calculate the determinant of a matrix.</p>
+</dd>
+<dt>Matrix.<a href="#ldiv">ldiv(A, B)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Left-division. Solve Ax = B for x.</p>
+</dd>
+<dt>Matrix.<a href="#div">div(A, B)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Right-division. Solve xB = A for x.</p>
+</dd>
+<dt>Matrix.<a href="#inv">inv(matrix)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Calculate the inverse of a matrix.</p>
+</dd>
+<dt>Matrix.<a href="#abs">abs(matrix)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Return a new matrix containing the element-wise absolute values of the source matrix.</p>
+</dd>
+<dt>Matrix.<a href="#grid">grid(rows, [cols])</a> ⇒ <code><a href="#Matrix">Array.&lt;Matrix&gt;</a></code></dt>
+    <dd><p>Generate a regular grid in 2D space</p>
+</dd>
+</dl>
+
+## Other Matrix Functions
+
+  <dl>
+<dt>Matrix.<a href="#rows">rows(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code></dt>
+    <dd><p>Iterate over the rows.</p>
+</dd>
+<dt>Matrix.<a href="#cols">cols(matrix)</a> ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code></dt>
+    <dd><p>Iterate over the columns.</p>
+</dd>
+<dt>Matrix.<a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
+    <dd><p>Tests if a value is an instance of a Matrix</p>
+</dd>
+<dt>Matrix.<a href="#mixin">mixin(...methods)</a></dt>
+    <dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
 </dd>
 </dl>
 
@@ -520,100 +620,6 @@ console.log(Matrix.from([1,':',9]).reshape(3,3).neg().toJSON());//[[-1,-2,-3],[-
 import * as Matrix from 't-matrix';
 Matrix.mixin(Matrix);
 console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,10,12],[14,16,18]]
-```
-<br>
-  <a name="sum"></a>
-
-  ## Matrix.sum(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  *Return the sum of the matrix in the direction specified or the element-wise sum of the set of matrices.*
-
-`Matrix.sum(m)` or `m.sum()` will sum all the values of a matrix, returning a number.`Matrix.sum(m,null,1)` or `m.sum(null,1)` will sum the matrix columns, returning a row matrix.`Matrix.sum(m,null,2)` or `m.sum(null,2)` will sum the matrix rows, returning a column matrix.`Matrix.sum(m1,m2,m3,...)` or `m1.sum(m2,m3,...)` will calculate an element-wise sum over all the matrices.For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and thesame column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.Arrays can also be provided and these will be converted to matrices using Matrix.[from](#from).  Row matrices will beadded to every row, column matrices to every column and scalar values to every matrix element.
-
-
-| Param | Type |
-| --- | --- |
-| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
-
-**Example**  
-```js
-import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).sum(null,1).toJSON());//[[15,15,15]];console.log(Matrix.magic(3).sum());//45console.log(Matrix.sum([[0,1,2]], [6,3,0], 1).toJSON());//[[7,8,9],[4,5,6],[1,2,3]];
-```
-<br>
-  <a name="max"></a>
-
-  ## Matrix.max(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  *Return the maximum of the matrix in the direction specified or the element-wise maximum of the set of matrices.*
-
-`Matrix.max(m)` or `m.max()` will return the max of all the values of a matrix.`Matrix.max(m,null,1)` or `m.max(null,1)` will return a row matrix containing max of each matrix column.`Matrix.max(m,null,2)` or `m.max(null,2)` will return a column matrix containing max of each matrix row.`Matrix.max(m1,m2,m3,...)` or `m1.max(m2,m3,...)` will calculate an element-wise max over all the matrices.For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and thesame column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.Arrays can also be provided and these will be converted to matrices using Matrix.[from](#from).  An element of thereturned matrix of a given row and column will be the max of that row and column of all regular matrices, of that row of allcolumn matrices, of that column of all row matrices and of all scalar values.
-
-
-| Param | Type |
-| --- | --- |
-| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
-
-**Example**  
-```js
-import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[8,9,7]];console.log(Matrix.magic(3).max());//9console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[6,6,6],[3,3,3],[1,1,2];
-```
-<br>
-  <a name="min"></a>
-
-  ## Matrix.min(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  *Return the minimum of the matrix in the direction specified or the element-wise minimum of the set of matrices.*
-
-Works the same way as other similar operations.  See Matrix.[max](#max) for more details.
-
-
-| Param | Type |
-| --- | --- |
-| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
-
-**Example**  
-```js
-import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[3,1,2]];console.log(Matrix.magic(3).max());//1console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[0,1,1],[0,1,1],[0,0,0];
-```
-<br>
-  <a name="product"></a>
-
-  ## Matrix.product(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  *Return the product of the matrix values in the direction specified or the element-wise product of the set of matrices.*
-
-Works the same way as other similar operations.  See Matrix.[sum](#sum) for more details.
-
-
-| Param | Type |
-| --- | --- |
-| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
-
-**Example**  
-```js
-import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).product(null,1).toJSON());//[[96,45,84]];console.log(Matrix.magic(3).product());//362880console.log(Matrix.product([[0,1,2]], [6,3,0], 1).toJSON());//[[0,6,12],[0,3,6],[0,0,0]];
-```
-<br>
-  <a name="trace"></a>
-
-  ## Matrix.trace(matrix) ⇒ <code>Number</code>
-  Returns the trace of a matrix (the sum of the diagonal elements)
-
-
-| Param |
-| --- |
-| matrix | 
-
-<br>
-  <a name="mult"></a>
-
-  ## Matrix.mult(...matrices) ⇒ [<code>Matrix</code>](#Matrix)
-  Performs matrix multiplication on a list of matrices and/or scalars
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | At least one parameter must be a matrix or convertible to a matrix through Matrix.[from](#from) |
-
-**Example**  
-```js
-import * as Matrix from 't-matrix';const mag = Matrix.magic(3);console.log(mag.mult(mag.inv()).toJSON());//a 3x3 identity matrix (plus some round-off error)
 ```
 <br>
   <a name="Range"></a>
@@ -874,6 +880,190 @@ The minor of a matrix is the matrix with the specified row and column removed.  
 | matrices | [<code>Matrix</code>](#Matrix) | 
 
 <br>
+  <a name="sum"></a>
+
+  ## Matrix.sum(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+  *Return the sum of the matrix in the direction specified or the element-wise sum of the set of matrices.*
+
+`Matrix.sum(m)` or `m.sum()` will sum all the values of a matrix, returning a number.`Matrix.sum(m,null,1)` or `m.sum(null,1)` will sum the matrix columns, returning a row matrix.`Matrix.sum(m,null,2)` or `m.sum(null,2)` will sum the matrix rows, returning a column matrix.`Matrix.sum(m1,m2,m3,...)` or `m1.sum(m2,m3,...)` will calculate an element-wise sum over all the matrices.For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and thesame column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.Arrays can also be provided and these will be converted to matrices using Matrix.[from](#from).  Row matrices will beadded to every row, column matrices to every column and scalar values to every matrix element.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).sum(null,1).toJSON());//[[15,15,15]];console.log(Matrix.magic(3).sum());//45console.log(Matrix.sum([[0,1,2]], [6,3,0], 1).toJSON());//[[7,8,9],[4,5,6],[1,2,3]];
+```
+<br>
+  <a name="max"></a>
+
+  ## Matrix.max(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+  *Return the maximum of the matrix in the direction specified or the element-wise maximum of the set of matrices.*
+
+`Matrix.max(m)` or `m.max()` will return the max of all the values of a matrix.`Matrix.max(m,null,1)` or `m.max(null,1)` will return a row matrix containing max of each matrix column.`Matrix.max(m,null,2)` or `m.max(null,2)` will return a column matrix containing max of each matrix row.`Matrix.max(m1,m2,m3,...)` or `m1.max(m2,m3,...)` will calculate an element-wise max over all the matrices.For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and thesame column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.Arrays can also be provided and these will be converted to matrices using Matrix.[from](#from).  An element of thereturned matrix of a given row and column will be the max of that row and column of all regular matrices, of that row of allcolumn matrices, of that column of all row matrices and of all scalar values.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[8,9,7]];console.log(Matrix.magic(3).max());//9console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[6,6,6],[3,3,3],[1,1,2];
+```
+<br>
+  <a name="min"></a>
+
+  ## Matrix.min(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+  *Return the minimum of the matrix in the direction specified or the element-wise minimum of the set of matrices.*
+
+Works the same way as other similar operations.  See Matrix.[max](#max) for more details.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[3,1,2]];console.log(Matrix.magic(3).max());//1console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[0,1,1],[0,1,1],[0,0,0];
+```
+<br>
+  <a name="product"></a>
+
+  ## Matrix.product(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+  *Return the product of the matrix values in the direction specified or the element-wise product of the set of matrices.*
+
+Works the same way as other similar operations.  See Matrix.[sum](#sum) for more details.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).product(null,1).toJSON());//[[96,45,84]];console.log(Matrix.magic(3).product());//362880console.log(Matrix.product([[0,1,2]], [6,3,0], 1).toJSON());//[[0,6,12],[0,3,6],[0,0,0]];
+```
+<br>
+  <a name="trace"></a>
+
+  ## Matrix.trace(matrix) ⇒ <code>Number</code>
+  Returns the trace of a matrix (the sum of the diagonal elements)
+
+**Category**: operation  
+
+| Param |
+| --- |
+| matrix | 
+
+<br>
+  <a name="mult"></a>
+
+  ## Matrix.mult(...matrices) ⇒ [<code>Matrix</code>](#Matrix)
+  Performs matrix multiplication on a list of matrices and/or scalars
+
+**Category**: operation  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | At least one parameter must be a matrix or convertible to a matrix through Matrix.[from](#from) |
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';const mag = Matrix.magic(3);console.log(mag.mult(mag.inv()).toJSON());//a 3x3 identity matrix (plus some round-off error)
+```
+<br>
+  <a name="det"></a>
+
+  ## Matrix.det(matrix) ⇒ <code>number</code>
+  *Calculate the determinant of a matrix.*
+
+The determinant is calculated by the standard naive algorithm which**scales really really badly** (the algorithm is O(n!)).  Once LU decomposition has been added to thelibrary then that will provide an O(n^3) method which is **much** faster.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| matrix | [<code>Matrix</code>](#Matrix) | 
+
+<br>
+  <a name="ldiv"></a>
+
+  ## Matrix.ldiv(A, B) ⇒ [<code>Matrix</code>](#Matrix)
+  *Left-division. Solve Ax = B for x.*
+
+Solve the system of linear equations Ax = B for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)this can be expressed as `A\B`.  Equivalent to using [Matrix.div](#div) where `Matrix.ldiv(A,B)` gives the same answer as `Matrix.div(B.t,A.t).t`.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| A | [<code>Matrix</code>](#Matrix) | 
+| B | [<code>Matrix</code>](#Matrix) | 
+
+<br>
+  <a name="div"></a>
+
+  ## Matrix.div(A, B) ⇒ [<code>Matrix</code>](#Matrix)
+  *Right-division. Solve xB = A for x.*
+
+Solve the system of linear equations xB = A for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)this can be expressed as `A/B`.  Equivalent to using [Matrix.div](#ldiv) where `Matrix.div(A,B)` gives the same answer as `Matrix.ldiv(B.t,A.t).t`.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| A | [<code>Matrix</code>](#Matrix) | 
+| B | [<code>Matrix</code>](#Matrix) | 
+
+<br>
+  <a name="inv"></a>
+
+  ## Matrix.inv(matrix) ⇒ [<code>Matrix</code>](#Matrix)
+  Calculate the inverse of a matrix.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| matrix | [<code>Matrix</code>](#Matrix) | 
+
+<br>
+  <a name="abs"></a>
+
+  ## Matrix.abs(matrix) ⇒ [<code>Matrix</code>](#Matrix)
+  Return a new matrix containing the element-wise absolute values of the source matrix.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| matrix | [<code>Matrix</code>](#Matrix) | 
+
+<br>
+  <a name="grid"></a>
+
+  ## Matrix.grid(rows, [cols]) ⇒ [<code>Array.&lt;Matrix&gt;</code>](#Matrix)
+  *Generate a regular grid in 2D space*
+
+This is equivalent to the [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/) function [ndgrid](https://octave.sourceforge.io/octave/function/ndgrid.html) for the 2d case.Once the _rows_ and _cols_ parameters are expanded to arrays, the first returned matrix contains the _rows_ array as a column matrix repeated to match the size of the _cols_ array.Similarly the second returned matrix is the _cols_ array as a row matrix repeated to match the size of the _rows_ array.
+
+**Category**: operation  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| rows | [<code>Range</code>](#Range) \| <code>Number</code> | If a number *n* this is converted to a range 0:n-1, otherwise a range is expected. |
+| [cols] | [<code>Range</code>](#Range) \| <code>Number</code> | If a number *n* this is converted to a range 0:n-1, otherwise a range is expected. |
+
+<br>
   * * *
 
-&copy; 2019 Euan Smith
+&copy; 2019 Euan Smith.
+API documentation generated with the help of [jsdoc2md](https://github.com/jsdoc2md/jsdoc-to-markdown).

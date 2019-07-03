@@ -54,6 +54,7 @@ const
  * Arrays can also be provided and these will be converted to matrices using Matrix.{@link from}.  Row matrices will be
  * added to every row, column matrices to every column and scalar values to every matrix element.
  * @param matrices {...(?Matrix|Number)}
+ * @category operation
  * @returns {Matrix|Number}
  * @example
  * import * as Matrix from 't-matrix';
@@ -84,6 +85,7 @@ sum[METHOD]='sum';
  * returned matrix of a given row and column will be the max of that row and column of all regular matrices, of that row of all
  * column matrices, of that column of all row matrices and of all scalar values.
  * @param matrices {...(?Matrix|Number)}
+ * @category operation
  * @returns {Matrix|Number}
  * @example
  * import * as Matrix from 't-matrix';
@@ -102,6 +104,7 @@ max[METHOD]='max';
  * @description
  * Works the same way as other similar operations.  See Matrix.{@link max} for more details.
  * @param matrices {...(?Matrix|Number)}
+ * @category operation
  * @returns {Matrix|Number}
  * @example
  * import * as Matrix from 't-matrix';
@@ -120,6 +123,7 @@ min[METHOD]='min';
  * @description
  * Works the same way as other similar operations.  See Matrix.{@link sum} for more details.
  * @param matrices {...(?Matrix|Number)}
+ * @category operation
  * @returns {Matrix|Number}
  * @example
  * import * as Matrix from 't-matrix';
@@ -136,6 +140,7 @@ product[METHOD]='product';
 /**
  * Returns the trace of a matrix (the sum of the diagonal elements)
  * @param matrix
+ * @category operation
  * @returns {Number}
  */
 export function trace(matrix){
@@ -172,6 +177,7 @@ function *matchSize(m,h,w){
 /**
  * Performs matrix multiplication on a list of matrices and/or scalars
  * @param matrices {...(Matrix|Number)} At least one parameter must be a matrix or convertible to a matrix through Matrix.{@link from}
+ * @category operation
  * @returns {Matrix}
  * @example
  * import * as Matrix from 't-matrix';
@@ -213,31 +219,48 @@ function *_mult(a,b,K){
   }
 }
 
-export function det(m){
-  m=from(m);
-  const [h,w] = m.size;
+/**
+ * @summary Calculate the determinant of a matrix.
+ * @description The determinant is calculated by the standard naive algorithm which
+ * **scales really really badly** (the algorithm is O(n!)).  Once LU decomposition has been added to the
+ * library then that will provide an O(n^3) method which is **much** faster.
+ * @param matrix {Matrix}
+ * @category operation
+ * @returns {number}
+ */
+export function det(matrix){
+  matrix=from(matrix);
+  const [h,w] = matrix.size;
   if (h!==w) return 0;
   if (h<4){
-    const d=[...m];
+    const d=[...matrix];
     if (h===2) return d[0] * d[3] - d[1] * d[2];
     return d[0]*(d[4]*d[8]-d[7]*d[5]) + d[1]*(d[5]*d[6]-d[8]*d[3]) + d[2]*(d[3]*d[7]-d[6]*d[4]);
   }
   let dt=0;
   for(let c=1;c<=w;c+=2){
-    dt += m.get(0,c-1)*det(minor(m,0,c-1));
-    if (c<w) dt -= m.get(0,c)*det(minor(m,0,c));
+    dt += matrix.get(0,c-1)*det(minor(matrix,0,c-1));
+    if (c<w) dt -= matrix.get(0,c)*det(minor(matrix,0,c));
   }
   return dt;
 }
 det[METHOD]='det';
 
-
-export function ldiv(a,b){
-  a=from(a);b=from(b);
-  const working = a.clone(), {[ROWS]:Rw,[COLS]:Cw,[DATA]:Dw}=working;
-  const rtn = b.clone(), {[ROWS]:Rr,[COLS]:Cr,[DATA]:Dr}=rtn;
-  const [h,w] = b.size;
-  const [hc,wc] = a.size;
+/**
+ * @summary Left-division. Solve Ax = B for x.
+ * @description Solve the system of linear equations Ax = B for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
+ * this can be expressed as `A\B`.  Equivalent to using [Matrix.div](#div) where `Matrix.ldiv(A,B)` gives the same answer as `Matrix.div(B.t,A.t).t`.
+ * @category operation
+ * @param A {Matrix}
+ * @param B {Matrix}
+ * @returns {Matrix}
+ */
+export function ldiv(A,B){
+  A=from(A);B=from(B);
+  const working = A.clone(), {[ROWS]:Rw,[COLS]:Cw,[DATA]:Dw}=working;
+  const rtn = B.clone(), {[ROWS]:Rr,[COLS]:Cr,[DATA]:Dr}=rtn;
+  const [h,w] = B.size;
+  const [hc,wc] = A.size;
   if (hc!==wc || hc!==h) throw new E.MatrixError(E.InvalidDimensions);
   for (let r=0;r<h;r++){
     //ensure that the pivot element is not too small
@@ -270,24 +293,56 @@ export function ldiv(a,b){
 }
 ldiv[METHOD]='ldiv';
 
-
-export function div(a,b){
-  return ldiv(b.t,a.t).t;
+/**
+ * @summary Right-division. Solve xB = A for x.
+ * @description Solve the system of linear equations xB = A for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
+ * this can be expressed as `A/B`.  Equivalent to using [Matrix.div](#ldiv) where `Matrix.div(A,B)` gives the same answer as `Matrix.ldiv(B.t,A.t).t`.
+ * @category operation
+ * @param A {Matrix}
+ * @param B {Matrix}
+ * @returns {Matrix}
+ */
+export function div(A,B){
+  return ldiv(B.t,A.t).t;
 }
 div[METHOD]='div';
 
-export function inv(a){
-  return ldiv(a,eye(a.size[0]));
+/**
+ * Calculate the inverse of a matrix.
+ * @param matrix {Matrix}
+ * @category operation
+ * @returns {Matrix}
+ */
+export function inv(matrix){
+  return ldiv(matrix,eye(matrix.size[0]));
 }
 inv[METHOD]='inv';
 
-export function abs(m){
-  return from(m).map(Math.abs);
+/**
+ * Return a new matrix containing the element-wise absolute values of the source matrix.
+ * @param matrix {Matrix}
+ * @category operation
+ * @returns {Matrix}
+ */
+export function abs(matrix){
+  return from(matrix).map(Math.abs);
 }
 abs[METHOD]='abs';
 
+/**
+ * @summary Generate a regular grid in 2D space
+ * @description This is equivalent to the [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/) function [ndgrid](https://octave.sourceforge.io/octave/function/ndgrid.html) for the 2d case.
+ * Once the _rows_ and _cols_ parameters are expanded to arrays, the first returned matrix contains the _rows_ array as a column matrix repeated to match the size of the _cols_ array.
+ * Similarly the second returned matrix is the _cols_ array as a row matrix repeated to match the size of the _rows_ array.
+ * @category operation
+ * @param rows {Range|Number} If a number *n* this is converted to a range 0:n-1, otherwise a range is expected.
+ * @param [cols] {Range|Number} If a number *n* this is converted to a range 0:n-1, otherwise a range is expected.
+ * @returns {Matrix[]}
+ */
 export function grid(rows,cols){
+  if (isNum(rows)) rows = [':',rows-1];
   rows = toList(rows);
+  if (isNum(cols)) cols = [':',cols-1];
   if (!cols) cols=rows;
   else cols = toList(cols);
   return [

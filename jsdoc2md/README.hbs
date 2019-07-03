@@ -1,7 +1,23 @@
 [![view on npm](http://img.shields.io/npm/v/example.svg)](https://www.npmjs.org/package/example)
 # t-matrix
+- [Aims](#aims)
+- [Status](#status)
+  - [Roadmap](#roadmap)
+- [Example Usage](#example-usage)
+- [Guide](#guide)
+  - [Creating Matrices](#guide-creating)
+  - [Matrix Methods and Properties](#guide-matrix)
+    - [Core Methods](#guide-matrix-core)
+    - [Iterables](#guide-matrix-iterables)
+  - [Operations on matrices](#guide-operations)
+  - [Matrix manipulation](#guide-manipulation)
+  - [Helpers and Mixins](#guide-other)
+- [Tutorial - making magic squares](#tutorial)
+- [API reference](#api)
 
-# Aims
+
+
+# <a id="aims"></a> Aims
 - a small library with no dependencies
 - Be a familiar as possible to those used to other tools, in particular [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
 - based on linear double (float64) arrays for precision and speed
@@ -15,9 +31,9 @@
 - LU decomposition-based operations - inv, div, ldiv, det, solve
 - flexible, expressive, extendable.
 
-# Status
+# <a id="status"></a> Status
 Nearing a V1 release.  Some changes from the initial version are breaking as all of the code has been rewritten.
-## Roadmap
+## <a id="roadmap"></a> Roadmap
 The current plan for future versions. Obviously the version numbers further out are more speculative.
 - v1.0
   - Breaking from v0.x.x
@@ -49,7 +65,7 @@ The current plan for future versions. Obviously the version numbers further out 
   - eigen, SVD
   - fft and supporting methods
   - sort, unique
-# example usage
+# <a id="example-usage"></a> example usage
 
 ```
 import * as Matrix from 't-matrix';
@@ -67,9 +83,9 @@ const a=Matrix.ldiv(m,v);
 console.log([...a]);
 ```
 
-# Guide
+# <a id="guide"></a> Guide
 
-## Creating matrices
+## <a id="guide-creating"></a> Creating matrices
 There is no way to create a [Matrix](#Matrix) class instance directly (using a `new` operator), instead there are five
 standard (and one less standard) way of creating a matrix - [`zeros`](#zeros), [`ones`](#ones), [`eye`](#eye),
 [`rand`](#rand) and [`from`](#from) (the less standard one is [`magic`](#magic)).
@@ -110,9 +126,9 @@ const m10=Matrix.diag([1,2,3,4]);//a 4x4 matrix with 1,2,3,4 on the diagonal.
 ```
 In addition [diag](#diag) can als be used to get or set the diagonal elements of a matrix.  See the API help for more details.
 
-## Matrix methods and properties
+## <a id="guide-matrix"></a> Matrix methods and properties
 
-### Core methods
+### <a id="guide-matrix-core"></a> Core methods
 The [Matrix](#Matrix) class has a few core methods and properties to provide information regarding a matrix and
 examine and manipulate its values:
 - [matrix.get](#Matrix+get) gets one or more values of a matrix
@@ -149,7 +165,7 @@ Note on that last example that the library is aware when `set`ting a range to a 
 is safe to use this to (for example) swap or rotate data within a matrix.
 
 To get or set the diagonal of a matrix see [diag](#diag).
-### Iterables
+### <a id="guide-matrix-iterables"></a> Iterables
 A matrix is itself an iterable, iterating in a row-major order over all values:
 ```
 import * as Matrix from 't-matrix';
@@ -175,7 +191,7 @@ for(let r of Matrix.magic(3).cols()) tots.push(Matrix.sum(r));
 console.log('Column sums = '+tots);
 //Column sums = 15,15,15
 ```
-## Operations on matrices
+## <a id="guide-operations"></a> Operations on matrices
 So far there are only a small set of the basic matrix arithmetic operations.  More will follow in time.
 - [Matrix.sum](#sum), [Matrix.max](#max), [Matrix.min](#min), [Matrix.product](#product) are all element-wise operations.  They can operate:
   - Over an entire matrix, returning a single value.
@@ -192,7 +208,7 @@ So far there are only a small set of the basic matrix arithmetic operations.  Mo
 one matrix, and the matrix dimensions must agree with standard matrix multiplication rules.
 - [Matrix.det](#det) returns the determinant of a matrix.
 - [Matrix.trace](#trace) returns the trace (the sum of the diagonal) of a matrix.
-## Matrix manipulation
+## <a id="guide-manipulation"></a> Matrix manipulation
 Again just the most essential matrix manipulation methods have been implemented so far.  More will follow, however the flexibility
 of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow most others to be composed.
 - [Matrix.hcat](#hcat), [Matrix.vcat](#vcat) and [Matrix.mcat](#mcat) concatenate matrices in various ways
@@ -206,15 +222,59 @@ of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow mos
 
 
 
-## Other functions
+## <a id="guide-other"></a> Helpers and Mixins
+There are two helper generator functions, [Matrix.rows](#rows) and [Matrix.cols](#cols) which are described with the [matrix iterables](#guide-matrix-iterables).
+There is also an [isMatrix](#isMatrix) function to test if an object is a valid matrix.  The potentially most useful helper function is, however, [Matrix.mixin](#mixin).
+
+The `t-matrix` library has intentionally been designed to be tree-shaking friendly.  You can [get the banana without the gorilla holding it](http://ahadb.com/2017/03/08/gorilla-banana/).
+However this means that the matrix object is quite light on methods and instead most of the functionality is wrapped up
+in many functions, which can make some expressions quite cumbersome.  e.g. you want to calculate `(xA + yB)/C` and you have to
+express that as `Matrix.div(Matrix.sum(Matrix.mult(A,x),Matrix.mult(B,y)),C)`. Ugh. Wouldn't it be nicer if you could
+do `A.mult(x).sum(B.mult(y)).div(C)` instead?  This is where [Matrix.mixin](#mixin) comes in.
+
+`Matrix.mixin(fn)` adds functions to the Matrix prototype so that `fn(matrix, ...params)` becomes `matrix.fn(...params)`.
+`mixin` can take any number of functions as arguments.  Each function is added as a method using the name the function
+was originally declared with (using `fn.name`).  Alternatively a string can be included before a function in the list of
+parameters and that string will be used as the name.  As well as adding in-built methods this also allows the addition
+of custom methods.
+
+For example, to add in the arithmetic operations above, have a file which configures `t-matrix` how you want it:
+```
+import {mixin, sum, mult, div, ldiv} from 't-matrix';
+mixin(sum,mult,div,ldiv);
+```
+then from elsewhere in your code:
+```
+import * as Matrix from 't-matrix';
+//Solve A*x = B
+const A = Matrix.magic(3);
+const B = Matrix.from([15,15,15]);
+const x = A.ldiv(B);
+console.log(x.toJSON);
+//[ [ 1 ], [ 1 ], [ 1 ] ]
+```
+
+Alternatively, to add a custom method:
+```
+import * as Matrix from 't-matrix';
+Matrix.mixin('sqrt',m=>m.map(Math.sqrt));
+console.log(Matrix.from([[1,4,9]]).sqrt().toJSON());
+//[ [ 1, 2, 3 ] ]
+```
+
+However, if all of this is too much pain, and you really don't care about tree-shaking, or are only every going to run your code in nodejs, then:
+```
+import * as Matrix from 't-matrix';
+Matrix.mixin(Matrix);
+```
+will just add every standard function which can be a method as a method.
 
 
-
-# API
+# <a id="api"></a> API
 {{>global-index-dl kind="function" category="creation" category2="creationAndManipulation" title="Matrix Creation" prefix="Matrix." ~}}
 {{>global-index-dl kind="function" category="manipulation" category2="creationAndManipulation" title="Matrix Manipulation" prefix="Matrix." ~}}
 {{>global-index-dl kind="function" category="operation" title="Matrix Operations" prefix="Matrix." ~}}
-{{>global-index-dl kind="function" title="Functions" prefix="Matrix." ~}}
+{{>global-index-dl kind="function" title="Other Matrix Functions" prefix="Matrix." ~}}
 {{>global-index-dl kind="class" title="Classes" ~}}
 {{>global-index-dl kind="typedef" title="Typedefs" ~}}
 {{#orphans~}}
@@ -234,4 +294,5 @@ of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow mos
 
 * * *
 
-&copy; 2019 Euan Smith
+&copy; 2019 Euan Smith.
+API documentation generated with the help of [jsdoc2md](https://github.com/jsdoc2md/jsdoc-to-markdown).
