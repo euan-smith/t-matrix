@@ -269,6 +269,60 @@ Matrix.mixin(Matrix);
 ```
 will just add every standard function which can be a method as a method.
 
+# <a id="tutorial"></a> Tutorial - making magic squares
+## Introduction
+This will follow some of the code already in the library, however it is a useful example in how to express a matrix algorithm
+using this library.  The algorithms used are the same as those used in Matlab as described [here](https://www.mathworks.com/content/dam/mathworks/mathworks-dot-com/moler/exm/chapters/magic.pdf).
+## Odd-order magic squares
+
+A vectorised version of [de La Loubere's method](https://en.wikipedia.org/wiki/Siamese_method) is expressed in [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/) code as:
+```matlab
+[I,J] = ndgrid(1:n);
+A = mod(I+J+(n-3)/2,n);
+B = mod(I+2*J-2,n);
+M = n*A + B + 1;
+```
+We will need three methods here, [grid](#grid), [sum](#sum) and [product](#product) (NOTE: mult could be used instead as we are only multiplying by a scalar).
+```js
+import {grid, sum, product} from 't-matrix';
+export function magic(n){
+  //code to go here...
+}
+```
+Calculating _I_ and _J_ looks very similar to the matlab:
+```js
+const [I,J] = grid([1,':',n]);
+```
+To get _A_ we are summing a number of terms:
+```js
+const A = sum(I, J, (n-3)>>1);
+```
+however that is incomplete as we need to `mod` all the values of _A_.  This can be done using a [.map](Matrix+map):
+```js
+const A = sum(I, J, (n-3)>>1).map(v => v%n);
+```
+We can similarly calculate _B_:
+```js
+const B = sum(I, product(2,J), -2).map(v => v%n);
+```
+And finally return the magic square
+```js
+return sum(product(n,A), B, 1);
+```
+So, now we have some code which deals with odd-order magic squares:
+```js
+import {grid, sum, product} from 't-matrix';
+export function magic(n){
+  if (n%2){
+    const [I,J] = grid([1,':',n]);
+    const A = sum(I, J, (n-3)>>1).map(v => v%n);
+    const B = sum(I, product(2,J), -2).map(v => v%n);
+    return sum(product(n,A), B, 1);
+  }
+}
+```
+
+
 
 # <a id="api"></a> API
 {{>global-index-dl kind="function" category="creation" category2="creationAndManipulation" title="Matrix Creation" prefix="Matrix." ~}}
