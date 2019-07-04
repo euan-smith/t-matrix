@@ -148,16 +148,40 @@ export function trace(matrix){
 }
 trace[METHOD]='trace';
 
-function pOp(opFn,...matrices){
-  if (matrices[1] == null) return op(matrices[0], matrices[2], opFn);
-  matrices = matrices.map(m=>isMatrix(m)?m:isNum(m)?from([m]):from(m));
+// noinspection JSCommentMatchesSignature
+/**
+ * Creates a new matrix with the results of calling a provided function on every element in the supplied set of matrices.
+ * @param matrices {...(Matrix|Number)}
+ * @param fn {Function}
+ * @category operation
+ * @returns {Matrix}
+ * @example
+ * //Calculate a gaussian function in 2D for a range -3:0.1:3 in x and y.
+ * import * as Matrix from 't-matrix';
+ * const [Y,X]=Matrix.grid([-3,'::',0.1,3]);
+ * const gauss=Matrix.mapMany(Y,X,(y,x)=>Math.exp(-Math.pow(x+y,2)));
+ */
+export function mapMany(...matrices){
+  const fn=matrices.pop();
+  return _mapMany(a=>fn.apply(null,a), ...matrices);
+}
+mapMany[METHOD]='mapMany';
+
+export function _mapMany(fn, ...matrices){
+  matrices = matrices.map(m=>isNum(m)?from([m]):from(m));
   const [h,w]=matrices.reduce(([h,w],m)=>{
     const [hm,wm]=m.size;
     return [hm>h?hm:h, wm>w?wm:w]
   },[1,1]);
   //ensure the dimensions are all the same
   matrices = matrices.map(m=>matchSize(m,h,w));
-  return new Matrix(h,w,mapIter(zipIters(...matrices),opFn));
+  return new Matrix(h,w,mapIter(zipIters(...matrices),fn));
+}
+
+function pOp(opFn,...matrices){
+  return matrices[1] == null?
+    op(matrices[0], matrices[2], opFn):
+    _mapMany(opFn, ...matrices);
 }
 
 function *matchSize(m,h,w){

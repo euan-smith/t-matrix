@@ -2,7 +2,7 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
-import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid} from "../src/operations";
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,mapMany} from "../src/operations";
 import {from} from "../src/core";
 import * as E from "../src/errors";
 
@@ -224,4 +224,12 @@ describe('grid',function(){
     expect(R.toJSON()).to.eql([[1,1],[2,2],[3,3]]);
     expect(C.toJSON()).to.eql([[1,2],[1,2],[1,2]]);
   });
+});
+
+describe('mapMany',function(){
+  it('maps from many matrices to one', function(){
+    const [R,C] = grid([0,3],[0,4]);
+    const L = mapMany(R,C,(r,c)=>Math.sqrt(r*r+c*c));
+    expect(L.toJSON()).to.eql([[0,4],[3,5]])
+  })
 });

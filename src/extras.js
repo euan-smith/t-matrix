@@ -32,7 +32,7 @@ export function magic(size){
   const M=magic(p);
   const O=mcat([[      M     , sum(M,2*p*p)],
                 [sum(M,3*p*p),  sum(M,p*p) ]]);
-  let k=(size-2)>>2, j=[':',k-1,size+1-k,':',size-1];
+  let k=(size-2)>>2, j=[':',k-1,size+1-k,':'];
   O.set(':',j,O.get([p,':',':',p-1],j));
   j=[0,k];
   O.set([k,k+p],j,O.get([k+p,k],j));

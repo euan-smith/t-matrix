@@ -67,7 +67,7 @@ The current plan for future versions. Obviously the version numbers further out 
   - sort, unique
 # <a id="example-usage"></a> example usage
 
-```
+```js
 import * as Matrix from 't-matrix';
 
 //create a 4x4 square matrix
@@ -91,7 +91,7 @@ standard (and one less standard) way of creating a matrix - [`zeros`](#zeros), [
 [`rand`](#rand) and [`from`](#from) (the less standard one is [`magic`](#magic)).
 
 [`zeros`](#zeros), [`ones`](#ones) and [`rand`](#rand) all have the same general form:
-```
+```js
 import {zeros,ones,rand} from 't-matrix';
 const m1=zeros(3); //a 3x3 square matrix filled with zeros
 const m2=ones(4,5); //a matrix with 4 rows and 5 columns filled with ones
@@ -100,7 +100,7 @@ const m4=zeros(m3.size); //a matrix the same size as m4 filled with zeros.
 ```
 
 [`eye`](#eye) and [`magic`](#magic) both take just one number which is the matrix size as both produce only square matrices:
-```
+```js
 import {eye,magic} from 't-matrix';
 const m5=eye(3); //a 3x3 identity matrix
 console.log(JSON.stringify(m5));
@@ -111,7 +111,7 @@ console.log(JSON.stringify(m6));
 ```
 
 [`from`](#from) is the more general purpose function and will try and convert arrays into a matrix:
-```
+```js
 import * as Matrix from 't-matrix';
 const m7=Matrix.from([1,2,3]); //An array of numbers becomes a column matrix
 const m8=Matrix.from([[1,2,3]]); //An array of arrays assumes row-major order, so this becomes a row matrix
@@ -120,7 +120,7 @@ const m9=Matrix.from([[1,2],[3,4]]); //and this is a 2x2 matrix.
 
 There is one final function which can be used to create matrices, but in this case is not purely a creation function, and that is [diag](#diag).
 To use it to create a matrix, provide a single parameter which is an array or a column or row matrix:
-```
+```js
 import {diag} from 't-matrix';
 const m10=Matrix.diag([1,2,3,4]);//a 4x4 matrix with 1,2,3,4 on the diagonal.
 ```
@@ -149,7 +149,7 @@ An important point to note is that `.get`, when it returns a matrix, returns one
 array as the original matrix - any changes to either matrix will be reflected in each other.  There are many more examples
 in the documentation for the [Range](#Range) data type and the [get](#Matrix+get) and [set](#Matrix+set) methods, however
 a couple of basic examples:
-```
+```js
 import * as Matrix from 't-matrix';
 const m=Matrix.zeros(4); //a 4x4 matrix filled with zeros
 m.set([1,2],':',5)  //fill the middle two rows with fives.
@@ -167,7 +167,7 @@ is safe to use this to (for example) swap or rotate data within a matrix.
 To get or set the diagonal of a matrix see [diag](#diag).
 ### <a id="guide-matrix-iterables"></a> Iterables
 A matrix is itself an iterable, iterating in a row-major order over all values:
-```
+```js
 import * as Matrix from 't-matrix';
 let t=0;
 for(let v of Matrix.magic(3)) t+=v;
@@ -175,7 +175,7 @@ console.log('Total of a 3x3 magic square = '+t);
 //Total of a 3x3 magic square = 45
 ```
 There are also helper functions, [Matrix.rows](#rows) and [Matrix.cols](#cols), to iterate over rows and columns:
-```
+```js
 import * as Matrix from 't-matrix';
 const tots=[];
 for(let r of Matrix.rows(Matrix.magic(3))) tots.push(Matrix.sum(r));
@@ -183,7 +183,7 @@ console.log('Row sums = '+tots);
 //Row sums = 15,15,15
 ```
 These functions can be mixed-in to become methods
-```
+```js
 import * as Matrix from 't-matrix';
 Matrix.mixin(Matrix.cols);
 const tots=[];
@@ -239,12 +239,12 @@ parameters and that string will be used as the name.  As well as adding in-built
 of custom methods.
 
 For example, to add in the arithmetic operations above, have a file which configures `t-matrix` how you want it:
-```
+```js
 import {mixin, sum, mult, div, ldiv} from 't-matrix';
 mixin(sum,mult,div,ldiv);
 ```
 then from elsewhere in your code:
-```
+```js
 import * as Matrix from 't-matrix';
 //Solve A*x = B
 const A = Matrix.magic(3);
@@ -255,7 +255,7 @@ console.log(x.toJSON);
 ```
 
 Alternatively, to add a custom method:
-```
+```js
 import * as Matrix from 't-matrix';
 Matrix.mixin('sqrt',m=>m.map(Math.sqrt));
 console.log(Matrix.from([[1,4,9]]).sqrt().toJSON());
@@ -263,7 +263,7 @@ console.log(Matrix.from([[1,4,9]]).sqrt().toJSON());
 ```
 
 However, if all of this is too much pain, and you really don't care about tree-shaking, or are only every going to run your code in nodejs, then:
-```
+```js
 import * as Matrix from 't-matrix';
 Matrix.mixin(Matrix);
 ```
@@ -321,8 +321,104 @@ export function magic(n){
   }
 }
 ```
+## Doubly-even-order magic squares
 
+The matlab code for the doubly-even algorithm is:
+```matlab
+[I,J] = ndgrid(1:n);
+M = reshape(1:n^2,n,n)';
+K = fix(mod(I,4)/2) == fix(mod(J,4)/2);
+M(K) = n^2+1 - M(K);
+```
+The _I_ and _J_ matrices are the same.  The calculation of the initial matrix _M_ is slightly different as _t-matrix_ uses row-major order whereas Matlab assumes column-major order.
+All this means, however, is that we don't need the transpose:
+```js
+const [I,J] = grid([1,':',n]);
+const M = reshape(from([1,':',n*n]),n,n);
+```
+The final step is done slightly differently as _t-matrix_ does not (yet) have logical matrix addressing, however there
+is a useful element-wise mapping function which can do the job for us, [Matrix.mapMany](#mapMany), which takes as input
+any number of matrices or scalar values and then creates a new matrix through an element-wise mapping:
+```js
+return mapMany(I,J,M, (i,j,m) => (i%4)>>1===(j%4)>>1 ? n*n+1-m : m);
+```
+The expanded code now looks like this:
+```js
+import {grid, sum, product, mapMany, from} from 't-matrix';
+export function magic(n){
+  if (n%2){
+    const [I,J] = grid([1,':',n]);
+    const A = sum(I, J, (n-3)>>1).map(v => v%n);
+    const B = sum(I, product(2,J), -2).map(v => v%n);
+    return sum(product(n,A), B, 1);
+  } else if (n%4===0) {
+    const [I,J] = grid([1,':',n]);
+    const M = reshape(from([1,':',n*n]),n,n);
+    return mapMany(I,J,M, (i,j,m) => (i%4)>>1===(j%4)>>1 ? n*n+1-m : m);
+  }
+}
+```
 
+## Singly-even-order magic squares
+This is the trickiest case of the three.  In essence the method is to repeat odd-order magic squares in the four quarters
+of the matrix with the addition of [0,2;3,1]*n²/4.  This gets the rows adding up correctly.  To get the columns working some swapping of values is required.
+```matlab
+  p = n/2;   %p is odd.
+  M = oddOrderMagicSquare(p);
+  M = [M M+2*p^2; M+3*p^2 M+p^2];
+  i = (1:p)';
+  k = (n-2)/4;
+  j = [1:k (n-k+2):n];
+  M([i; i+p],j) = M([i+p; i],j);
+  i = k+1;
+  j = [1 i];
+  M([i; i+p],j) = M([i+p; i],j);
+```
+Forming the M matrix on the third line needs the introduction of another new _t-matrix_ method, [Matrix.mcat](#mcat).
+This could be done using separate horizontal and vertical concatenation ([hcat](#hcat) and [vcat](#vcat)), however _mcat_
+makes this job a lot simpler:
+```js
+const p=size>>1;
+let M=magic(p);
+M=mcat([[      M     , sum(M,2*p*p)],
+        [sum(M,3*p*p),  sum(M,p*p) ]]);
+```
+We need to be careful in the matrix addressing with the next two steps as matlab uses a 1-based index, whereas _t-matrix_
+(like JavaScript) is 0-based.  Note also that the [i; i+p] is just addressing the whole range.  Similarly [i+p; i] is
+the whole range with a half-way circular shift.  Here the flexibility of [Range](#Range) indexing really helps:
+```js
+let k=(n-2)>>2, j=[':',k-1,size+1-k,':',size-1];
+M.set(':', j, M.get([p,':',':',p-1], j));
+j=[0,k];
+M.set([k,k+p], j, M.get([k+p,k], j));
+return M;
+```
+So, the final code for generating magic squares:
+```js
+import {grid, sum, product, mapMany, from, mcat, reshape} from 't-matrix';
+export function magic(n){
+  if (n%2){
+    const [I,J] = grid([1,':',n]);
+    const A = sum(I, J, (n-3)>>1).map(v => v%n);
+    const B = sum(I, product(2,J), -2).map(v => v%n);
+    return sum(product(n,A), B, 1);
+  }
+  if (n%4===0) {
+    const [I,J] = grid([1,':',n]);
+    const M = reshape(from([1,':',n*n]),n,n);
+    return mapMany(I,J,M, (i,j,m) => (i%4)>>1===(j%4)>>1 ? n*n+1-m : m);
+  }
+  const p=n>>1;
+  let M=magic(p);
+  M=mcat([[      M     , sum(M,2*p*p)],
+          [sum(M,3*p*p),  sum(M,p*p) ]]);
+  let k=(n-2)>>2, j=[':',k-1,n+1-k,':',n-1];
+  M.set(':', j, M.get([p,':',':',p-1], j));
+  j=[0,k];
+  M.set([k,k+p], j, M.get([k+p,k], j));
+  return M;
+}
+```
 
 # <a id="api"></a> API
 ## Matrix Creation
@@ -400,6 +496,9 @@ export function magic(n){
 </dd>
 <dt>Matrix.<a href="#trace">trace(matrix)</a> ⇒ <code>Number</code></dt>
     <dd><p>Returns the trace of a matrix (the sum of the diagonal elements)</p>
+</dd>
+<dt>Matrix.<a href="#mapMany">mapMany(...matrices, fn)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Creates a new matrix with the results of calling a provided function on every element in the supplied set of matrices.</p>
 </dd>
 <dt>Matrix.<a href="#mult">mult(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Performs matrix multiplication on a list of matrices and/or scalars</p>
@@ -1017,6 +1116,23 @@ import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.mag
 | --- |
 | matrix | 
 
+<br>
+  <a name="mapMany"></a>
+
+  ## Matrix.mapMany(...matrices, fn) ⇒ [<code>Matrix</code>](#Matrix)
+  Creates a new matrix with the results of calling a provided function on every element in the supplied set of matrices.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> | 
+| fn | <code>function</code> | 
+
+**Example**  
+```js
+//Calculate a gaussian function in 2D for a range -3:0.1:3 in x and y.import * as Matrix from 't-matrix';const [Y,X]=Matrix.grid([-3,'::',0.1,3]);const gauss=Matrix.mapMany(Y,X,(y,x)=>Math.exp(-Math.pow(x+y,2)));
+```
 <br>
   <a name="mult"></a>
 

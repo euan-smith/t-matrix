@@ -6,7 +6,7 @@
 export function MatrixError(message){
   const instance = Error.call(this, message);
   instance.name = "MatrixError";
-  instance.message=message || "";
+  instance.message = message;
   return instance;
 }
 MatrixError.prototype = Object.create(Error.prototype, {
