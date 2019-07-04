@@ -3,6 +3,7 @@
 - [Aims](#aims)
 - [Status](#status)
   - [Roadmap](#roadmap)
+- [Installation](#installation)
 - [Example Usage](#example-usage)
 - [Guide](#guide)
   - [Creating Matrices](#guide-creating)
@@ -65,21 +66,27 @@ The current plan for future versions. Obviously the version numbers further out 
   - eigen, SVD
   - fft and supporting methods
   - sort, unique
-# <a id="example-usage"></a> example usage
+# <a id="installation"></a> Installation
+```
+npm install t-matrix -S
+```
+
+# <a id="example-usage"></a> Example usage
 
 ```js
 import * as Matrix from 't-matrix';
 
-//create a 4x4 square matrix
-const m=Matrix.from([[1,2,3,4],[2,3,4,1],[3,4,1,2],[4,1,2,3]]);
+//create a 5x5 magic square matrix
+const M=Matrix.magic(5);
 
 //and a target vector (column matrix)
-const v=Matrix.vect([2,-2,2,-2])
+const v=Matrix.vect([65,65,65,65,65])
+//the expected sum of any row of a magic square is (n^3 + n)/2, which for n=5 is 65.
 
 //then solve v = M * a by rearranging to M \ v = a
-const a=Matrix.ldiv(m,v);
+const a=Matrix.ldiv(M,v);
 
-//the answer should be [-1,1,-1,1];
+//the answer should be [1,1,1,1,1] (plus some roundoff);
 console.log([...a]);
 ```
 
@@ -387,7 +394,7 @@ We need to be careful in the matrix addressing with the next two steps as matlab
 (like JavaScript) is 0-based.  Note also that the [i; i+p] is just addressing the whole range.  Similarly [i+p; i] is
 the whole range with a half-way circular shift.  Here the flexibility of [Range](#Range) indexing really helps:
 ```js
-let k=(n-2)>>2, j=[':',k-1,size+1-k,':',size-1];
+let k=(n-2)>>2, j=[':',k-1,size+1-k,':'];
 M.set(':', j, M.get([p,':',':',p-1], j));
 j=[0,k];
 M.set([k,k+p], j, M.get([k+p,k], j));
@@ -396,6 +403,7 @@ return M;
 So, the final code for generating magic squares:
 ```js
 import {grid, sum, product, mapMany, from, mcat, reshape} from 't-matrix';
+//Valid for any integer n of 3 or greater
 export function magic(n){
   if (n%2){
     const [I,J] = grid([1,':',n]);
@@ -419,6 +427,7 @@ export function magic(n){
   return M;
 }
 ```
+
 
 # <a id="api"></a> API
 ## Matrix Creation
