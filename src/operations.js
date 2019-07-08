@@ -206,7 +206,7 @@ function *matchSize(m,h,w){
  * @example
  * import * as Matrix from 't-matrix';
  * const mag = Matrix.magic(3);
- * console.log(mag.mult(mag.inv()).toJSON());//a 3x3 identity matrix (plus some round-off error)
+ * console.log(Matrix.mult(mag,Matrix.inv(mag)).toJSON());//a 3x3 identity matrix (plus some round-off error)
  */
 export function mult(...matrices){
   let m,h,k,s=1;

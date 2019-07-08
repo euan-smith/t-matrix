@@ -1156,7 +1156,7 @@ Performs matrix multiplication on a list of matrices and/or scalars
 
 **Example**  
 ```js
-import * as Matrix from 't-matrix';const mag = Matrix.magic(3);console.log(mag.mult(mag.inv()).toJSON());//a 3x3 identity matrix (plus some round-off error)
+import * as Matrix from 't-matrix';const mag = Matrix.magic(3);console.log(Matrix.mult(mag,Matrix.inv(mag)).toJSON());//a 3x3 identity matrix (plus some round-off error)
 ```
 <br>
 <a name="det"></a>
