@@ -71,6 +71,9 @@ The current plan for future versions. Obviously the version numbers further out 
 npm install t-matrix -S
 ```
 
+Throughout the examples given I will use ES6 module syntax.  If you prefer CommonJS then just use `const Matrix = require('t-matrix');`
+in place of the `import` statement.  If you do want to use ES6 modules then you may find it useful to try [_reify_](https://www.npmjs.com/package/reify).
+
 # <a id="example-usage"></a> Example usage
 
 ```js
