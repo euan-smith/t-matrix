@@ -437,18 +437,18 @@ export function magic(n){
 {{>global-index-dl kind="class" title="Classes" ~}}
 {{>global-index-dl kind="typedef" title="Typedefs" ~}}
 {{#orphans~}}
-  <a name="{{{anchorName}}}"></a>
+<a name="{{{anchorName}}}"></a>
 
-  {{>heading-indent~}}
-  {{#if (equal name "Matrix")}}{{else}}{{#if (equal name "Range")}}{{else}}Matrix.{{/if~}}{{/if~}}
-  {{>sig-name}}
+{{>heading-indent~}}
+{{#if (equal name "Matrix")}}{{else}}{{#if (equal name "Range")}}{{else}}Matrix.{{/if~}}{{/if~}}
+{{>sig-name}}
 
-  {{>body}}
-  {{>member-index~}}
-  {{>separator~}}
-  {{#children inherited=undefined ~}}
-    {{>docs~}}
-  {{/children~}}
+{{>body}}
+{{>member-index~}}
+{{>separator~}}
+{{#children inherited=undefined ~}}
+{{>docs~}}
+{{/children~}}
 {{/orphans~}}
 
 * * *

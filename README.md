@@ -567,11 +567,11 @@ export function magic(n){
 
 <a name="Matrix"></a>
 
-  ## Matrix
-  *The core matrix class*
+## Matrix
+*The core matrix class*
 
 <br>
-  
+
 * [Matrix](#Matrix)
     * [new Matrix()](#new_Matrix_new)
     * [.size](#Matrix+size) ⇒ <code>Array.&lt;Number&gt;</code>
@@ -583,13 +583,13 @@ export function magic(n){
     * [.map(fn)](#Matrix+map) ⇒ [<code>Matrix</code>](#Matrix)
     * [.toJSON()](#Matrix+toJSON) ⇒ <code>Array.Array.Number</code>
 
-    <a name="new_Matrix_new"></a>
+<a name="new_Matrix_new"></a>
 
 ### new Matrix()
 This class is not intended to be directly created by a user of this library, rather it is returnedby the various creation functions (such as [zeros](#zeros), [eye](#eye) or [from](#from)) and as a returned result fromvarious operation and manipulation methods and functions.
 
 <br>
-    <a name="Matrix+size"></a>
+<a name="Matrix+size"></a>
 
 ### matrix.size ⇒ <code>Array.&lt;Number&gt;</code>
 The matrix height and width in an array.
@@ -599,7 +599,7 @@ The matrix height and width in an array.
 const m=Matrix.from([1,2,3]);console.log(m.size);//[3,1]
 ```
 <br>
-    <a name="Matrix+t"></a>
+<a name="Matrix+t"></a>
 
 ### matrix.t ⇒ [<code>Matrix</code>](#Matrix)
 The transpose of the matrix
@@ -609,7 +609,7 @@ The transpose of the matrix
 const m=Matrix.from([[1,2],[3,4]]);console.log(m.t.toJSON()); // [[1,3],[2,4]]
 ```
 <br>
-    <a name="Matrix+[Symbol-iterator]"></a>
+<a name="Matrix+[Symbol-iterator]"></a>
 
 ### matrix\[Symbol\.iterator\]() ⇒ <code>IterableIterator.&lt;Number&gt;</code>
 Iterates through the matrix data in row-major order
@@ -629,7 +629,7 @@ const m=Matrix.from([[1,2,3],[4,5,6]]);
 console.log([...m]); //=> [1,2,3,4,5,6];
 ```
 <br>
-    <a name="Matrix+get"></a>
+<a name="Matrix+get"></a>
 
 ### matrix.get(rows, cols) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
 Return a value or subset of a matrix.  The matrix subset is a view into the current matrix.
@@ -645,7 +645,7 @@ Return a value or subset of a matrix.  The matrix subset is a view into the curr
 const m=Matrix.from([[1,2],[3,4]]);//Specify single indices to return a valuem.get(0,0) //1//The same indices in an array will return a matrixm.get([0],[0]) //Matrix [1]//A general [Range](#Range) can be specified.m.get(':',0) //Matrix [1;3]m.get(':',':') //The original matrix.m.get(['::',-1],':') //Return a matrix flipped vertically//Any sub-matrix returned is a view into the source matrix.const a=zeros(4), b=a.get([1,2],[1,2]);b.set(2);console.log(a.toJSON()) //[[0,0,0,0], [0,2,2,0], [0,2,2,0], [0,0,0,0]]
 ```
 <br>
-    <a name="Matrix+set"></a>
+<a name="Matrix+set"></a>
 
 ### matrix.set([rows], [cols], val) ⇒ [<code>Matrix</code>](#Matrix)
 Set a value or range of values of the matrix
@@ -662,7 +662,7 @@ Set a value or range of values of the matrix
 const m=Matrix.zeros(3);//Set a single valuem.set(1,1,5) //[0,0,0; 0,5,0; 0,0,0]//Set a range to a single valuem.set(0,':',3) //[3,3,3; 0,5,0; 0,0,0]//The value can also be a matrix of the matching size, or an array which resolves to such.m.set(2,':',[[7,8,6]]) //[3,3,3; 0,5,0; 7,8,6]//If val is an array, [from](#from) will be used to convert it to a matrix.//If no row and column indices are provided, the value will apply to the whole matrixm.set(1) //[1,1,1; 1,1,1; 1,1,1]
 ```
 <br>
-    <a name="Matrix+clone"></a>
+<a name="Matrix+clone"></a>
 
 ### matrix.clone([rows], [cols]) ⇒ [<code>Matrix</code>](#Matrix)
 Clone the current matrix, or a subset of the current matrix if rows and columns are specified.
@@ -674,7 +674,7 @@ Clone the current matrix, or a subset of the current matrix if rows and columns 
 | [cols] | [<code>Range</code>](#Range) \| <code>Number</code> | If specified, the columns to clone |
 
 <br>
-    <a name="Matrix+map"></a>
+<a name="Matrix+map"></a>
 
 ### matrix.map(fn) ⇒ [<code>Matrix</code>](#Matrix)
 Creates a new matrix with the results of calling a provided function on every element in the supplied matrix.
@@ -689,7 +689,7 @@ Creates a new matrix with the results of calling a provided function on every el
 const m=Matrix.from([0,':',5]).map(v=>Math.pow(2,v));console.log([...m]); //[1,2,4,8,16,32]
 ```
 <br>
-    <a name="Matrix+toJSON"></a>
+<a name="Matrix+toJSON"></a>
 
 ### matrix.toJSON() ⇒ <code>Array.Array.Number</code>
 Convert the matrix to an array of number arrays.
@@ -701,8 +701,8 @@ const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJS
 <br>
 <a name="rows"></a>
 
-  ## Matrix.rows(matrix) ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code>
-  Iterate over the rows.
+## Matrix.rows(matrix) ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code>
+Iterate over the rows.
 
 
 | Param | Type |
@@ -714,10 +714,10 @@ const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJS
 //Log each matrix rowfor(let row of Matrix.rows(matrix)){  console.log(row);}
 ```
 <br>
-  <a name="cols"></a>
+<a name="cols"></a>
 
-  ## Matrix.cols(matrix) ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code>
-  Iterate over the columns.
+## Matrix.cols(matrix) ⇒ <code>IterableIterator.&lt;Array.Number&gt;</code>
+Iterate over the columns.
 
 
 | Param | Type |
@@ -729,10 +729,10 @@ const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJS
 //Log the range of each columnfor(let col of Matrix.cols(matrix)){  console.log(`Range [${Math.min(...col)}|${Math.max(...col)}]`);}
 ```
 <br>
-  <a name="isMatrix"></a>
+<a name="isMatrix"></a>
 
-  ## Matrix.isMatrix(val) ⇒ <code>boolean</code>
-  Tests if a value is an instance of a Matrix
+## Matrix.isMatrix(val) ⇒ <code>boolean</code>
+Tests if a value is an instance of a Matrix
 
 **Returns**: <code>boolean</code> - 'true' if `val` is an instance of Matrix, 'false' otherwise.  
 
@@ -741,10 +741,10 @@ const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJS
 | val | <code>\*</code> | The value to test. |
 
 <br>
-  <a name="mixin"></a>
+<a name="mixin"></a>
 
-  ## Matrix.mixin(...methods)
-  Add static functions of the form `fn(matrix,...args)` to the [Matrix](#Matrix) prototype as `matrix.fn(args)`
+## Matrix.mixin(...methods)
+Add static functions of the form `fn(matrix,...args)` to the [Matrix](#Matrix) prototype as `matrix.fn(args)`
 
 
 | Param | Type | Description |
@@ -784,20 +784,20 @@ Matrix.mixin(Matrix);
 console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,10,12],[14,16,18]]
 ```
 <br>
-  <a name="Range"></a>
+<a name="Range"></a>
 
-  ## Range : <code>Array.&lt;(Number\|String)&gt;</code> \| <code>Number</code> \| <code>String</code>
-  A Specification of indices of the row or column of a matrix, or a range of array values.
+## Range : <code>Array.&lt;(Number\|String)&gt;</code> \| <code>Number</code> \| <code>String</code>
+A Specification of indices of the row or column of a matrix, or a range of array values.
 
 **Example**  
 ```js
 //An arbitrary sequence of indices or numbers can be expressed[1,2,3] //=> expands to the same list of indices: 1,2,3[-1,-2,-3] //=> -1,-2,-3//If specifying indices, negative numbers index from the end of an array.[-1,-2,-3] //for an array of length 10, => 9,8,7//Ranges can be expressed with the special character ':'[1,':',5] //=> 1,2,3,4,5//Therefore to express the full range[0,':',-1] // for length 10, => 0,1,2,3,4,5,6,7,8,9//When used at the start of a range definition, the range start is assumed[':',-1] // equivalent to [0,':',-1]//When used at the end of a range definition, the range end is assumed[':'] // equivalent to [0,':'] and [':',-1] and [0,':',-1]//Ranges with a larger step can be expressed using '::'[1,'::',2,5] //=> 1,3,5//Similar to ':' start and end limits can be implied['::',2] // equivalent to [0,'::',2,-1]//Negative steps can also be used[5,'::',-2,1] //=> 5,3,1//Similarly end limits can be implied['::',-1] //=> [-1,'::',-1,0] which for length 10 => 9,8,7,6,5,4,3,2,1,0//However if the step size is missing, an error will be thrown['::'] //will throw an error when used//Many ranges can be used in one definition[5,':',-1,0,':',4] //for length 10=> 5,6,7,8,9,0,1,2,3,4//Wherever a range definition is truncated by a second definition, end points are implied[5,':',':',4] //equivalent to [5,':',-1,0,':',4]//The same is true of the '::' operator[4,'::',-1,'::',-1,5] // for length 10=>4,3,2,1,0,9,8,7,6,5//Where there is only one entry, this can be expressed outside of an array4 //equivalent to [4]':' //specifies the full range
 ```
 <br>
-  <a name="from"></a>
+<a name="from"></a>
 
-  ## Matrix.from(data) ⇒ [<code>Matrix</code>](#Matrix)
-  Create a matrix from the supplied data.
+## Matrix.from(data) ⇒ [<code>Matrix</code>](#Matrix)
+Create a matrix from the supplied data.
 
 **Category**: creation  
 
@@ -826,23 +826,10 @@ const m = Matrix.from([[1,2],[3,4]]);
 Matrix.from(m) === m; //true
 ```
 <br>
-  <a name="zeros"></a>
+<a name="zeros"></a>
 
-  ## Matrix.zeros(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
-  creates a new matrix filled with zeros
-
-**Category**: creation  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| rows | <code>number</code> | number of rows |
-| [cols] | <code>number</code> | number of columns |
-
-<br>
-  <a name="ones"></a>
-
-  ## Matrix.ones(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
-  creates a new matrix filled with ones
+## Matrix.zeros(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+creates a new matrix filled with zeros
 
 **Category**: creation  
 
@@ -852,10 +839,23 @@ Matrix.from(m) === m; //true
 | [cols] | <code>number</code> | number of columns |
 
 <br>
-  <a name="eye"></a>
+<a name="ones"></a>
 
-  ## Matrix.eye(n) ⇒ [<code>Matrix</code>](#Matrix)
-  creates a new [identity matrix](https://en.wikipedia.org/wiki/Identity_matrix) of size n
+## Matrix.ones(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+creates a new matrix filled with ones
+
+**Category**: creation  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| rows | <code>number</code> | number of rows |
+| [cols] | <code>number</code> | number of columns |
+
+<br>
+<a name="eye"></a>
+
+## Matrix.eye(n) ⇒ [<code>Matrix</code>](#Matrix)
+creates a new [identity matrix](https://en.wikipedia.org/wiki/Identity_matrix) of size n
 
 **Category**: creation  
 
@@ -864,10 +864,10 @@ Matrix.from(m) === m; //true
 | n | <code>number</code> | number of rows and columns |
 
 <br>
-  <a name="rand"></a>
+<a name="rand"></a>
 
-  ## Matrix.rand(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
-  creates a new matrix filled with random values [0|1)
+## Matrix.rand(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
+creates a new matrix filled with random values [0|1)
 
 **Category**: creation  
 
@@ -877,10 +877,10 @@ Matrix.from(m) === m; //true
 | [cols] | <code>number</code> | number of columns |
 
 <br>
-  <a name="magic"></a>
+<a name="magic"></a>
 
-  ## Matrix.magic(size) ⇒ [<code>Matrix</code>](#Matrix)
-  Creates a magic square of the specified size
+## Matrix.magic(size) ⇒ [<code>Matrix</code>](#Matrix)
+Creates a magic square of the specified size
 
 **Category**: creation  
 
@@ -889,10 +889,10 @@ Matrix.from(m) === m; //true
 | size | <code>Number</code> | The size of the magic square. Must be 1 or an integer 3 or greater. |
 
 <br>
-  <a name="diag"></a>
+<a name="diag"></a>
 
-  ## Matrix.diag(matrix, [set]) ⇒ [<code>Matrix</code>](#Matrix)
-  gets, sets or creates diagonal matrices
+## Matrix.diag(matrix, [set]) ⇒ [<code>Matrix</code>](#Matrix)
+gets, sets or creates diagonal matrices
 
 **Category**: creationAndManipulation  
 
@@ -920,10 +920,10 @@ console.log(mDiag.toJSON());//[[1,0,0,0],[0,2,0,0],[0,0,3,0],[0,0,0,4]]
 console.log(Matrix.diag([1,2,3,4]).toJSON());//returns the same as above
 ```
 <br>
-  <a name="mcat"></a>
+<a name="mcat"></a>
 
-  ## Matrix.mcat(array) ⇒ [<code>Matrix</code>](#Matrix)
-  *Concatenate matrices horizontally and vertically*
+## Matrix.mcat(array) ⇒ [<code>Matrix</code>](#Matrix)
+*Concatenate matrices horizontally and vertically*
 
 The matrices to be concatenated must be supplied as an array of arrays of matrices.  The inner arraysare concatenated horizontally and the outer arrays are concatenated vertically.
 
@@ -938,10 +938,10 @@ The matrices to be concatenated must be supplied as an array of arrays of matric
 const m = Matrix.mcat([[Matrix.ones(2),Matrix.zeros(2)],[Matrix.zeros(2),Matrix.ones(2)]]);console.log(m.toJSON()); //[[1,1,0,0],[1,1,0,0],[0,0,1,1],[0,0,1,1]]
 ```
 <br>
-  <a name="reshape"></a>
+<a name="reshape"></a>
 
-  ## Matrix.reshape(matrix, rows, cols) ⇒ [<code>Matrix</code>](#Matrix)
-  Reshape the matrix to the dimensions specified treating the matrix data in *row-major order*
+## Matrix.reshape(matrix, rows, cols) ⇒ [<code>Matrix</code>](#Matrix)
+Reshape the matrix to the dimensions specified treating the matrix data in *row-major order*
 
 **Category**: manipulation  
 
@@ -956,10 +956,10 @@ const m = Matrix.mcat([[Matrix.ones(2),Matrix.zeros(2)],[Matrix.zeros(2),Matrix.
 const m=Matrix.from([1,':',9]);const m2=Matrix.reshape(m,3,3);console.log(m2.toJSON()); //[[1,2,3],[4,5,6],[7,8,9]]//If reshape is used a lot to form new matrices, consider adding it to the matrix prototype with mixinMatrix.mixin(Matrix.reshape);console.log(Matrix.from([1,':',4]).reshape(2,2).toJSON()); // [[1,2],[3,4]]
 ```
 <br>
-  <a name="swapRows"></a>
+<a name="swapRows"></a>
 
-  ## Matrix.swapRows(matrix, rowsA, rowsB) ⇒ [<code>Matrix</code>](#Matrix)
-  *Swap the rows of a matrix.*
+## Matrix.swapRows(matrix, rowsA, rowsB) ⇒ [<code>Matrix</code>](#Matrix)
+*Swap the rows of a matrix.*
 
 No data is actually copied here, so this is a very efficient operation.Two lists of indices are supplied, and these can both be [Range](#Range) types.  The pairs of rows from rowsA and rowsBare then swapped in order from the start of each list.  If more indices are specified in one list than the other thenthese additional indices are ignored.This function can be added to the Matrix prototype as a method using Matrix.[mixin](#mixin), it returns the matrix object for chaining.
 
@@ -972,10 +972,10 @@ No data is actually copied here, so this is a very efficient operation.Two list
 | rowsB | [<code>Range</code>](#Range) \| <code>Number</code> | The second list of rows to swap, must be the same length as rowsA |
 
 <br>
-  <a name="swapCols"></a>
+<a name="swapCols"></a>
 
-  ## Matrix.swapCols(matrix, colsA, colsB) ⇒ [<code>Matrix</code>](#Matrix)
-  *Swap the columns of a matrix.*
+## Matrix.swapCols(matrix, colsA, colsB) ⇒ [<code>Matrix</code>](#Matrix)
+*Swap the columns of a matrix.*
 
 No data is actually copied here, so this is a very efficient operation.Two lists of indices are supplied, and these can both be [Range](#Range) types.  The pairs of columns from colsA and colsBare then swapped in order from the start of each list.  If more indices are specified in one list than the other thenthese additional indices are ignored.This function can be added to the Matrix prototype as a method using Matrix.[mixin](#mixin), it returns the matrix object for chaining.
 
@@ -988,10 +988,10 @@ No data is actually copied here, so this is a very efficient operation.Two list
 | colsB | [<code>Range</code>](#Range) \| <code>Number</code> | The second list of columns to swap, must be the same length as rowsA |
 
 <br>
-  <a name="minor"></a>
+<a name="minor"></a>
 
-  ## Matrix.minor(matrix, row, col) ⇒ [<code>Matrix</code>](#Matrix)
-  *Get the minor of a matrix*
+## Matrix.minor(matrix, row, col) ⇒ [<code>Matrix</code>](#Matrix)
+*Get the minor of a matrix*
 
 The minor of a matrix is the matrix with the specified row and column removed.  The matrix returned by this functionis a new matrix, but references the same data.  No data is copied so this is a fast operation.
 
@@ -1004,10 +1004,10 @@ The minor of a matrix is the matrix with the specified row and column removed.  
 | col | <code>Number</code> | 
 
 <br>
-  <a name="repmat"></a>
+<a name="repmat"></a>
 
-  ## Matrix.repmat(matrix, vRepeat, hRepeat) ⇒ [<code>Matrix</code>](#Matrix)
-  Repeat the supplied matrix the specified number of times horizontally and vertically.
+## Matrix.repmat(matrix, vRepeat, hRepeat) ⇒ [<code>Matrix</code>](#Matrix)
+Repeat the supplied matrix the specified number of times horizontally and vertically.
 
 **Category**: manipulation  
 
@@ -1018,22 +1018,10 @@ The minor of a matrix is the matrix with the specified row and column removed.  
 | hRepeat | <code>Number</code> | 
 
 <br>
-  <a name="vcat"></a>
+<a name="vcat"></a>
 
-  ## Matrix.vcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
-  Vertically concatenate matrices together
-
-**Category**: manipulation  
-
-| Param | Type |
-| --- | --- |
-| matrices | [<code>Matrix</code>](#Matrix) | 
-
-<br>
-  <a name="hcat"></a>
-
-  ## Matrix.hcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
-  Horizontally concatenate matrices together
+## Matrix.vcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
+Vertically concatenate matrices together
 
 **Category**: manipulation  
 
@@ -1042,10 +1030,22 @@ The minor of a matrix is the matrix with the specified row and column removed.  
 | matrices | [<code>Matrix</code>](#Matrix) | 
 
 <br>
-  <a name="sum"></a>
+<a name="hcat"></a>
 
-  ## Matrix.sum(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  *Return the sum of the matrix in the direction specified or the element-wise sum of the set of matrices.*
+## Matrix.hcat(matrices) ⇒ [<code>Matrix</code>](#Matrix)
+Horizontally concatenate matrices together
+
+**Category**: manipulation  
+
+| Param | Type |
+| --- | --- |
+| matrices | [<code>Matrix</code>](#Matrix) | 
+
+<br>
+<a name="sum"></a>
+
+## Matrix.sum(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+*Return the sum of the matrix in the direction specified or the element-wise sum of the set of matrices.*
 
 `Matrix.sum(m)` or `m.sum()` will sum all the values of a matrix, returning a number.`Matrix.sum(m,null,1)` or `m.sum(null,1)` will sum the matrix columns, returning a row matrix.`Matrix.sum(m,null,2)` or `m.sum(null,2)` will sum the matrix rows, returning a column matrix.`Matrix.sum(m1,m2,m3,...)` or `m1.sum(m2,m3,...)` will calculate an element-wise sum over all the matrices.For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and thesame column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.Arrays can also be provided and these will be converted to matrices using Matrix.[from](#from).  Row matrices will beadded to every row, column matrices to every column and scalar values to every matrix element.
 
@@ -1060,10 +1060,10 @@ The minor of a matrix is the matrix with the specified row and column removed.  
 import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).sum(null,1).toJSON());//[[15,15,15]];console.log(Matrix.magic(3).sum());//45console.log(Matrix.sum([[0,1,2]], [6,3,0], 1).toJSON());//[[7,8,9],[4,5,6],[1,2,3]];
 ```
 <br>
-  <a name="max"></a>
+<a name="max"></a>
 
-  ## Matrix.max(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  *Return the maximum of the matrix in the direction specified or the element-wise maximum of the set of matrices.*
+## Matrix.max(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+*Return the maximum of the matrix in the direction specified or the element-wise maximum of the set of matrices.*
 
 `Matrix.max(m)` or `m.max()` will return the max of all the values of a matrix.`Matrix.max(m,null,1)` or `m.max(null,1)` will return a row matrix containing max of each matrix column.`Matrix.max(m,null,2)` or `m.max(null,2)` will return a column matrix containing max of each matrix row.`Matrix.max(m1,m2,m3,...)` or `m1.max(m2,m3,...)` will calculate an element-wise max over all the matrices.For the last case, the supplied list of matrices must either have the same row count or a row count of 1, and thesame column count or a column count of 1.  This includes scalar values which implicitly are treated as 1x1 matrices.Arrays can also be provided and these will be converted to matrices using Matrix.[from](#from).  An element of thereturned matrix of a given row and column will be the max of that row and column of all regular matrices, of that row of allcolumn matrices, of that column of all row matrices and of all scalar values.
 
@@ -1078,10 +1078,10 @@ import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.mag
 import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[8,9,7]];console.log(Matrix.magic(3).max());//9console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[6,6,6],[3,3,3],[1,1,2];
 ```
 <br>
-  <a name="min"></a>
+<a name="min"></a>
 
-  ## Matrix.min(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  *Return the minimum of the matrix in the direction specified or the element-wise minimum of the set of matrices.*
+## Matrix.min(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+*Return the minimum of the matrix in the direction specified or the element-wise minimum of the set of matrices.*
 
 Works the same way as other similar operations.  See Matrix.[max](#max) for more details.
 
@@ -1096,10 +1096,10 @@ Works the same way as other similar operations.  See Matrix.[max](#max) for more
 import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).max(null,1).toJSON());//[[3,1,2]];console.log(Matrix.magic(3).max());//1console.log(Matrix.max([[0,1,2]], [6,3,0], 1).toJSON());//[[0,1,1],[0,1,1],[0,0,0];
 ```
 <br>
-  <a name="product"></a>
+<a name="product"></a>
 
-  ## Matrix.product(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
-  *Return the product of the matrix values in the direction specified or the element-wise product of the set of matrices.*
+## Matrix.product(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+*Return the product of the matrix values in the direction specified or the element-wise product of the set of matrices.*
 
 Works the same way as other similar operations.  See Matrix.[sum](#sum) for more details.
 
@@ -1114,10 +1114,10 @@ Works the same way as other similar operations.  See Matrix.[sum](#sum) for more
 import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.magic(3).product(null,1).toJSON());//[[96,45,84]];console.log(Matrix.magic(3).product());//362880console.log(Matrix.product([[0,1,2]], [6,3,0], 1).toJSON());//[[0,6,12],[0,3,6],[0,0,0]];
 ```
 <br>
-  <a name="trace"></a>
+<a name="trace"></a>
 
-  ## Matrix.trace(matrix) ⇒ <code>Number</code>
-  Returns the trace of a matrix (the sum of the diagonal elements)
+## Matrix.trace(matrix) ⇒ <code>Number</code>
+Returns the trace of a matrix (the sum of the diagonal elements)
 
 **Category**: operation  
 
@@ -1126,10 +1126,10 @@ import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.mag
 | matrix | 
 
 <br>
-  <a name="mapMany"></a>
+<a name="mapMany"></a>
 
-  ## Matrix.mapMany(...matrices, fn) ⇒ [<code>Matrix</code>](#Matrix)
-  Creates a new matrix with the results of calling a provided function on every element in the supplied set of matrices.
+## Matrix.mapMany(...matrices, fn) ⇒ [<code>Matrix</code>](#Matrix)
+Creates a new matrix with the results of calling a provided function on every element in the supplied set of matrices.
 
 **Category**: operation  
 
@@ -1143,10 +1143,10 @@ import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.mag
 //Calculate a gaussian function in 2D for a range -3:0.1:3 in x and y.import * as Matrix from 't-matrix';const [Y,X]=Matrix.grid([-3,'::',0.1,3]);const gauss=Matrix.mapMany(Y,X,(y,x)=>Math.exp(-Math.pow(x+y,2)));
 ```
 <br>
-  <a name="mult"></a>
+<a name="mult"></a>
 
-  ## Matrix.mult(...matrices) ⇒ [<code>Matrix</code>](#Matrix)
-  Performs matrix multiplication on a list of matrices and/or scalars
+## Matrix.mult(...matrices) ⇒ [<code>Matrix</code>](#Matrix)
+Performs matrix multiplication on a list of matrices and/or scalars
 
 **Category**: operation  
 
@@ -1159,10 +1159,10 @@ import * as Matrix from 't-matrix';Matrix.mixin(Matrix);console.log(Matrix.mag
 import * as Matrix from 't-matrix';const mag = Matrix.magic(3);console.log(mag.mult(mag.inv()).toJSON());//a 3x3 identity matrix (plus some round-off error)
 ```
 <br>
-  <a name="det"></a>
+<a name="det"></a>
 
-  ## Matrix.det(matrix) ⇒ <code>number</code>
-  *Calculate the determinant of a matrix.*
+## Matrix.det(matrix) ⇒ <code>number</code>
+*Calculate the determinant of a matrix.*
 
 The determinant is calculated by the standard naive algorithm which**scales really really badly** (the algorithm is O(n!)).  Once LU decomposition has been added to thelibrary then that will provide an O(n^3) method which is **much** faster.
 
@@ -1173,10 +1173,10 @@ The determinant is calculated by the standard naive algorithm which**scales rea
 | matrix | [<code>Matrix</code>](#Matrix) | 
 
 <br>
-  <a name="ldiv"></a>
+<a name="ldiv"></a>
 
-  ## Matrix.ldiv(A, B) ⇒ [<code>Matrix</code>](#Matrix)
-  *Left-division. Solve Ax = B for x.*
+## Matrix.ldiv(A, B) ⇒ [<code>Matrix</code>](#Matrix)
+*Left-division. Solve Ax = B for x.*
 
 Solve the system of linear equations Ax = B for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)this can be expressed as `A\B`.  Equivalent to using [Matrix.div](#div) where `Matrix.ldiv(A,B)` gives the same answer as `Matrix.div(B.t,A.t).t`.
 
@@ -1188,10 +1188,10 @@ Solve the system of linear equations Ax = B for x.  In [Matlab](https://www.math
 | B | [<code>Matrix</code>](#Matrix) | 
 
 <br>
-  <a name="div"></a>
+<a name="div"></a>
 
-  ## Matrix.div(A, B) ⇒ [<code>Matrix</code>](#Matrix)
-  *Right-division. Solve xB = A for x.*
+## Matrix.div(A, B) ⇒ [<code>Matrix</code>](#Matrix)
+*Right-division. Solve xB = A for x.*
 
 Solve the system of linear equations xB = A for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)this can be expressed as `A/B`.  Equivalent to using [Matrix.div](#ldiv) where `Matrix.div(A,B)` gives the same answer as `Matrix.ldiv(B.t,A.t).t`.
 
@@ -1203,22 +1203,10 @@ Solve the system of linear equations xB = A for x.  In [Matlab](https://www.math
 | B | [<code>Matrix</code>](#Matrix) | 
 
 <br>
-  <a name="inv"></a>
+<a name="inv"></a>
 
-  ## Matrix.inv(matrix) ⇒ [<code>Matrix</code>](#Matrix)
-  Calculate the inverse of a matrix.
-
-**Category**: operation  
-
-| Param | Type |
-| --- | --- |
-| matrix | [<code>Matrix</code>](#Matrix) | 
-
-<br>
-  <a name="abs"></a>
-
-  ## Matrix.abs(matrix) ⇒ [<code>Matrix</code>](#Matrix)
-  Return a new matrix containing the element-wise absolute values of the source matrix.
+## Matrix.inv(matrix) ⇒ [<code>Matrix</code>](#Matrix)
+Calculate the inverse of a matrix.
 
 **Category**: operation  
 
@@ -1227,10 +1215,22 @@ Solve the system of linear equations xB = A for x.  In [Matlab](https://www.math
 | matrix | [<code>Matrix</code>](#Matrix) | 
 
 <br>
-  <a name="grid"></a>
+<a name="abs"></a>
 
-  ## Matrix.grid(rows, [cols]) ⇒ [<code>Array.&lt;Matrix&gt;</code>](#Matrix)
-  *Generate a regular grid in 2D space*
+## Matrix.abs(matrix) ⇒ [<code>Matrix</code>](#Matrix)
+Return a new matrix containing the element-wise absolute values of the source matrix.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| matrix | [<code>Matrix</code>](#Matrix) | 
+
+<br>
+<a name="grid"></a>
+
+## Matrix.grid(rows, [cols]) ⇒ [<code>Array.&lt;Matrix&gt;</code>](#Matrix)
+*Generate a regular grid in 2D space*
 
 This is equivalent to the [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/) function [ndgrid](https://octave.sourceforge.io/octave/function/ndgrid.html) for the 2d case.Once the _rows_ and _cols_ parameters are expanded to arrays, the first returned matrix contains the _rows_ array as a column matrix repeated to match the size of the _cols_ array.Similarly the second returned matrix is the _cols_ array as a row matrix repeated to match the size of the _rows_ array.
 
@@ -1242,7 +1242,7 @@ This is equivalent to the [Matlab](https://www.mathworks.com/products/matlab.htm
 | [cols] | [<code>Range</code>](#Range) \| <code>Number</code> | If a number *n* this is converted to a range 0:n-1, otherwise a range is expected. |
 
 <br>
-  * * *
+* * *
 
 &copy; 2019 Euan Smith.
 API documentation generated with the help of [jsdoc2md](https://github.com/jsdoc2md/jsdoc-to-markdown).
