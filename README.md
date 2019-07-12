@@ -33,7 +33,7 @@
 - flexible, expressive, extendable.
 
 # <a id="status"></a> Status
-Nearing a V1 release.  Some changes from the initial version are breaking as all of the code has been rewritten.
+V1 now released.  Some changes from the initial 0.x versions are breaking as all of the code has been rewritten.
 ## <a id="roadmap"></a> Roadmap
 The current plan for future versions. Obviously the version numbers further out are more speculative.
 - v1.0
