@@ -41,7 +41,7 @@ export function magic(size){
 
 
 /**
- * @summary Concatenate matrices horizontally and vertically
+ * @summary Concatenates a nested array of matrices - horizontally and vertically as required.
  * @description The matrices to be concatenated must be supplied as an array of arrays of matrices.  The inner arrays
  * are concatenated horizontally and the outer arrays are concatenated vertically.
  * @param array {Array<Array<Matrix>>}

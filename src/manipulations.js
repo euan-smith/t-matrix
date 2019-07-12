@@ -113,7 +113,7 @@ swapCols[METHOD]='swapCols';
 
 
 /**
- * @summary Get the minor of a matrix
+ * @summary Return a matrix with the given row and column removed.
  * @description The minor of a matrix is the matrix with the specified row and column removed.  The matrix returned by this function
  * is a new matrix, but references the same data.  No data is copied so this is a fast operation.
  * @param matrix {Matrix}

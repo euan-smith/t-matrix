@@ -33,7 +33,7 @@ export const
   eye = n => diag(zeros(n),1),
 
   /**
-   * creates a new matrix filled with random values [0|1)
+   * creates a new matrix filled with random values between 0 inclusive and 1 exclusive
    * @function rand
    * @category creation
    * @param rows {number} number of rows

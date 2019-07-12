@@ -96,17 +96,16 @@ console.log([...a]);
 # <a id="guide"></a> Guide
 
 ## <a id="guide-creating"></a> Creating matrices
-There is no way to create a [Matrix](#Matrix) class instance directly (using a `new` operator), instead there are five
-standard (and one less standard) way of creating a matrix - [`zeros`](#zeros), [`ones`](#ones), [`eye`](#eye),
-[`rand`](#rand) and [`from`](#from) (the less standard one is [`magic`](#magic)).
+There is no way to create a [Matrix](#Matrix) class instance directly (using a `new` operator), instead there are a few
+standard functions which can be used to create matrices.
 
-[`zeros`](#zeros), [`ones`](#ones) and [`rand`](#rand) all have the same general form:
+[`zeros`](#zeros), [`ones`](#ones) and [`rand`](#rand) create matrices of arbitrary dimension initialised in different ways and all have the same general form:
 ```js
 import {zeros,ones,rand} from 't-matrix';
 const m1=zeros(3); //a 3x3 square matrix filled with zeros
 const m2=ones(4,5); //a matrix with 4 rows and 5 columns filled with ones
 const m3=rand([6,5]); //a matrix with 6 rows and 5 columns filled with random values in the range [0,1)
-const m4=zeros(m3.size); //a matrix the same size as m4 filled with zeros.
+const m4=zeros(m3.size); //a matrix the same size as m3 filled with zeros.
 ```
 
 [`eye`](#eye) and [`magic`](#magic) both take just one number which is the matrix size as both produce only square matrices:
@@ -128,13 +127,20 @@ const m8=Matrix.from([[1,2,3]]); //An array of arrays assumes row-major order, s
 const m9=Matrix.from([[1,2],[3,4]]); //and this is a 2x2 matrix.
 ```
 
-There is one final function which can be used to create matrices, but in this case is not purely a creation function, and that is [diag](#diag).
-To use it to create a matrix, provide a single parameter which is an array or a column or row matrix:
+[`diag`](#diag) can be used to create a diagonal matrix if provided with a single parameter which is an array or a column or row matrix:
 ```js
 import {diag} from 't-matrix';
 const m10=Matrix.diag([1,2,3,4]);//a 4x4 matrix with 1,2,3,4 on the diagonal.
 ```
-In addition [diag](#diag) can als be used to get or set the diagonal elements of a matrix.  See the API help for more details.
+In addition [`diag`](#diag) can als be used to get or set the diagonal elements of a matrix.  See the API help for more details.
+
+[`grid`](#grid) creates a pair of matrices filled with row and column indices:
+```js
+import {grid} from 't-matrix';
+const [m11,m12]=Matrix.grid(2,3);
+//m11 = [[0,0,0],[1,1,1]], m12 = [[0,1,2],[0,1,2]]
+```
+[`grid`](#grid) the grid parameters can also be [Ranges](#Range) and in general works in a similar way to the 2D case of `ndgrid` in [matlab](https://en.wikipedia.org/wiki/Division_%28mathematics%29#Left_and_right_division) or [octave](https://octave.sourceforge.io/octave/function/ndgrid.html).
 
 ## <a id="guide-matrix"></a> Matrix methods and properties
 
@@ -151,12 +157,12 @@ You can use the `.get` and `.set` methods to retrieve and assign single values, 
 value in row 0, column 1, and `m.set(0,1,5)` would set that same value to the number 5.  However `.get` and `.set` become
 much more useful when used with a [Range](#Range) to set the row and column indices.
 
-The was to define a range should be (at least somewhat) familiar to those used to [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/).
+The way to define a range should be (at least somewhat) familiar to those used to [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/).
 For example `m.set(0,':',1)` will set all the values in row 0 to 1, or `m.get([1,2],[':',4])` will return a matrix which
 contains all columns up to (and including) column 4 of rows 1 and 2 (a 2x5 matrix).
 
 An important point to note is that `.get`, when it returns a matrix, returns one which maps onto the same underlying data
-array as the original matrix - any changes to either matrix will be reflected in each other.  There are many more examples
+array as the original matrix - any changes to either matrix will be reflected in the other.  There are many more examples
 in the documentation for the [Range](#Range) data type and the [get](#Matrix+get) and [set](#Matrix+set) methods, however
 a couple of basic examples:
 ```js
@@ -176,7 +182,7 @@ is safe to use this to (for example) swap or rotate data within a matrix.
 
 To get or set the diagonal of a matrix see [diag](#diag).
 ### <a id="guide-matrix-iterables"></a> Iterables
-A matrix is itself an iterable, iterating in a row-major order over all values:
+A matrix is itself an iterable, iterating in [row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order) over all values:
 ```js
 import * as Matrix from 't-matrix';
 let t=0;
@@ -279,6 +285,10 @@ Matrix.mixin(Matrix);
 ```
 will just add every standard function which can be a method as a method.
 
+A final word of caution however.  If what you are building 'owns' the global namespace, the mixin as much as you like.  However
+if what is being built is a library, then it is recommended *not* to use the mixin function as it will modify the returned
+Matrix class for *all* libraries which use it.
+
 # <a id="tutorial"></a> Tutorial - making magic squares
 ## Introduction
 This will follow some of the code already in the library, however it is a useful example in how to express a matrix algorithm
@@ -305,11 +315,11 @@ const [I,J] = grid([1,':',n]);
 ```
 To get _A_ we are summing a number of terms:
 ```js
-const A = sum(I, J, (n-3)>>1);
+const A = sum(I, J, (n-3)/2);
 ```
 however that is incomplete as we need to `mod` all the values of _A_.  This can be done using a [.map](Matrix+map):
 ```js
-const A = sum(I, J, (n-3)>>1).map(v => v%n);
+const A = sum(I, J, (n-3)/2).map(v => v%n);
 ```
 We can similarly calculate _B_:
 ```js
@@ -325,7 +335,7 @@ import {grid, sum, product} from 't-matrix';
 export function magic(n){
   if (n%2){
     const [I,J] = grid([1,':',n]);
-    const A = sum(I, J, (n-3)>>1).map(v => v%n);
+    const A = sum(I, J, (n-3)/2).map(v => v%n);
     const B = sum(I, product(2,J), -2).map(v => v%n);
     return sum(product(n,A), B, 1);
   }
@@ -337,7 +347,7 @@ The matlab code for the doubly-even algorithm is:
 ```matlab
 [I,J] = ndgrid(1:n);
 M = reshape(1:n^2,n,n)';
-K = fix(mod(I,4)/2) == fix(mod(J,4)/2);
+K = floor(mod(I,4)/2) == floor(mod(J,4)/2);
 M(K) = n^2+1 - M(K);
 ```
 The _I_ and _J_ matrices are the same.  The calculation of the initial matrix _M_ is slightly different as _t-matrix_ uses row-major order whereas Matlab assumes column-major order.
@@ -350,7 +360,7 @@ The final step is done slightly differently as _t-matrix_ does not (yet) have lo
 is a useful element-wise mapping function which can do the job for us, [Matrix.mapMany](#mapMany), which takes as input
 any number of matrices or scalar values and then creates a new matrix through an element-wise mapping:
 ```js
-return mapMany(I,J,M, (i,j,m) => (i%4)>>1===(j%4)>>1 ? n*n+1-m : m);
+return mapMany(I,J,M, (i,j,m) => Math.floor((i%4)/2)===Math.floor((j%4)/2) ? n*n+1-m : m);
 ```
 The expanded code now looks like this:
 ```js
@@ -358,13 +368,13 @@ import {grid, sum, product, mapMany, from} from 't-matrix';
 export function magic(n){
   if (n%2){
     const [I,J] = grid([1,':',n]);
-    const A = sum(I, J, (n-3)>>1).map(v => v%n);
+    const A = sum(I, J, (n-3)/2).map(v => v%n);
     const B = sum(I, product(2,J), -2).map(v => v%n);
     return sum(product(n,A), B, 1);
   } else if (n%4===0) {
     const [I,J] = grid([1,':',n]);
     const M = reshape(from([1,':',n*n]),n,n);
-    return mapMany(I,J,M, (i,j,m) => (i%4)>>1===(j%4)>>1 ? n*n+1-m : m);
+    return mapMany(I,J,M, (i,j,m) => Math.floor((i%4)/2)===Math.floor((j%4)/2) ? n*n+1-m : m);
   }
 }
 ```
@@ -403,6 +413,12 @@ j=[0,k];
 M.set([k,k+p], j, M.get([k+p,k], j));
 return M;
 ```
+The [range](#Range) expressions benefit from a little explanation. `[p,':']` provides a range from `p` to the end of the
+dimension concerned (so if there were 10 rows, `[5,':']` would expand to `[5,6,7,8,9]`).  Similarly `[':',p-1]` will
+range from `0` up to and including `p-1`.  When taken back-to-back the two ranges will therefore extend to the end of
+the dimension and then again back from the start, so `[p,':',':',p-1]` for p=5 and a size of 10 would expand to `[5,6,7,8,9,0,1,2,3,4]`
+swapping the left and right halves of a full range.
+
 So, the final code for generating magic squares:
 ```js
 import {grid, sum, product, mapMany, from, mcat, reshape} from 't-matrix';
@@ -410,14 +426,14 @@ import {grid, sum, product, mapMany, from, mcat, reshape} from 't-matrix';
 export function magic(n){
   if (n%2){
     const [I,J] = grid([1,':',n]);
-    const A = sum(I, J, (n-3)>>1).map(v => v%n);
+    const A = sum(I, J, (n-3)/2).map(v => v%n);
     const B = sum(I, product(2,J), -2).map(v => v%n);
     return sum(product(n,A), B, 1);
   }
   if (n%4===0) {
     const [I,J] = grid([1,':',n]);
     const M = reshape(from([1,':',n*n]),n,n);
-    return mapMany(I,J,M, (i,j,m) => (i%4)>>1===(j%4)>>1 ? n*n+1-m : m);
+    return mapMany(I,J,M, (i,j,m) => Math.floor((i%4)/2)===Math.floor((j%4)/2) ? n*n+1-m : m);
   }
   const p=n>>1;
   let M=magic(p);
@@ -449,7 +465,7 @@ export function magic(n){
     <dd><p>creates a new <a href="https://en.wikipedia.org/wiki/Identity_matrix">identity matrix</a> of size n</p>
 </dd>
 <dt>Matrix.<a href="#rand">rand(rows, [cols])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>creates a new matrix filled with random values [0|1)</p>
+    <dd><p>creates a new matrix filled with random values between 0 inclusive and 1 exclusive</p>
 </dd>
 <dt>Matrix.<a href="#magic">magic(size)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Creates a magic square of the specified size</p>
@@ -463,7 +479,7 @@ export function magic(n){
 
   <dl>
 <dt>Matrix.<a href="#mcat">mcat(array)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>Concatenate matrices horizontally and vertically</p>
+    <dd><p>Concatenates a nested array of matrices - horizontally and vertically as required.</p>
 </dd>
 <dt>Matrix.<a href="#reshape">reshape(matrix, rows, cols)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Reshape the matrix to the dimensions specified treating the matrix data in <em>row-major order</em></p>
@@ -475,7 +491,7 @@ export function magic(n){
     <dd><p>Swap the columns of a matrix.</p>
 </dd>
 <dt>Matrix.<a href="#minor">minor(matrix, row, col)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>Get the minor of a matrix</p>
+    <dd><p>Return a matrix with the given row and column removed.</p>
 </dd>
 <dt>Matrix.<a href="#repmat">repmat(matrix, vRepeat, hRepeat)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Repeat the supplied matrix the specified number of times horizontally and vertically.</p>
@@ -519,10 +535,10 @@ export function magic(n){
     <dd><p>Calculate the determinant of a matrix.</p>
 </dd>
 <dt>Matrix.<a href="#ldiv">ldiv(A, B)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>Left-division. Solve Ax = B for x.</p>
+    <dd><p><a href="https://en.wikipedia.org/wiki/Division_%28mathematics%29#Left_and_right_division">Left-division</a>. Solve Ax = B for x.</p>
 </dd>
 <dt>Matrix.<a href="#div">div(A, B)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>Right-division. Solve xB = A for x.</p>
+    <dd><p><a href="https://en.wikipedia.org/wiki/Division_%28mathematics%29#Left_and_right_division">Right-division</a>. Solve xB = A for x.</p>
 </dd>
 <dt>Matrix.<a href="#inv">inv(matrix)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Calculate the inverse of a matrix.</p>
@@ -870,7 +886,7 @@ creates a new [identity matrix](https://en.wikipedia.org/wiki/Identity_matrix) o
 <a name="rand"></a>
 
 ## Matrix.rand(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix)
-creates a new matrix filled with random values [0|1)
+creates a new matrix filled with random values between 0 inclusive and 1 exclusive
 
 **Category**: creation  
 
@@ -926,7 +942,7 @@ console.log(Matrix.diag([1,2,3,4]).toJSON());//returns the same as above
 <a name="mcat"></a>
 
 ## Matrix.mcat(array) ⇒ [<code>Matrix</code>](#Matrix)
-*Concatenate matrices horizontally and vertically*
+*Concatenates a nested array of matrices - horizontally and vertically as required.*
 
 The matrices to be concatenated must be supplied as an array of arrays of matrices.  The inner arraysare concatenated horizontally and the outer arrays are concatenated vertically.
 
@@ -994,7 +1010,7 @@ No data is actually copied here, so this is a very efficient operation.Two list
 <a name="minor"></a>
 
 ## Matrix.minor(matrix, row, col) ⇒ [<code>Matrix</code>](#Matrix)
-*Get the minor of a matrix*
+*Return a matrix with the given row and column removed.*
 
 The minor of a matrix is the matrix with the specified row and column removed.  The matrix returned by this functionis a new matrix, but references the same data.  No data is copied so this is a fast operation.
 
@@ -1179,7 +1195,7 @@ The determinant is calculated by the standard naive algorithm which**scales rea
 <a name="ldiv"></a>
 
 ## Matrix.ldiv(A, B) ⇒ [<code>Matrix</code>](#Matrix)
-*Left-division. Solve Ax = B for x.*
+*[Left-division](https://en.wikipedia.org/wiki/Division_%28mathematics%29#Left_and_right_division). Solve Ax = B for x.*
 
 Solve the system of linear equations Ax = B for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)this can be expressed as `A\B`.  Equivalent to using [Matrix.div](#div) where `Matrix.ldiv(A,B)` gives the same answer as `Matrix.div(B.t,A.t).t`.
 
@@ -1194,7 +1210,7 @@ Solve the system of linear equations Ax = B for x.  In [Matlab](https://www.math
 <a name="div"></a>
 
 ## Matrix.div(A, B) ⇒ [<code>Matrix</code>](#Matrix)
-*Right-division. Solve xB = A for x.*
+*[Right-division](https://en.wikipedia.org/wiki/Division_%28mathematics%29#Left_and_right_division). Solve xB = A for x.*
 
 Solve the system of linear equations xB = A for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)this can be expressed as `A/B`.  Equivalent to using [Matrix.div](#ldiv) where `Matrix.div(A,B)` gives the same answer as `Matrix.ldiv(B.t,A.t).t`.
 
@@ -1209,7 +1225,9 @@ Solve the system of linear equations xB = A for x.  In [Matlab](https://www.math
 <a name="inv"></a>
 
 ## Matrix.inv(matrix) ⇒ [<code>Matrix</code>](#Matrix)
-Calculate the inverse of a matrix.
+*Calculate the inverse of a matrix.*
+
+Uses the [ldiv](#ldiv) operation to calculate the inverse.  NOTE: it is *really not good practice* touse a matrix inverse, instead consider using [div](#div) or [ldiv](#ldiv) directly. For a more thorough exposition onthis see, for example, ["Don't invert that matrix"](https://www.johndcook.com/blog/2010/01/19/dont-invert-that-matrix/)
 
 **Category**: operation  
 

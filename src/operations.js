@@ -271,7 +271,7 @@ export function det(matrix){
 det[METHOD]='det';
 
 /**
- * @summary Left-division. Solve Ax = B for x.
+ * @summary [Left-division](https://en.wikipedia.org/wiki/Division_%28mathematics%29#Left_and_right_division). Solve Ax = B for x.
  * @description Solve the system of linear equations Ax = B for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
  * this can be expressed as `A\B`.  Equivalent to using [Matrix.div](#div) where `Matrix.ldiv(A,B)` gives the same answer as `Matrix.div(B.t,A.t).t`.
  * @category operation
@@ -318,7 +318,7 @@ export function ldiv(A,B){
 ldiv[METHOD]='ldiv';
 
 /**
- * @summary Right-division. Solve xB = A for x.
+ * @summary [Right-division](https://en.wikipedia.org/wiki/Division_%28mathematics%29#Left_and_right_division). Solve xB = A for x.
  * @description Solve the system of linear equations xB = A for x.  In [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
  * this can be expressed as `A/B`.  Equivalent to using [Matrix.div](#ldiv) where `Matrix.div(A,B)` gives the same answer as `Matrix.ldiv(B.t,A.t).t`.
  * @category operation
@@ -332,7 +332,10 @@ export function div(A,B){
 div[METHOD]='div';
 
 /**
- * Calculate the inverse of a matrix.
+ * @summary Calculate the inverse of a matrix.
+ * @description Uses the {@link ldiv} operation to calculate the inverse.  NOTE: it is *really not good practice* to
+ * use a matrix inverse, instead consider using {@link div} or {@link ldiv} directly. For a more thorough exposition on
+ * this see, for example, ["Don't invert that matrix"](https://www.johndcook.com/blog/2010/01/19/dont-invert-that-matrix/)
  * @param matrix {Matrix}
  * @category operation
  * @returns {Matrix}
