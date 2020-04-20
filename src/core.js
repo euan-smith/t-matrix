@@ -1,4 +1,4 @@
-import {DATA,ROWS,COLS} from "./const";
+import {DATA,ROWS,COLS,METHOD} from "./const";
 
 import {isNum, range, isFunction, isArray, mapIter} from "./tools";
 
@@ -18,7 +18,10 @@ export const isMatrix = val => val instanceof Matrix;
 
 
 /**
- * The core matrix class
+ * @summary The core matrix class
+ * @description This class is not intended to be directly created by a user of this library, rather it is returned
+ * by the various creation functions (such as {@link zeros}, {@link eye} or {@link from}) and as a returned result from
+ * various operation and manipulation methods and functions.
  */
 class Matrix{
   /**
@@ -47,15 +50,18 @@ class Matrix{
   /**
    * Iterates through the matrix data in row-major order
    * @generator
-   * @function Matrix#[Symbol-Iterator]
-   * @yields {Number}
-   * @example
+   * @function Matrix#[Symbol-iterator]
+   * @returns {IterableIterator<Number>}
+   * @example <caption>Iterating the matrix values in a for..of loop</caption>
    * //Calculate the L²-norm of a matrix
    * function norm(matrix){
    *   let tot=0;
    *   for(let v of matrix) tot+=v*v;
    *   return Math.sqrt(tot);
    * }
+   * @example <caption>Using the ES6 spread operator with a matrix</caption>
+   * const m=Matrix.from([[1,2,3],[4,5,6]]);
+   * console.log([...m]); //=> [1,2,3,4,5,6];
    */
   * [Symbol.iterator](){
     for(let r of this[ROWS])
@@ -119,7 +125,7 @@ class Matrix{
    * @param [rows] {Range|Number} Row index or indices.  zero-based
    * @param [cols] {Range|Number} Column index or indices.  zero-based
    * @param val {Number|Matrix|Array} Values to assign to the specified range
-   * @returns this
+   * @returns {Matrix}
    * @example
    * const m=Matrix.zeros(3);
    * //Set a single value
@@ -183,7 +189,9 @@ class Matrix{
    * Creates a new matrix with the results of calling a provided function on every element in the supplied matrix.
    * @param fn {Function}
    * @returns {Matrix}
-   *
+   * @example
+   * const m=Matrix.from([0,':',5]).map(v=>Math.pow(2,v));
+   * console.log([...m]); //[1,2,4,8,16,32]
    */
   map(fn){
     return new Matrix(this[ROWS].length,this[COLS].length,mapIter(this,fn))
@@ -191,7 +199,14 @@ class Matrix{
 
   /**
    * Convert the matrix to an array of number arrays.
-   * @returns {Array<Array<Number>>}
+   * @returns {Array.Array.Number}
+   * @example
+   * const m=Matrix.from([0,':',5]); //will create a column vector
+   * console.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]
+   * console.log(m.t.toJSON()); //[0,1,2,3,4,5]
+   * console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]
+   * //enables a matrix instance to be serialised by JSON.stringify
+   * console.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
    */
   toJSON(){
     return [...rows(this)];
@@ -200,12 +215,13 @@ class Matrix{
 
 /**
  * Create a matrix from the supplied data.
- * @param data {(Matrix|Array<Number>|Array<Array<Number>>)}
+ * @param data {(Matrix|Array.Number|Array.Array.Number)}
  * If `data` is a matrix then it is just returned.
  * An array of numbers becomes a column matrix.
  * An array of an array of numbers becomes a row matrix.
  * An array of arrays of numbers becomes a general matrix.  The inner arrays must all have the same length.
  * @returns {Matrix}
+ * @category creation
  * @example <caption>Creating a column matrix</caption>
  * Matrix.from([1,2,3,4])
  * //[1; 2; 3; 4]
@@ -234,11 +250,52 @@ export function from(data){
   throw new TypeError('Matrix::from Unsupported data type');
 }
 
+/**
+ * Add static functions of the form `fn(matrix,...args)` to the {@link Matrix} prototype as `matrix.fn(args)`
+ * @param methods {...(Function|Object|Function[])} The method(s) to add
+ * @example <caption>Adding standard functions</caption>
+ * import * as Matrix from 't-matrix';
+ * Matrix.mixin(Matrix.max, Matrix.min);
+ * const m=Matrix.from([[1,2,3],[4,5,6]]);
+ * console.log(m.min() + ', ' + m.max()); //=> 1, 6
+ * @example <caption>Adding a custom function</caption>
+ * import * as Matrix from 't-matrix';
+ * const sqrt = matrix => matrix.map(Math.sqrt);
+ * Matrix.mixin('sqrt',sqrt);
+ * const m=Matrix.from([1,4,9]);
+ * console.log([...m.sqrt()]); //=> [1,2,3]
+ * @example <caption>Using a config file for the Matrix class</caption>
+ * // inside 'matrix-setup.js'
+ * import {mixin, reshape} from 't-matrix';
+ * const neg = matrix => matrix.map(v=>-v);
+ * mixin(reshape,'neg',neg);
+ *
+ * // inside other modules
+ * import * as Matrix from 't-matrix';
+ * console.log(Matrix.from([1,':',9]).reshape(3,3).neg().toJSON());//[[-1,-2,-3],[-4,-5,-6],[-7,-8,-9]]
+ * @example <caption>Just include everything which can be included</caption>
+ * import * as Matrix from 't-matrix';
+ * Matrix.mixin(Matrix);
+ * console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,10,12],[14,16,18]]
+ */
 export function mixin(...methods){
-  for(let method of methods){
-    Matrix.prototype[method.name]=function(...args){
-      return method(this, ...args);
-    };
+  let prev=null;
+  for(let method of _mixin(methods)){
+    if (typeof method === "function" && (prev || method[METHOD])){
+      Matrix.prototype[method[METHOD]||prev]=function(...args){
+        return method(this, ...args);
+      };
+    }
+    prev = typeof method === "string" ? method : null;
+  }
+}
+
+function * _mixin(methods){
+  for (let method of methods){
+    if (typeof method === "function" || typeof method === "string") yield method;
+    else{
+      for (let k of Object.keys(method)) if (typeof method[k] === "function") yield method[k];
+    }
   }
 }
 

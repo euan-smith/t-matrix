@@ -27,6 +27,7 @@ describe('zeros',function(){
       expect(max(m)).to.equal(0);
       expect(min(m)).to.equal(0);
       expect([...m]).to.eql([...m.t]);
+      expect(zeros(m.size).size).to.eql([s,s]);
     }
     expect(zeros().size).to.eql([1,1]);
   })
@@ -41,6 +42,7 @@ describe('ones',function(){
       expect(max(m)).to.equal(1);
       expect(min(m)).to.equal(1);
       expect([...m]).to.eql([...m.t]);
+      expect(ones(m.size).size).to.eql([s,s]);
     }
     expect(ones().size).to.eql([1,1]);
   })

@@ -1,10 +1,11 @@
-import {COLS, DATA, ROWS} from "./const";
+import {COLS, DATA, ROWS, METHOD} from "./const";
 import {from} from "./core";
 
 /**
  * Iterate over the rows.
  * @param matrix {Matrix}
- * @returns {IterableIterator<Array<Number>>}
+ * @generator
+ * @returns {IterableIterator<Array.Number>}
  * @example
  * //Log each matrix row
  * for(let row of Matrix.rows(matrix)){
@@ -17,11 +18,13 @@ export function *rows(matrix){
   for(let r of matrix[ROWS])
     yield cols.map(c=>matrix[DATA][r+c]);
 }
+rows[METHOD]='rows';
 
 /**
  * Iterate over the columns.
  * @param matrix {Matrix}
- * @returns {IterableIterator<Array<Number>>}
+ * @generator
+ * @returns {IterableIterator<Array.Number>}
  * @example
  * //Log the range of each column
  * for(let col of Matrix.cols(matrix)){
@@ -34,3 +37,4 @@ export function *cols(matrix){
   for(let c of matrix[COLS])
     yield rows.map(r=>matrix[DATA][r+c]);
 }
+cols[METHOD]='cols';

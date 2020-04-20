@@ -1,6 +1,6 @@
 {
   "name": "t-matrix",
-  "version": "0.0.4",
+  "version": "1.0.4",
   "description": "A small type-array based matrix lib. A core matrix type plus just the other functions you need. ",
   "main": "index.js",
   "module": "index.mjs",
@@ -9,8 +9,7 @@
     "cover": "nyc npm test",
     "build": "rollup -c",
     "prepublish": "npm run build",
-    "docs": "jsdoc2md --template jsdoc2md/README.hbs --files src/*.js > README.md",
-    "docs2": "jsdoc src/matrix.js src/core.js src/operations.js src/create.js src/manipulations.js src/tools.js src/conversions.js src/extras.js"
+    "docs": "jsdoc2md --template jsdoc2md/README.hbs --partial jsdoc2md/global-index-dl.hbs --partial jsdoc2md/body.hbs --files src/*.js > README.md & node ./jsdoc2md/post-process.js"
   },
   "repository": {
     "type": "git",
@@ -33,7 +32,6 @@
   "homepage": "https://github.com/zakalwe314/t-matrix#readme",
   "devDependencies": {
     "array-flat-polyfill": "^1.0.1",
-    "better-docs": "^1.1.6",
     "chai": "^4.2.0",
     "chai-almost": "^1.0.1",
     "jsdoc-to-markdown": "^5.0.0",
