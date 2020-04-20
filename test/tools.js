@@ -1,7 +1,7 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {isNum, range, mapIter, zipIters} from '../src/tools';
+import {isNum, range, mapIter, zipIters, repeat} from '../src/tools';
 
 describe('range',function(){
   it('returns a sequence of values',function(){
@@ -80,4 +80,11 @@ describe('zipIters',function(){
   it('zips an array and a non-array iterable',function(){
     expect([...zipIters([1,2,3],range([4,5,6]))]).to.eql([[1,4],[2,5],[3,6]])
   })
+});
+
+describe('repeat', function(){
+  it('repeats a value n times', function(){
+    const a={};
+    expect([...repeat(a,3)]).to.have.members([a,a,a]);
+  });
 });

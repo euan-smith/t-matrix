@@ -4,6 +4,9 @@ import {isNum, range, isFunction, isArray, mapIter} from "./tools";
 
 import {rows} from "./conversions";
 
+import 'array-flat-polyfill';
+
+
 
 /**
  * Tests if a value is an instance of a Matrix

@@ -2,7 +2,7 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
-import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid} from "../src/operations";
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross} from "../src/operations";
 import {from} from "../src/core"
 
 const m=from([[1,2,4],[8,16,32],[64,128,256]]);
@@ -218,5 +218,25 @@ describe('grid',function(){
     const [R,C] = grid([1,':',3],[1,':',2]);
     expect(R.toJSON()).to.eql([[1,1],[2,2],[3,3]]);
     expect(C.toJSON()).to.eql([[1,2],[1,2],[1,2]]);
+  });
+});
+
+describe('cross', function(){
+  it('calculates the cross product of two simple vectors',function(){
+    expect([...cross([1,0,0],[0,1,0])]).to.eql([0,0,1]);
+    expect([...cross([1,0,0],[0,0,1])]).to.eql([0,-1,0]);
+    expect([...cross([0,2,0],[0,0,2])]).to.eql([4,0,0]);
+  });
+  it('permutation results in negation', function(){
+    for(let n=0;n<10;n++){
+      const a=rand(3,1);
+      const b=rand(3,1);
+      expect([...cross(a,b)]).to.eql([...cross(b,a)].map(v=>-v));
+    }
+  });
+  it('adapts to transposition', function(){
+    const a=rand(3,4);
+    const b=rand(3,4);
+    expect([...cross(a,b)]).to.eql([...cross(a.t,b.t).t]);
   });
 });

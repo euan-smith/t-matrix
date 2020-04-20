@@ -1,7 +1,7 @@
 import {Matrix, isMatrix, from} from "./core";
 import {ROWS,COLS,DATA} from "./const";
 import {rows, cols} from "./conversions";
-import {mapIter, zipIters, isNum, toList} from "./tools";
+import {mapIter, zipIters, isNum, toList, repeat} from "./tools";
 import {diag, minor,repmat} from "./manipulations";
 import {eye} from "./create";
 
@@ -195,4 +195,37 @@ export function grid(rows,cols){
     repmat(new Matrix(rows.length,1,rows),1,cols.length),
     repmat(new Matrix(1,cols.length,cols),rows.length,1),
   ]
+}
+
+export function cross(a,b,dim){
+  a=from(a);
+  b=from(b);
+  const [ah,aw]=a.size, [bh,bw]=b.size;
+  if (!dim){
+    if (ah===3 && bh===3) dim=1;
+    else if (aw===3 && bw===3) dim=2;
+    else throw new Error('Matrix::cross requires matrices with both 3 rows or both 3 columns');
+  }
+  if ((dim===1 && aw!==bw && aw>1 && bw>1) || (dim===2 && ah!==bh && ah>1 && bh>1)) throw new Error('Matrix::cross invalid matrix dimensions');
+
+  if (dim===1){
+    const w = Math.max(aw,bw);
+    const ai = aw===1?repeat(a,w):cols(a);
+    const bi = bw===1?repeat(b,w):cols(b);
+    return (new Matrix(w,3,_cross(ai,bi))).t;
+  } else {
+    const h = Math.max(ah,bh);
+    const ai = ah===1?repeat(a,h):rows(a);
+    const bi = bh===1?repeat(b,h):rows(b);
+    return new Matrix(h,3,_cross(ai,bi));
+  }
+}
+
+function* _cross(a,b){
+  for (let [ar,br] of zipIters(a,b)){
+    const [arx,ary,arz]=ar, [brx,bry,brz]=br;
+    yield ary*brz-arz*bry;
+    yield brx*arz-arx*brz;
+    yield arx*bry-brx*ary;
+  }
 }

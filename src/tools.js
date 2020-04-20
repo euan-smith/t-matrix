@@ -144,6 +144,10 @@ export function *mapIter(iter,fn){
   }
 }
 
+export function *repeat(val, count){
+  for (let i=0;i<count;i++) yield val;
+}
+
 const Si=Symbol.iterator;
 export function *zipIters(...iters){
   iters=iters.map(i=>i[Si]());

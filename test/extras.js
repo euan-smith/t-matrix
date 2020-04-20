@@ -40,7 +40,6 @@ describe('magic',function(){
     for (let n=6;n<20;n+=4){
       const t=(n*n*n+n)>>1;
       const m=magic(n);
-      console.log(m.toJSON());
       expect(m.size).to.eql([n,n]);
       expect(sum(m)).to.equal(n*t);
       const mrs=sum(m,null,1),mcs=sum(m,null,2),md=trace(m);
