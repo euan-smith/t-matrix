@@ -1,5 +1,5 @@
-[![view on npm](http://img.shields.io/npm/v/t-matrix.svg)](https://www.npmjs.org/package/t-matrix)
-[![Build Status](https://travis-ci.org/zakalwe314/t-matrix.svg?branch=master)](https://travis-ci.com/github/zakalwe314/t-matrix)
+[![npm version](https://badge.fury.io/js/t-matrix.svg)](https://www.npmjs.org/package/t-matrix)
+[![Build Status](https://travis-ci.com/zakalwe314/t-matrix.svg?branch=master)](https://travis-ci.com/github/zakalwe314/t-matrix)
 [![Coverage Status](https://coveralls.io/repos/github/zakalwe314/t-matrix/badge.svg?branch=master)](https://coveralls.io/github/zakalwe314/t-matrix?branch=master)
 
 # t-matrix
