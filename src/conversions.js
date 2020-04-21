@@ -1,5 +1,5 @@
 import {COLS, DATA, ROWS, METHOD} from "./const";
-import {from} from "./core";
+import {from, mixin} from "./core";
 
 /**
  * Iterate over the rows.
@@ -38,3 +38,19 @@ export function *cols(matrix){
     yield rows.map(r=>matrix[DATA][r+c]);
 }
 cols[METHOD]='cols';
+
+/**
+ * Convert the matrix to an array of number arrays.
+ * @memberOf Matrix#
+ * @name toJSON
+ * @returns {Array.Array.Number}
+ * @example
+ * const m=Matrix.from([0,':',5]); //will create a column vector
+ * console.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]
+ * console.log(m.t.toJSON()); //[0,1,2,3,4,5]
+ * console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]
+ * //enables a matrix instance to be serialised by JSON.stringify
+ * console.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
+ */
+mixin('toJSON',m=>[...rows(m)]);
+

@@ -378,10 +378,23 @@ export function grid(rows,cols){
   ]
 }
 
-export function cross(a,b,dim){
-  a=from(a);
-  b=from(b);
-  const [ah,aw]=a.size, [bh,bw]=b.size;
+/**
+ * @summary Calculate the cross product(s) of two vectors or sets of vectors.
+ * @description Both matrices must contain either 1 or N 3-element row vectors or column vectors.  The orientation of the vectors
+ * must be consistent between the two matrices, and the returned matrix will use the same orientation.  If both contain
+ * a single vector, the cross product of those vectors will be returned.  If both contain N vectors, then the returned
+ * matrix will contain the N cross products of each vector pair.  If one matrix has 1 vector and the other N then the
+ * returned matrix will be the N cross products of the single vector with each of N vectors from the other matrix.
+ * @category operation
+ * @param A {Matrix}
+ * @param B {Matrix}
+ * @param [dim] {Number}
+ * @returns {Matrix}
+ */
+export function cross(A,B,dim){
+  A=from(A);
+  B=from(B);
+  const [ah,aw]=A.size, [bh,bw]=B.size;
   if (!dim){
     if (ah===3 && bh===3) dim=1;
     else if (aw===3 && bw===3) dim=2;
@@ -391,13 +404,13 @@ export function cross(a,b,dim){
 
   if (dim===1){
     const w = Math.max(aw,bw);
-    const ai = aw===1?repeat(a,w):cols(a);
-    const bi = bw===1?repeat(b,w):cols(b);
+    const ai = aw===1?repeat(A,w):cols(A);
+    const bi = bw===1?repeat(B,w):cols(B);
     return (new Matrix(w,3,_cross(ai,bi))).t;
   } else {
     const h = Math.max(ah,bh);
-    const ai = ah===1?repeat(a,h):rows(a);
-    const bi = bh===1?repeat(b,h):rows(b);
+    const ai = ah===1?repeat(A,h):rows(A);
+    const bi = bh===1?repeat(B,h):rows(B);
     return new Matrix(h,3,_cross(ai,bi));
   }
 }

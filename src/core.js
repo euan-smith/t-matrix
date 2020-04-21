@@ -1,10 +1,6 @@
 import {DATA,ROWS,COLS,METHOD} from "./const";
 
-import {isNum, range, isFunction, isArray, mapIter} from "./tools";
-
-import {rows} from "./conversions";
-
-import 'array-flat-polyfill';
+import {isNum, range, isFunction, isArray, mapIter, flatten} from "./tools";
 
 
 
@@ -129,17 +125,17 @@ class Matrix{
    * @example
    * const m=Matrix.zeros(3);
    * //Set a single value
-   * m.set(1,1,5) //[0,0,0; 0,5,0; 0,0,0]
+   * m.set(1,1,5); //[0,0,0; 0,5,0; 0,0,0]
    *
    * //Set a range to a single value
-   * m.set(0,':',3) //[3,3,3; 0,5,0; 0,0,0]
+   * m.set(0,':',3); //[3,3,3; 0,5,0; 0,0,0]
    *
    * //The value can also be a matrix of the matching size, or an array which resolves to such.
-   * m.set(2,':',[[7,8,6]]) //[3,3,3; 0,5,0; 7,8,6]
+   * m.set(2,':',[[7,8,6]]); //[3,3,3; 0,5,0; 7,8,6]
    * //If val is an array, {@link from} will be used to convert it to a matrix.
    *
    * //If no row and column indices are provided, the value will apply to the whole matrix
-   * m.set(1) //[1,1,1; 1,1,1; 1,1,1]
+   * m.set(1); //[1,1,1; 1,1,1; 1,1,1]
    */
   set(rows,cols,val){
     let R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
@@ -196,21 +192,6 @@ class Matrix{
   map(fn){
     return new Matrix(this[ROWS].length,this[COLS].length,mapIter(this,fn))
   }
-
-  /**
-   * Convert the matrix to an array of number arrays.
-   * @returns {Array.Array.Number}
-   * @example
-   * const m=Matrix.from([0,':',5]); //will create a column vector
-   * console.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]
-   * console.log(m.t.toJSON()); //[0,1,2,3,4,5]
-   * console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]
-   * //enables a matrix instance to be serialised by JSON.stringify
-   * console.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
-   */
-  toJSON(){
-    return [...rows(this)];
-  }
 }
 
 /**
@@ -229,11 +210,11 @@ class Matrix{
  * Matrix.from([[1,2,3,4]])
  * //[1,2,3,4]
  * @example <caption>Creating an arbitrary matrix</caption>
- * Matrix.from([[1,2],[3,4],[5,6]]
+ * Matrix.from([[1,2],[3,4],[5,6]]);
  * //a 3x2 matrix [1,2; 3,4; 5,6]
  * @example <caption>A matrix is just passed through</caption>
  * const m = Matrix.from([[1,2],[3,4]]);
- * Matrix.from(m) === m; //true
+ * check = Matrix.from(m) === m; //true
  */
 export function from(data){
   if (isMatrix(data)) return data;
@@ -244,7 +225,7 @@ export function from(data){
     }
     if (isArray(data[0])){
       const rows = data.length, cols = data[0].length;
-      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,data.flat());
+      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,flatten(data));
     }
   }
   throw new TypeError('Matrix::from Unsupported data type');

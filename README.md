@@ -34,6 +34,7 @@
 
 # <a id="status"></a> Status
 V1 now released.  Some changes from the initial 0.x versions are breaking as all of the code has been rewritten.
+Starting work on some of the more straightforward parts of 1.1 (cross, dot, etc).
 ## <a id="roadmap"></a> Roadmap
 The current plan for future versions. Obviously the version numbers further out are more speculative.
 - v1.0
@@ -66,6 +67,17 @@ The current plan for future versions. Obviously the version numbers further out 
   - eigen, SVD
   - fft and supporting methods
   - sort, unique
+## <a id="release-notes"></a> Release Notes
+- v1.0.0
+  - Refactored to the new API, fully testing implemented and passing, documentation now derived from jsdoc.
+- v1.0.1 - v1.0.4
+  - Entirely documentation corrections and improvements.
+- v1.0.5
+  - More doc typo/inconsistency corrections.
+  - Added a cross product operation and testing.
+  - Updated devDependencies
+  - Removed the single use of Array.prototype.flat to avoid the need for a polyfill below node 11.
+
 # <a id="installation"></a> Installation
 ```
 npm install t-matrix -S
@@ -549,6 +561,9 @@ export function magic(n){
 <dt>Matrix.<a href="#grid">grid(rows, [cols])</a> ⇒ <code><a href="#Matrix">Array.&lt;Matrix&gt;</a></code></dt>
     <dd><p>Generate a regular grid in 2D space</p>
 </dd>
+<dt>Matrix.<a href="#cross">cross(A, B, [dim])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Calculate the cross product(s) of two vectors or sets of vectors.</p>
+</dd>
 </dl>
 
 ## Other Matrix Functions
@@ -593,6 +608,7 @@ export function magic(n){
 
 * [Matrix](#Matrix)
     * [new Matrix()](#new_Matrix_new)
+    * [.toJSON](#Matrix+toJSON) ⇒ <code>Array.Array.Number</code>
     * [.size](#Matrix+size) ⇒ <code>Array.&lt;Number&gt;</code>
     * [.t](#Matrix+t) ⇒ [<code>Matrix</code>](#Matrix)
     * [\[Symbol\.iterator\]()](#Matrix+[Symbol-iterator]) ⇒ <code>IterableIterator.&lt;Number&gt;</code>
@@ -600,7 +616,6 @@ export function magic(n){
     * [.set([rows], [cols], val)](#Matrix+set) ⇒ [<code>Matrix</code>](#Matrix)
     * [.clone([rows], [cols])](#Matrix+clone) ⇒ [<code>Matrix</code>](#Matrix)
     * [.map(fn)](#Matrix+map) ⇒ [<code>Matrix</code>](#Matrix)
-    * [.toJSON()](#Matrix+toJSON) ⇒ <code>Array.Array.Number</code>
 
 <a name="new_Matrix_new"></a>
 
@@ -609,6 +624,21 @@ This class is not intended to be directly created by a user of this library, rat
 by the various creation functions (such as [zeros](#zeros), [eye](#eye) or [from](#from)) and as a returned result from
 various operation and manipulation methods and functions.
 
+<br>
+<a name="Matrix+toJSON"></a>
+
+### matrix.toJSON ⇒ <code>Array.Array.Number</code>
+Convert the matrix to an array of number arrays.
+
+**Example**  
+```js
+const m=Matrix.from([0,':',5]); //will create a column vector
+console.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]
+console.log(m.t.toJSON()); //[0,1,2,3,4,5]
+console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]
+//enables a matrix instance to be serialised by JSON.stringify
+console.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
+```
 <br>
 <a name="Matrix+size"></a>
 
@@ -700,17 +730,17 @@ Set a value or range of values of the matrix
 ```js
 const m=Matrix.zeros(3);
 //Set a single value
-m.set(1,1,5) //[0,0,0; 0,5,0; 0,0,0]
+m.set(1,1,5); //[0,0,0; 0,5,0; 0,0,0]
 
 //Set a range to a single value
-m.set(0,':',3) //[3,3,3; 0,5,0; 0,0,0]
+m.set(0,':',3); //[3,3,3; 0,5,0; 0,0,0]
 
 //The value can also be a matrix of the matching size, or an array which resolves to such.
-m.set(2,':',[[7,8,6]]) //[3,3,3; 0,5,0; 7,8,6]
+m.set(2,':',[[7,8,6]]); //[3,3,3; 0,5,0; 7,8,6]
 //If val is an array, [from](#from) will be used to convert it to a matrix.
 
 //If no row and column indices are provided, the value will apply to the whole matrix
-m.set(1) //[1,1,1; 1,1,1; 1,1,1]
+m.set(1); //[1,1,1; 1,1,1; 1,1,1]
 ```
 <br>
 <a name="Matrix+clone"></a>
@@ -739,21 +769,6 @@ Creates a new matrix with the results of calling a provided function on every el
 ```js
 const m=Matrix.from([0,':',5]).map(v=>Math.pow(2,v));
 console.log([...m]); //[1,2,4,8,16,32]
-```
-<br>
-<a name="Matrix+toJSON"></a>
-
-### matrix.toJSON() ⇒ <code>Array.Array.Number</code>
-Convert the matrix to an array of number arrays.
-
-**Example**  
-```js
-const m=Matrix.from([0,':',5]); //will create a column vector
-console.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]
-console.log(m.t.toJSON()); //[0,1,2,3,4,5]
-console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]
-//enables a matrix instance to be serialised by JSON.stringify
-console.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
 ```
 <br>
 <a name="rows"></a>
@@ -925,13 +940,13 @@ Matrix.from([[1,2,3,4]])
 ```
 **Example** *(Creating an arbitrary matrix)*  
 ```js
-Matrix.from([[1,2],[3,4],[5,6]]
+Matrix.from([[1,2],[3,4],[5,6]]);
 //a 3x2 matrix [1,2; 3,4; 5,6]
 ```
 **Example** *(A matrix is just passed through)*  
 ```js
 const m = Matrix.from([[1,2],[3,4]]);
-Matrix.from(m) === m; //true
+check = Matrix.from(m) === m; //true
 ```
 <br>
 <a name="zeros"></a>
@@ -1015,7 +1030,7 @@ import * as Matrix from 't-matrix';
 //Create a magic square
 const mag = Matrix.magic(3);
 //Get the sum of the diagonal elements - should add up to 15 for a 3x3 magic square
-console.log(Matrix.sum(Matrix.diag(mag)); //15
+console.log(Matrix.sum(Matrix.diag(mag))); //15
 ```
 **Example** *(Set the diagonal elements of a matrix)*  
 ```js
@@ -1420,6 +1435,26 @@ Similarly the second returned matrix is the _cols_ array as a row matrix repeate
 | --- | --- | --- |
 | rows | [<code>Range</code>](#Range) \| <code>Number</code> | If a number *n* this is converted to a range 0:n-1, otherwise a range is expected. |
 | [cols] | [<code>Range</code>](#Range) \| <code>Number</code> | If a number *n* this is converted to a range 0:n-1, otherwise a range is expected. |
+
+<br>
+<a name="cross"></a>
+
+## Matrix.cross(A, B, [dim]) ⇒ [<code>Matrix</code>](#Matrix)
+*Calculate the cross product(s) of two vectors or sets of vectors.*
+
+Both matrices must contain either 1 or N 3-element row vectors or column vectors.  The orientation of the vectors
+must be consistent between the two matrices, and the returned matrix will use the same orientation.  If both contain
+a single vector, the cross product of those vectors will be returned.  If both contain N vectors, then the returned
+matrix will contain the N cross products of each vector pair.  If one matrix has 1 vector and the other N then the
+returned matrix will be the N cross products of the single vector with each of N vectors from the other matrix.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| A | [<code>Matrix</code>](#Matrix) | 
+| B | [<code>Matrix</code>](#Matrix) | 
+| [dim] | <code>Number</code> | 
 
 <br>
 * * *

@@ -14,7 +14,7 @@ import {rows} from "./conversions";
  * //Create a magic square
  * const mag = Matrix.magic(3);
  * //Get the sum of the diagonal elements - should add up to 15 for a 3x3 magic square
- * console.log(Matrix.sum(Matrix.diag(mag)); //15
+ * console.log(Matrix.sum(Matrix.diag(mag))); //15
  * @example <caption>Set the diagonal elements of a matrix</caption>
  * import * as Matrix from 't-matrix';
  * Matrix.mixin(Matrix); //just add everything in for ease

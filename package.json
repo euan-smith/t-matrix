@@ -8,7 +8,7 @@
     "test": "mocha --require reify test/*.js",
     "cover": "nyc npm test",
     "build": "rollup -c",
-    "prepublish": "npm run build",
+    "prepublish": "npm test && npm run docs && npm run build",
     "docs": "jsdoc2md --template jsdoc2md/README.hbs --partial jsdoc2md/global-index-dl.hbs --partial jsdoc2md/body.hbs --files src/*.js > README.md & node ./jsdoc2md/post-process.js"
   },
   "repository": {
@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/zakalwe314/t-matrix#readme",
   "devDependencies": {
-    "array-flat-polyfill": "^1.0.1",
     "chai": "^4.2.0",
     "chai-almost": "^1.0.1",
     "jsdoc-to-markdown": "^5.0.0",

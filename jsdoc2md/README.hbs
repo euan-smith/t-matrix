@@ -34,6 +34,7 @@
 
 # <a id="status"></a> Status
 V1 now released.  Some changes from the initial 0.x versions are breaking as all of the code has been rewritten.
+Starting work on some of the more straightforward parts of 1.1 (cross, dot, etc).
 ## <a id="roadmap"></a> Roadmap
 The current plan for future versions. Obviously the version numbers further out are more speculative.
 - v1.0
@@ -66,6 +67,16 @@ The current plan for future versions. Obviously the version numbers further out 
   - eigen, SVD
   - fft and supporting methods
   - sort, unique
+## <a id="release-notes"></a> Release Notes
+- v1.0.0
+  - Refactored to the new API, fully testing implemented and passing, documentation now derived from jsdoc.
+- v1.0.1 - v1.0.4
+  - Entirely documentation corrections and improvements.
+- v1.0.5
+  - More doc typo/inconsistency corrections.
+  - Added a cross product operation and testing.
+  - Updated devDependencies to remove vulnerabilities.
+
 # <a id="installation"></a> Installation
 ```
 npm install t-matrix -S
@@ -472,5 +483,5 @@ export function magic(n){
 
 * * *
 
-&copy; 2019 Euan Smith.
+&copy; 2019, 2020 Euan Smith.
 API documentation generated with the help of [jsdoc2md](https://github.com/jsdoc2md/jsdoc-to-markdown).

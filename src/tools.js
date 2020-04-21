@@ -161,3 +161,7 @@ export function *zipIters(...iters){
 export function toList(o){
   return [...range([...o])];
 }
+
+export function *flatten(a){
+  for (let v of a) if (v[Symbol.iterator]) yield* flatten(v); else yield v;
+}
