@@ -6,7 +6,7 @@
   "module": "index.mjs",
   "scripts": {
     "test": "mocha --require reify test/*.js",
-    "cover": "nyc npm test",
+    "cover": "nyc --reporter=lcov --reporter=text npm test",
     "build": "rollup -c",
     "prepublish": "npm test && npm run docs && npm run build",
     "docs": "jsdoc2md --template jsdoc2md/README.hbs --partial jsdoc2md/global-index-dl.hbs --partial jsdoc2md/body.hbs --files src/*.js > README.md & node ./jsdoc2md/post-process.js"

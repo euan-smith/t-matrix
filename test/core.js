@@ -131,5 +131,9 @@ describe('mixin',function(){
   it('adds a load of in-built methods at a time',function(){
     mixin(Operations);
     expect(zeros(4)).to.have.a.property('sum');
+  });
+  it('does not add object properties which are not methods',function(){
+    mixin({baz:'bar'});
+    expect(zeros(4)).to.not.have.a.property('baz');
   })
 });

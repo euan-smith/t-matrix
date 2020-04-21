@@ -75,8 +75,7 @@ The current plan for future versions. Obviously the version numbers further out 
 - v1.0.5
   - More doc typo/inconsistency corrections.
   - Added a cross product operation and testing.
-  - Updated devDependencies
-  - Removed the single use of Array.prototype.flat to avoid the need for a polyfill below node 11.
+  - Updated devDependencies to remove vulnerabilities.
 
 # <a id="installation"></a> Installation
 ```

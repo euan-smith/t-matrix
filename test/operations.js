@@ -224,6 +224,16 @@ describe('grid',function(){
     expect(R.toJSON()).to.eql([[1,1],[2,2],[3,3]]);
     expect(C.toJSON()).to.eql([[1,2],[1,2],[1,2]]);
   });
+  it('generates a square meshgrid from a size', function(){
+    const [R,C] = grid(3);
+    expect(R.toJSON()).to.eql([[0,0,0],[1,1,1],[2,2,2]]);
+    expect(C.toJSON()).to.eql([[0,1,2],[0,1,2],[0,1,2]]);
+  });
+  it('generates a rectangular meshgrid from two sizes', function(){
+    const [R,C] = grid(3,2);
+    expect(R.toJSON()).to.eql([[0,0],[1,1],[2,2]]);
+    expect(C.toJSON()).to.eql([[0,1],[0,1],[0,1]]);
+  });
 });
 
 describe('cross', function(){
@@ -243,6 +253,24 @@ describe('cross', function(){
     const a=rand(3,4);
     const b=rand(3,4);
     expect([...cross(a,b)]).to.eql([...cross(a.t,b.t).t]);
+  });
+  it('throws an error if the matrix size is wrong', function(){
+    const a=rand(2,2), b=rand(3,4), c=rand(3,4), d=rand(3,2);
+    expect(()=>cross(a,a)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(a,a,1)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(a,a,2)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(b,c.t)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(b.t,c.t,1)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(b,c,2)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(b,d)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(d,b)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(b.t,d.t)).to.throw(E.InvalidDimensions);
+    expect(()=>cross(d.t,b.t)).to.throw(E.InvalidDimensions);
+  });
+  it('deals with 1x3 and Nx3 matrices', function(){
+    const a=rand(3,1), b=rand(3,4);
+    expect([...cross(a,b)]).to.eql([...cross(b,a)].map(v=>-v));
+    expect([...cross(a.t,b.t)]).to.eql([...cross(b.t,a.t)].map(v=>-v));
   });
 });
 describe('mapMany',function(){

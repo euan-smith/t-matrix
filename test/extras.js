@@ -8,6 +8,9 @@ describe('magic',function(){
   it('throws if a square of size 2 is requested',function(){
     expect(()=>magic(2)).to.throw();
   });
+  it('throws if a square of non-integer size is requested',function(){
+    expect(()=>magic(3.5)).to.throw();
+  });
   it('produces an nxn magic square where n is odd',function(){
     for (let n=3;n<10;n+=2){
       const t=(n*n*n+n)>>1;

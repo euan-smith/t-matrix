@@ -398,9 +398,10 @@ export function cross(A,B,dim){
   if (!dim){
     if (ah===3 && bh===3) dim=1;
     else if (aw===3 && bw===3) dim=2;
-    else throw new Error('Matrix::cross requires matrices with both 3 rows or both 3 columns');
+    else throw E.MatrixError(E.InvalidDimensions);
   }
-  if ((dim===1 && aw!==bw && aw>1 && bw>1) || (dim===2 && ah!==bh && ah>1 && bh>1)) throw new Error('Matrix::cross invalid matrix dimensions');
+  if ((dim===1 && (ah!==3 || bh!==3)) || (dim===2 && (aw!==3 || bw!==3))) throw E.MatrixError(E.InvalidDimensions);
+  if ((dim===1 && aw!==bw && aw>1 && bw>1) || (dim===2 && ah!==bh && ah>1 && bh>1)) throw E.MatrixError(E.InvalidDimensions);
 
   if (dim===1){
     const w = Math.max(aw,bw);
