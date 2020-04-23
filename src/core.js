@@ -224,6 +224,7 @@ export function from(data){
       return new Matrix(data.length, [0], data);
     }
     if (isArray(data[0])){
+      data = data.map(d=>[...range(d)]);
       const rows = data.length, cols = data[0].length;
       if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,flatten(data));
     }

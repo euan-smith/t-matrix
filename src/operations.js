@@ -390,6 +390,10 @@ export function grid(rows,cols){
  * @param B {Matrix}
  * @param [dim] {Number}
  * @returns {Matrix}
+ * @example
+ * import * as Matrix from 't-matrix';
+ * console.log([...Matrix.cross([1,0,0],[0,1,0])]); // should be [0,0,1]
+ *
  */
 export function cross(A,B,dim){
   A=from(A);
@@ -415,6 +419,7 @@ export function cross(A,B,dim){
     return new Matrix(h,3,_cross(ai,bi));
   }
 }
+cross[METHOD]="cross";
 
 function* _cross(a,b){
   for (let [ar,br] of zipIters(a,b)){
@@ -424,3 +429,32 @@ function* _cross(a,b){
     yield arx*bry-brx*ary;
   }
 }
+
+/**
+ * @summary Calculate the scalar dot product(s) of two vectors or sets of vectors.
+ * @description Both matrices must contain either 1 or N row vectors or column vectors of equal length.  The orientation of the vectors
+ * must be consistent between the two matrices, and the returned matrix will use the same orientation.  If both contain
+ * a single vector, the dot product of those vectors will be returned as a scalar value.  If both contain N vectors, then the returned
+ * matrix will contain the N dot products of each vector pair.  If one matrix has 1 vector and the other N then the
+ * returned matrix will be the N dot products of the single vector with each of N vectors from the other matrix.
+ * @category operation
+ * @param A {Matrix}
+ * @param B {Matrix}
+ * @param [dim] {Number}
+ * @returns {Matrix}
+ */
+export function dot(A,B,dim){
+  A=from(A);
+  B=from(B);
+  const [ah,aw]=A.size, [bh,bw]=B.size;
+  if (!dim){
+    if (ah>1 && bh>1 && ah===bh) dim=1;
+    else if (aw>1 && bw>1 && aw===bw) dim=2;
+    else throw E.MatrixError(E.InvalidDimensions);
+  } else if (
+    (dim===1 && (ah===1 || bh===1 || ah!==bh)) ||
+    (dim===2 && (aw===1 || bw===1 || aw!==bw))
+  ) throw E.MatrixError(E.InvalidDimensions);
+  return sum(product(A,B),null,dim);
+}
+

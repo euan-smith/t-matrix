@@ -2,9 +2,10 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
-import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross,mapMany} from "../src/operations";
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross,mapMany,dot} from "../src/operations";
 import {from} from "../src/core";
 import * as E from "../src/errors";
+import {magic} from "../src/extras";
 
 const m=from([[1,2,4],[8,16,32],[64,128,256]]);
 
@@ -236,6 +237,34 @@ describe('grid',function(){
   });
 });
 
+describe('dot', function(){
+  it('calculates the dot product of two simple vectors', function(){
+    expect([...dot([1,0,0],[0,1,0])]).to.eql([0]);
+    expect([...dot([1,0,0],[0,0,1])]).to.eql([0]);
+    expect([...dot([0,2,0],[0,0,2])]).to.eql([0]);
+    expect([...dot([1,2,3],[1,2,3])]).to.eql([14]);
+    const r=rand(3,1);
+    expect([...dot(r,r)]).to.eql([...dot(r.t,r.t)]);
+  });
+  it('permutation makes no difference', function(){
+    const r1=rand(3,1), r2=rand(3,1);
+    expect([...dot(r1,r2)]).to.eql([...dot(r2,r1)]);
+  });
+  it('takes notice of the supplied dimension', function(){
+    const a=magic(3);
+    expect([...dot(a,a,1)]).to.not.eql([...dot(a,a,2)]);
+  });
+  it('thows an error if the matrix size is wrong', function(){
+    const a=rand(4,3), b=rand(4,1), c=rand(4,2);
+    expect(()=>dot(a,a.t)).to.throw(E.InvalidDimensions);
+    expect(()=>dot(a,b.t)).to.throw(E.InvalidDimensions);
+    expect(()=>dot(a,b,2)).to.throw(E.InvalidDimensions);
+    expect(()=>dot(a,c,2)).to.throw(E.InvalidDimensions);
+    expect(()=>dot(a.t,b.t,1)).to.throw(E.InvalidDimensions);
+    expect(()=>dot(a.t,c.t,1)).to.throw(E.InvalidDimensions);
+  })
+});
+
 describe('cross', function(){
   it('calculates the cross product of two simple vectors',function(){
     expect([...cross([1,0,0],[0,1,0])]).to.eql([0,0,1]);
@@ -273,6 +302,7 @@ describe('cross', function(){
     expect([...cross(a.t,b.t)]).to.eql([...cross(b.t,a.t)].map(v=>-v));
   });
 });
+
 describe('mapMany',function(){
   it('maps from many matrices to one', function(){
     const [R,C] = grid([0,3],[0,4]);

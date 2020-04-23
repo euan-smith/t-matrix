@@ -1,5 +1,6 @@
 import {COLS, DATA, ROWS, METHOD} from "./const";
 import {from, mixin} from "./core";
+// import {mapIter} from "./tools";
 
 /**
  * Iterate over the rows.
@@ -54,3 +55,15 @@ cols[METHOD]='cols';
  */
 mixin('toJSON',m=>[...rows(m)]);
 
+
+//Need to consider if these should map arrays=>arrays, matrices=>matrices or what
+//I worry that, while what I am doing is expressive, it is not very efficient
+// export function mapRows(m,fn){
+//   return from([...mapIter(rows(m),fn)]);
+// }
+// mapRows[METHOD]='mapRows';
+//
+// export function mapCols(m,fn){
+//   return from([...mapIter(cols(m),fn)]).t;
+// }
+// mapCols[METHOD]='mapCols';

@@ -566,6 +566,9 @@ export function magic(n){
 <dt>Matrix.<a href="#cross">cross(A, B, [dim])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Calculate the cross product(s) of two vectors or sets of vectors.</p>
 </dd>
+<dt>Matrix.<a href="#dot">dot(A, B, [dim])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Calculate the scalar dot product(s) of two vectors or sets of vectors.</p>
+</dd>
 </dl>
 
 ## Other Matrix Functions
@@ -1449,6 +1452,31 @@ must be consistent between the two matrices, and the returned matrix will use th
 a single vector, the cross product of those vectors will be returned.  If both contain N vectors, then the returned
 matrix will contain the N cross products of each vector pair.  If one matrix has 1 vector and the other N then the
 returned matrix will be the N cross products of the single vector with each of N vectors from the other matrix.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| A | [<code>Matrix</code>](#Matrix) | 
+| B | [<code>Matrix</code>](#Matrix) | 
+| [dim] | <code>Number</code> | 
+
+**Example**  
+```js
+import * as Matrix from 't-matrix';
+console.log([...Matrix.cross([1,0,0],[0,1,0])]); // should be [0,0,1]
+```
+<br>
+<a name="dot"></a>
+
+## Matrix.dot(A, B, [dim]) ⇒ [<code>Matrix</code>](#Matrix)
+*Calculate the scalar dot product(s) of two vectors or sets of vectors.*
+
+Both matrices must contain either 1 or N row vectors or column vectors of equal length.  The orientation of the vectors
+must be consistent between the two matrices, and the returned matrix will use the same orientation.  If both contain
+a single vector, the dot product of those vectors will be returned as a scalar value.  If both contain N vectors, then the returned
+matrix will contain the N dot products of each vector pair.  If one matrix has 1 vector and the other N then the
+returned matrix will be the N dot products of the single vector with each of N vectors from the other matrix.
 
 **Category**: operation  
 
