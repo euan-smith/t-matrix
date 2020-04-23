@@ -79,6 +79,9 @@ The current plan for future versions. Obviously the version numbers further out 
   - More doc typo/inconsistency corrections.
   - Added a cross product operation and testing.
   - Updated devDependencies to remove vulnerabilities.
+- v1.0.6
+  - Added testing and coverage badges
+  - Added a dot product operation and testing
 
 # <a id="installation"></a> Installation
 ```
