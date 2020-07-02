@@ -1,4 +1,4 @@
-import {Matrix, isMatrix, _from} from "./core";
+import {Matrix, isMatrix, from} from "./core";
 import {ROWS,COLS,DATA,METHOD} from "./const";
 import {rows, cols} from "./conversions";
 import {mapIter, zipIters, isNum, toList, repeat} from "./tools";
@@ -171,27 +171,25 @@ mapMany[METHOD]='mapMany';
 /**
  * Creates a new binary matrix with the results of calling a provided function on every element in the supplied set of one or more.
  * @param matrices {...(Matrix|Number)}
- * @param [fn] {Function} If no function is supplied then
+ * @param [fn] {Function} Optional for the special case of a single parameter, mandatory otherwise
  * @category operation
  * @returns {Matrix}
  * @example
  * //Sum only the values of a matrix above a threshold
  * import * as Matrix from 't-matrix';
- * const m = Matrix.rand(10);
+ * const m = Matrix.magic(10);
  * const selection = Matrix.bin(m, v=>v>0.5);
  * const sum = Matrix.sum(m.get(selection));
+ *
  */
 export function bin(...matrices){
-  if (matrices.length === 1){
-    return _from(matrices[0],{logical:true})
-  }
-  let fn= isMatrix(matrices[matrices.length-1]) ? ([v])=>v : matrices.pop();
-  return _mapMany(a=>fn.apply(null,a)?1:0, {logical:true}, ...matrices);
+  const fn = matrices.length === 1 ? v=>v : matrices.pop();
+  return _mapMany(a=>fn.apply(null,a)?1:0, {binary:true}, ...matrices);
 }
 bin[METHOD]='bin';
 
 function _mapMany(fn, opts, ...matrices){
-  matrices = matrices.map(m=>isNum(m)?_from([m]):_from(m));
+  matrices = matrices.map(m=>isNum(m)?from([m]):from(m));
   const [h,w]=matrices.reduce(([h,w],m)=>{
     const [hm,wm]=m.size;
     return [hm>h?hm:h, wm>w?wm:w]
@@ -237,7 +235,7 @@ export function mult(...matrices){
   for(let matrix of matrices){
     if (isNum(matrix)) s*=matrix;
     else {
-      matrix=_from(matrix);
+      matrix=from(matrix);
       if (!m){
         m=matrix;
         [h,k]=m.size;
@@ -276,7 +274,7 @@ function *_mult(a,b,K){
  * @returns {number}
  */
 export function det(matrix){
-  matrix=_from(matrix);
+  matrix=from(matrix);
   const [h,w] = matrix.size;
   if (h!==w) return 0;
   if (h<4){
@@ -303,7 +301,7 @@ det[METHOD]='det';
  * @returns {Matrix}
  */
 export function ldiv(A,B){
-  A=_from(A);B=_from(B);
+  A=from(A);B=from(B);
   const working = A.clone(), {[ROWS]:Rw,[COLS]:Cw,[DATA]:Dw}=working;
   const rtn = B.clone(), {[ROWS]:Rr,[COLS]:Cr,[DATA]:Dr}=rtn;
   const [h,] = B.size;
@@ -375,7 +373,7 @@ inv[METHOD]='inv';
  * @returns {Matrix}
  */
 export function abs(matrix){
-  return _from(matrix).map(Math.abs);
+  return from(matrix).map(Math.abs);
 }
 abs[METHOD]='abs';
 
@@ -419,8 +417,8 @@ export function grid(rows,cols){
  *
  */
 export function cross(A,B,dim){
-  A=_from(A);
-  B=_from(B);
+  A=from(A);
+  B=from(B);
   const [ah,aw]=A.size, [bh,bw]=B.size;
   if (!dim){
     if (ah===3 && bh===3) dim=1;
@@ -467,8 +465,8 @@ function* _cross(a,b){
  * @returns {Matrix}
  */
 export function dot(A,B,dim){
-  A=_from(A);
-  B=_from(B);
+  A=from(A);
+  B=from(B);
   const [ah,aw]=A.size, [bh,bw]=B.size;
   if (!dim){
     if (ah>1 && bh>1 && ah===bh) dim=1;

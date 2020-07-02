@@ -2,8 +2,8 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
-import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross,mapMany,dot} from "../src/operations";
-import {from} from "../src/core";
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross,mapMany,dot,bin} from "../src/operations";
+import {from, isBinary} from "../src/core";
 import * as E from "../src/errors";
 import {magic} from "../src/extras";
 
@@ -76,7 +76,7 @@ describe('sum',function(){
   it('returns the col min',function(){
     expect([...sum(m,null,2)]).to.eql([7,56,448]);
   });
-  it('returns the matrix min',function(){
+  it('returns the matrix sum',function(){
     expect(sum(m)).to.equal(511);
   });
   it('adds two matrices of the same size',function(){
@@ -310,3 +310,24 @@ describe('mapMany',function(){
     expect(L.toJSON()).to.eql([[0,4],[3,5]])
   })
 });
+
+describe('bin', function(){
+  it('creates a binary array in a from-like way', function(){
+    const b=bin([[0,1],[2,0]]);
+    expect(isBinary(b)).to.equal(true);
+    expect(b.toJSON()).to.eql([[0,1],[1,0]])
+  });
+  it('creates a binary array from a matrix', function(){
+    const b=bin(eye(2));
+    expect(isBinary(b)).to.equal(true);
+    expect(b.toJSON()).to.eql([[1,0],[0,1]])
+  });
+  it('creates a binary array from a matrix plus a function', function(){
+    const b = bin(magic(4),v=>v>8);
+    expect(b.toJSON()).to.eql([[1,0,0,1],[0,1,1,0],[1,0,0,1],[0,1,1,0]])
+  })
+  it('creates a binary array from multiple matrices and a function', function(){
+    const b = bin(magic(4), magic(4).t, (a,b)=>a>b);
+    expect(sum(b)).to.equal(6);
+  })
+})

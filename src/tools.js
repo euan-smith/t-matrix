@@ -145,13 +145,6 @@ export function *mapIter(iter,fn){
 }
 
 const Si=Symbol.iterator;
-export function *filterIters(valueIter,filterIter){
-  const vi=valueIter[Si](), fi=filterIter[Si]();
-  const vr=vi.next(), fr=fi.nect();
-  while(!vr.done && !fr.done){
-    if (fr.value) yield vr.value;
-  }
-}
 
 export function *repeat(val, count){
   for (let i=0;i<count;i++) yield val;

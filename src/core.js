@@ -1,23 +1,23 @@
 import {DATA,ROWS,COLS,METHOD} from "./const";
 
-import {isNum, range, isFunction, isArray, mapIter, filterIters, flatten} from "./tools";
+import {isNum, range, isFunction, isArray, mapIter, flatten} from "./tools";
 
 const NUMERICAL = Float64Array, BINARY = Uint8Array, INDEX = Uint32Array;
 
 function *filterIndices(R,Rl,C,Cl,binary){
-  const lD=binary[DATA], lR=binary[ROWS], lC=binary[COLS];
-  if (lR.length!==Rl || lC.length!==Cl) throw new Error('Matrix::binary addressing error, matrix dimensions must agree');
+  const bD=binary[DATA], bR=binary[ROWS], bC=binary[COLS];
+  if (bR.length!==Rl || bC.length!==Cl) throw new Error('Matrix::binary addressing error, matrix dimensions must agree');
   for(let ri=0; ri<Rl; ri++)
     for(let ci=0; ci<Cl; ci++)
-      if (lD[lR[ri]+lC[ci]]) yield R[ri]+C[ci];
+      if (bD[bR[ri]+bC[ci]]) yield R[ri]+C[ci];
 }
 
 function *filterIndex(I,Il,binary){
-  const lD=binary[DATA], lR=binary[ROWS], lC=binary[COLS], lRl=lR.length, lCl=lC.length;
-  if (lRl*lCl!==Il) throw new Error('Matrix::binary addressing error, matrix element count must agree with dimension size');
-  for (let i=0, ri=0; ri<lRl; ri++)
-    for(let ci=0; ci<lCl; ci++, i++)
-      if (lD[lR[ri]+lC[ci]]) yield I[i];
+  const bD=binary[DATA], bR=binary[ROWS], bC=binary[COLS], bRl=bR.length, bCl=bC.length;
+  if (bRl*bCl!==Il) throw new Error('Matrix::binary addressing error, matrix element count must agree with dimension size');
+  for (let i=0, ri=0; ri<bRl; ri++)
+    for(let ci=0; ci<bCl; ci++, i++)
+      if (bD[bR[ri]+bC[ci]]) yield I[i];
 }
 
 function getIndices(R, Rl, C, Cl, rows) {
@@ -278,20 +278,16 @@ class Matrix{
  * check = Matrix.from(m) === m; //true
  */
 export function from(data){
-  return _from(data);
-}
-
-export function _from(data, opts={}){
   if (isMatrix(data)) return data;
   if (isArray(data) && data.length){
     if (isNum(data[0])) {
       data = [...range(data)];
-      return new Matrix(data.length, [0], data, opts);
+      return new Matrix(data.length, [0], data);
     }
     if (isArray(data[0])){
       data = data.map(d=>[...range(d)]);
       const rows = data.length, cols = data[0].length;
-      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,flatten(data), opts);
+      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,flatten(data));
     }
   }
   throw new TypeError('Matrix::from Unsupported data type');

@@ -5,7 +5,8 @@ import {Matrix,from,mixin} from "../src/core";
 import {METHOD} from "../src/const";
 import {eye,zeros} from "../src/create";
 import * as Operations from "../src/operations";
-
+import * as Manipulations from "../src/manipulations"
+import {magic} from "../src/extras";
 
 
 describe('Matrix',function(){
@@ -59,6 +60,13 @@ describe('Matrix',function(){
     it('can flip the cols of a matrix',function(){
       const m=new Matrix(2,3,[1,2,3,4,5,6]);
       expect([...m.get(':',[-1,'::',-1,0])]).to.eql([3,2,1,6,5,4]);
+    });
+    it('can use binary addressing', function(){
+      const m=magic(4);
+      const d = Manipulations.diag(m);
+      const b = Operations.bin(eye(4));
+      m.get(b);
+      expect(m.get(b).toJSON()).to.eql(d.toJSON());
     })
   });
   describe('set',function(){
