@@ -1,7 +1,39 @@
 import {DATA,ROWS,COLS,METHOD} from "./const";
 
-import {isNum, range, isFunction, isArray, mapIter, flatten} from "./tools";
+import {isNum, range, isFunction, isArray, mapIter, filterIters, flatten} from "./tools";
 
+const NUMERICAL = Float64Array, BINARY = Uint8Array, INDEX = Uint32Array;
+
+function *filterIndices(R,Rl,C,Cl,binary){
+  const lD=binary[DATA], lR=binary[ROWS], lC=binary[COLS];
+  if (lR.length!==Rl || lC.length!==Cl) throw new Error('Matrix::binary addressing error, matrix dimensions must agree');
+  for(let ri=0; ri<Rl; ri++)
+    for(let ci=0; ci<Cl; ci++)
+      if (lD[lR[ri]+lC[ci]]) yield R[ri]+C[ci];
+}
+
+function *filterIndex(I,Il,binary){
+  const lD=binary[DATA], lR=binary[ROWS], lC=binary[COLS], lRl=lR.length, lCl=lC.length;
+  if (lRl*lCl!==Il) throw new Error('Matrix::binary addressing error, matrix element count must agree with dimension size');
+  for (let i=0, ri=0; ri<lRl; ri++)
+    for(let ci=0; ci<lCl; ci++, i++)
+      if (lD[lR[ri]+lC[ci]]) yield I[i];
+}
+
+function getIndices(R, Rl, C, Cl, rows) {
+  return [
+    isBinary(rows) ?
+      INDEX.from(filterIndices(R, Rl, C, Cl, rows)) :
+      INDEX.from(isMatrix(rows) ? rows : range(rows, Rl * Cl)).map(i => R[(i / Cl) | 0] + C[i % Cl]),
+    new INDEX(1)
+  ]
+}
+
+function getIndex(I,Il,idx){
+  return isBinary(idx)?
+    INDEX.from(filterIndex(I,Il,idx)):
+    INDEX.from(isMatrix(idx) ? idx : range(idx,Il)).map(r=>I[r]);
+}
 
 
 /**
@@ -12,6 +44,13 @@ import {isNum, range, isFunction, isArray, mapIter, flatten} from "./tools";
  */
 export const isMatrix = val => val instanceof Matrix;
 
+/**
+ * Tests if a value is an instance of a binary Matrix
+ * @function
+ * @param val {*} The value to test.
+ * @returns {boolean} 'true' if `val` is an instance of a binary Matrix, 'false' otherwise.
+ */
+export const isBinary = val => val instanceof Matrix && val[DATA].constructor === BINARY;
 
 /**
  * @summary The core matrix class
@@ -23,16 +62,23 @@ class Matrix{
   /**
    * @hideconstructor
    */
-  constructor(rows,cols,data){
+  constructor(rows,cols,data,opts){
+    const {binary = false} = opts || {};
     if (isNum(cols)) cols = [':',cols-1];
-    if (Array.isArray(cols)) cols = Uint32Array.from([...range(cols)]);
+    if (Array.isArray(cols)) cols = INDEX.from([...range(cols)]);
     const span = cols[cols.length-1]+1;
     if (isNum(rows)) rows = ['::',span,span*(rows-1)];
-    if (Array.isArray(rows)) rows = Uint32Array.from([...range(rows)]);
+    if (Array.isArray(rows)) rows = INDEX.from([...range(rows)]);
     const size = span + rows[rows.length-1];
-    if (!data) data = new Float64Array(size);
-    else if (isNum(data)) data = new Float64Array(size).fill(data);
-    else if (!(data instanceof Float64Array)) data = Float64Array.from(data);
+    if (binary){
+      if (!data) data = new BINARY(size);
+      else if (isNum(data)) data = new BINARY(size).fill(data);
+      else if (!(data instanceof BINARY)) data = BINARY.from(data);
+    } else {
+      if (!data) data = new NUMERICAL(size);
+      else if (isNum(data)) data = new NUMERICAL(size).fill(data);
+      else if (!(data instanceof NUMERICAL)) data = NUMERICAL.from(data);
+    }
     if (data.length<size){
       throw new Error('Matrix:: Data array too small for specified rows and columns');
     }
@@ -86,8 +132,8 @@ class Matrix{
 
   /**
    * Return a value or subset of a matrix.  The matrix subset is a view into the current matrix.
-   * @param rows {Range|Number} Row index or indices.  zero-based
-   * @param cols {Range|Number} Column index or indices.  zero-based
+   * @param rows {Matrix|Range|Number} Zero-based row or linear index or indices or a binary matrix
+   * @param [cols] {Matrix|Range|Number} Zero-based column index or indices or a binary matrix
    * @returns {Matrix|Number}
    * @example
    * const m=Matrix.from([[1,2],[3,4]]);
@@ -110,9 +156,14 @@ class Matrix{
   get(rows,cols){
     const D=this[DATA], R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
     if (isNum(rows) && isNum(cols)) return D[R[(rows+Rl)%Rl]+C[(cols+Cl)%Cl]];
+    if (arguments.length === 1){
+      return new Matrix(
+        ...getIndices(R, Rl, C, Cl, rows),
+        D);
+    }
     return new Matrix(
-      Uint32Array.from([...range(rows,Rl)].map(r=>R[r])),
-      Uint32Array.from([...range(cols,Cl)].map(c=>C[c])),
+      getIndex(R,Rl,rows),
+      getIndex(C,Cl,cols),
       D);
   }
 
@@ -140,14 +191,24 @@ class Matrix{
   set(rows,cols,val){
     let R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
     const D=this[DATA];
-    if (isNum(rows) && isNum(cols) && isNum(val)) D[R[rows]+C[cols]]=val;
-    if (arguments.length===1){
-      val=rows;
-    } else {
-      R = Uint32Array.from([...range(rows,Rl)].map(r=>R[r]));
-      Rl = R.length;
-      C = Uint32Array.from([...range(cols,Cl)].map(c=>C[c]));
-      Cl = C.length;
+    if (isNum(rows) && isNum(cols) && isNum(val)) {
+      D[R[rows]+C[cols]]=val;
+      return this;
+    }
+    switch(arguments.length){
+      case 1:
+        val = rows;
+        break;
+      case 2:
+        [R,C] = getIndices(R, Rl, C, Cl, rows)
+        Rl = R.length;
+        Cl = 1;
+        break;
+      case 3:
+        R = getIndex(R,Rl,rows);
+        Rl = R.length;
+        C = getIndex(C,Cl,cols);
+        Cl = C.length;
     }
     if (isNum(val)){
       for(let r of R) for(let c of C)
@@ -217,16 +278,20 @@ class Matrix{
  * check = Matrix.from(m) === m; //true
  */
 export function from(data){
+  return _from(data);
+}
+
+export function _from(data, opts={}){
   if (isMatrix(data)) return data;
   if (isArray(data) && data.length){
     if (isNum(data[0])) {
       data = [...range(data)];
-      return new Matrix(data.length, [0], data);
+      return new Matrix(data.length, [0], data, opts);
     }
     if (isArray(data[0])){
       data = data.map(d=>[...range(d)]);
       const rows = data.length, cols = data[0].length;
-      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,flatten(data));
+      if (data.every(a=>a.length===cols)) return new Matrix(rows,cols,flatten(data), opts);
     }
   }
   throw new TypeError('Matrix::from Unsupported data type');
