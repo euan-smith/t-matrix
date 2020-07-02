@@ -67,6 +67,11 @@ describe('Matrix',function(){
       const b = Operations.bin(eye(4));
       m.get(b);
       expect(m.get(b).toJSON()).to.eql(d.toJSON());
+    });
+    it('thows an error when the binary addressing does not match', function(){
+      const m=magic(4);
+      const b = Operations.bin(eye(3));
+      expect(()=>m.get(b)).to.throw();
     })
   });
   describe('set',function(){
