@@ -71,9 +71,7 @@ class Matrix{
     if (Array.isArray(rows)) rows = INDEX.from([...range(rows)]);
     const size = span + rows[rows.length-1];
     if (binary){
-      if (!data) data = new BINARY(size);
-      else if (isNum(data)) data = new BINARY(size).fill(data);
-      else if (!(data instanceof BINARY)) data = BINARY.from(data);
+      if (!(data instanceof BINARY)) data = BINARY.from(data);
     } else {
       if (!data) data = new NUMERICAL(size);
       else if (isNum(data)) data = new NUMERICAL(size).fill(data);
@@ -155,23 +153,26 @@ class Matrix{
    */
   get(rows,cols){
     const D=this[DATA], R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
+    const binary = isBinary(this);
     if (isNum(rows) && isNum(cols)) return D[R[(rows+Rl)%Rl]+C[(cols+Cl)%Cl]];
     if (arguments.length === 1){
       return new Matrix(
         ...getIndices(R, Rl, C, Cl, rows),
-        D);
+        D,
+        {binary});
     }
     return new Matrix(
       getIndex(R,Rl,rows),
       getIndex(C,Cl,cols),
-      D);
+      D,
+      {binary});
   }
 
   /**
    * Set a value or range of values of the matrix
    * @param [rows] {Range|Number} Row index or indices.  zero-based
    * @param [cols] {Range|Number} Column index or indices.  zero-based
-   * @param val {Number|Matrix|Array} Values to assign to the specified range
+   * @param val {Number|Matrix|Array|Function|Boolean} Values to assign to the specified range or a function to modify the values
    * @returns {Matrix}
    * @example
    * const m=Matrix.zeros(3);
@@ -190,9 +191,9 @@ class Matrix{
    */
   set(rows,cols,val){
     let R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
-    const D=this[DATA];
+    const D=this[DATA], binary = isBinary(this);
     if (isNum(rows) && isNum(cols) && isNum(val)) {
-      D[R[rows]+C[cols]]=val;
+      D[R[rows]+C[cols]]=binary ? val ? 1 : 0 : val;
       return this;
     }
     switch(arguments.length){
@@ -203,6 +204,7 @@ class Matrix{
         [R,C] = getIndices(R, Rl, C, Cl, rows)
         Rl = R.length;
         Cl = 1;
+        val = cols;
         break;
       case 3:
         R = getIndex(R,Rl,rows);
@@ -211,13 +213,19 @@ class Matrix{
         Cl = C.length;
     }
     if (isNum(val)){
+      if (binary) val = val ? 1 : 0;
       for(let r of R) for(let c of C)
         D[r+c] = val;
       return this;
     }
     if (isFunction(val)){
-      for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
-        D[R[i]+C[j]] = val(D[R[i]+C[j]],i,j);
+      if (binary){
+        for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
+          D[R[i]+C[j]] = val(D[R[i]+C[j]],i,j) ? 1 : 0;
+      } else {
+        for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
+          D[R[i]+C[j]] = val(D[R[i]+C[j]],i,j);
+      }
       return this;
     }
     if (!isMatrix(val)) val = from(val);
@@ -226,8 +234,13 @@ class Matrix{
     let vD = val[DATA], vR=val[ROWS], vC = val[COLS];
     //if this is the same matrix, avoid issues with swaps by copying the data first
     if (vD===D)vD=D.slice();
-    for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
-      D[R[i]+C[j]] = vD[vR[i]+vC[j]];
+    if (binary){
+      for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
+        D[R[i]+C[j]] = vD[vR[i]+vC[j]] ? 1 : 0;
+    } else {
+      for (let i=0;i<Rl;i++) for (let j=0;j<Cl;j++)
+        D[R[i]+C[j]] = vD[vR[i]+vC[j]];
+    }
     return this;
   }
 

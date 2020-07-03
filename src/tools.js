@@ -1,4 +1,4 @@
-export const isNum = v => typeof v === "number";
+export const isNum = v => typeof v === "number" || typeof v === "boolean";
 export const isArray = Array.isArray;
 export const isFunction = f => typeof f === "function";
 

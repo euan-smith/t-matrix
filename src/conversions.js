@@ -47,13 +47,13 @@ cols[METHOD]='cols';
  * @returns {Array.Array.Number}
  * @example
  * const m=Matrix.from([0,':',5]); //will create a column vector
- * console.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]
- * console.log(m.t.toJSON()); //[0,1,2,3,4,5]
+ * console.log(m.toJSON()); //[0,1,2,3,4,5]
+ * console.log(m.t.toJSON()); //[[0,1,2,3,4,5]]
  * console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]
  * //enables a matrix instance to be serialised by JSON.stringify
- * console.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
+ * console.log(JSON.stringify(m)); //"[0,1,2,3,4,5]"
  */
-mixin('toJSON',m=>[...rows(m)]);
+mixin('toJSON',m=>m[COLS].length===1?[...m]:[...rows(m)]);
 
 
 //Need to consider if these should map arrays=>arrays, matrices=>matrices or what

@@ -1,9 +1,9 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {Matrix,from,mixin} from "../src/core";
+import {Matrix, from, mixin, isBinary} from "../src/core";
 import {METHOD} from "../src/const";
-import {eye,zeros} from "../src/create";
+import {eye,zeros,rand} from "../src/create";
 import * as Operations from "../src/operations";
 import * as Manipulations from "../src/manipulations"
 import {magic} from "../src/extras";
@@ -21,6 +21,9 @@ describe('Matrix',function(){
     it('throws an error if there is not enough data',function(){
       expect(()=>new Matrix(2,3,[1,2])).to.throw();
     });
+    it('creates a binary matrix', function(){
+      expect(isBinary(new Matrix(1,1,[1],{binary: true})))
+    })
   });
   describe('instance',function(){
     it('is iterable',function(){
@@ -61,23 +64,58 @@ describe('Matrix',function(){
       const m=new Matrix(2,3,[1,2,3,4,5,6]);
       expect([...m.get(':',[-1,'::',-1,0])]).to.eql([3,2,1,6,5,4]);
     });
-    it('can use binary addressing', function(){
+    it('can use binary linear addressing', function(){
       const m=magic(4);
       const d = Manipulations.diag(m);
       const b = Operations.bin(eye(4));
       m.get(b);
       expect(m.get(b).toJSON()).to.eql(d.toJSON());
     });
-    it('thows an error when the binary addressing does not match', function(){
+    it('throws an error when the binary addressing does not match', function(){
       const m=magic(4);
       const b = Operations.bin(eye(3));
       expect(()=>m.get(b)).to.throw();
+    });
+    it('can use binary vector addressing', function(){
+      const m=magic(4);
+      const b=Operations.bin([1,0,0,1]);
+      expect(m.get(b,b).toJSON()).to.eql([ [ 16, 13 ], [ 4, 1 ] ]);
+    });
+    it('can use linear addressing', function(){
+      const m=magic(4);
+      console.log(m.toJSON());
+      expect(m.get([0,3,12,15]).toJSON()).to.eql([ 16, 13, 4, 1 ]);
+      expect(m.get(from([0,3,12,15])).toJSON()).to.eql([ 16, 13, 4, 1 ]);
+    })
+    it('binary vector addressing throws an error when sizes do not match', function(){
+      const m=magic(4);
+      const b=Operations.bin([1,0,1]);
+      expect(()=>m.get(b,b).toJSON()).to.throw();
+    });
+    it('can mix different types of index addressing', function(){
+      const m=magic(4);
+      const b=Operations.bin([1,0,0,1]);
+      expect(m.get([0,3],b).toJSON()).to.eql([ [ 16, 13 ], [ 4, 1 ] ]);
+      expect(m.get(0,b).toJSON()).to.eql([ [ 16, 13 ] ]);
+      expect(m.get(from([[0,3]]),b).toJSON()).to.eql([ [ 16, 13 ], [ 4, 1 ] ]);
+    });
+    it('returns a column vector', function(){
+      const m=magic(3);
+      expect(m.get(':').toJSON()).to.eql([8,1,6,3,5,7,4,9,2])
+    });
+    it('gets a submatrix of a binary matrix', function(){
+      const m=Operations.bin(magic(4).map(v=>v%2));
+      const s = m.get([0,1],[0,1]);
+      expect(isBinary(s));
+      expect(s.toJSON()).to.eql([[0,0],[1,1]]);
+      s.set(0,0,2);
+      expect(m.get(0,0)).to.equal(1);
     })
   });
   describe('set',function(){
     it('can set a submatrix',function(){
       const m=zeros(4);
-      expect([...m.set([0,1],[0,1],1)]).to.eql([1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0]);
+      expect([...m.set([0,1],[0,1],2)]).to.eql([2,2,0,0,2,2,0,0,0,0,0,0,0,0,0,0]);
     });
     it('can make one matrix equal another',function(){
       const m=zeros(2);
@@ -89,12 +127,33 @@ describe('Matrix',function(){
     });
     it('throws an error when the set size does not match',function(){
       expect(()=>eye(3).set(eye(2))).to.throw();
+    });
+    it('can use a binary matrix to set values', function(){
+      const m=rand(10).map(v=>v-0.5);
+      const b=Operations.bin(m,v=>v<0);
+      m.set(b,0);
+      expect(Operations.sum(m.get(b))).to.equal(0);
+    });
+    it('can ensure set binary matrix values are restricted to 1 or 0', function(){
+      const m=Operations.bin(zeros(3));
+      m.set(0,0,3);
+      m.set(0,[1,2],4);
+      m.set([1,2],0,(v,r,c)=>r+c);
+      m.set([1,2],[1,2],[[0,1],[1,0]]);
+      expect(m.toJSON()).to.eql([[1,1,1],[0,0,1],[1,1,0]]);
+      m.set(0,0,false);
+      m.set(0,[1,2],0);
+      expect(m.toJSON()).to.eql([[0,0,0],[0,0,1],[1,1,0]]);
     })
   });
   describe('toJSON',function(){
     it('can serialise to a nested array',function(){
       const m=eye(2);
       expect(JSON.stringify(m)).to.equal("[[1,0],[0,1]]");
+    })
+    it('can serialise a column vector to a simple array', function(){
+      const m=from([1,2,3,4]);
+      expect(JSON.stringify(m)).to.equal("[1,2,3,4]")
     })
   })
 });
