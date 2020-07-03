@@ -545,6 +545,9 @@ export function magic(n){
 <dt>Matrix.<a href="#mapMany">mapMany(...matrices, fn)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Creates a new matrix with the results of calling a provided function on every element in the supplied set of matrices.</p>
 </dd>
+<dt>Matrix.<a href="#bin">bin(...matrices, [fn])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Creates a new binary matrix with the results of calling a provided function on every element in the supplied set of one or more.</p>
+</dd>
 <dt>Matrix.<a href="#mult">mult(...matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Performs matrix multiplication on a list of matrices and/or scalars</p>
 </dd>
@@ -586,6 +589,9 @@ export function magic(n){
 <dt>Matrix.<a href="#isMatrix">isMatrix(val)</a> ⇒ <code>boolean</code></dt>
     <dd><p>Tests if a value is an instance of a Matrix</p>
 </dd>
+<dt>Matrix.<a href="#isBinary">isBinary(val)</a> ⇒ <code>boolean</code></dt>
+    <dd><p>Tests if a value is an instance of a binary Matrix</p>
+</dd>
 <dt>Matrix.<a href="#mixin">mixin(...methods)</a></dt>
     <dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
 </dd>
@@ -620,7 +626,7 @@ export function magic(n){
     * [.size](#Matrix+size) ⇒ <code>Array.&lt;Number&gt;</code>
     * [.t](#Matrix+t) ⇒ [<code>Matrix</code>](#Matrix)
     * [\[Symbol\.iterator\]()](#Matrix+[Symbol-iterator]) ⇒ <code>IterableIterator.&lt;Number&gt;</code>
-    * [.get(rows, cols)](#Matrix+get) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+    * [.get(rows, [cols])](#Matrix+get) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
     * [.set([rows], [cols], val)](#Matrix+set) ⇒ [<code>Matrix</code>](#Matrix)
     * [.clone([rows], [cols])](#Matrix+clone) ⇒ [<code>Matrix</code>](#Matrix)
     * [.map(fn)](#Matrix+map) ⇒ [<code>Matrix</code>](#Matrix)
@@ -638,7 +644,7 @@ Convert the matrix to an array of number arrays.
 
 **Example**  
 ```js
-const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJSON()); //[[0],[1],[2],[3],[4],[5]]console.log(m.t.toJSON()); //[0,1,2,3,4,5]console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]//enables a matrix instance to be serialised by JSON.stringifyconsole.log(JSON.stringify(m)); //"[[0],[1],[2],[3],[4],[5]]"
+const m=Matrix.from([0,':',5]); //will create a column vectorconsole.log(m.toJSON()); //[0,1,2,3,4,5]console.log(m.t.toJSON()); //[[0,1,2,3,4,5]]console.log(Matrix.reshape(m,2,3).toJSON()); //[[0,1,2],[3,4,5]]//enables a matrix instance to be serialised by JSON.stringifyconsole.log(JSON.stringify(m)); //"[0,1,2,3,4,5]"
 ```
 <br>
 <a name="Matrix+size"></a>
@@ -683,14 +689,14 @@ console.log([...m]); //=> [1,2,3,4,5,6];
 <br>
 <a name="Matrix+get"></a>
 
-### matrix.get(rows, cols) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
+### matrix.get(rows, [cols]) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
 Return a value or subset of a matrix.  The matrix subset is a view into the current matrix.
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| rows | [<code>Range</code>](#Range) \| <code>Number</code> | Row index or indices.  zero-based |
-| cols | [<code>Range</code>](#Range) \| <code>Number</code> | Column index or indices.  zero-based |
+| rows | [<code>Matrix</code>](#Matrix) \| [<code>Range</code>](#Range) \| <code>Number</code> | Zero-based row or linear index or indices or a binary matrix |
+| [cols] | [<code>Matrix</code>](#Matrix) \| [<code>Range</code>](#Range) \| <code>Number</code> | Zero-based column index or indices or a binary matrix |
 
 **Example**  
 ```js
@@ -707,7 +713,7 @@ Set a value or range of values of the matrix
 | --- | --- | --- |
 | [rows] | [<code>Range</code>](#Range) \| <code>Number</code> | Row index or indices.  zero-based |
 | [cols] | [<code>Range</code>](#Range) \| <code>Number</code> | Column index or indices.  zero-based |
-| val | <code>Number</code> \| [<code>Matrix</code>](#Matrix) \| <code>Array</code> | Values to assign to the specified range |
+| val | <code>Number</code> \| [<code>Matrix</code>](#Matrix) \| <code>Array</code> \| <code>function</code> \| <code>Boolean</code> | Values to assign to the specified range or a function to modify the values |
 
 **Example**  
 ```js
@@ -777,6 +783,18 @@ Iterate over the columns.
 Tests if a value is an instance of a Matrix
 
 **Returns**: <code>boolean</code> - 'true' if `val` is an instance of Matrix, 'false' otherwise.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| val | <code>\*</code> | The value to test. |
+
+<br>
+<a name="isBinary"></a>
+
+## Matrix.isBinary(val) ⇒ <code>boolean</code>
+Tests if a value is an instance of a binary Matrix
+
+**Returns**: <code>boolean</code> - 'true' if `val` is an instance of a binary Matrix, 'false' otherwise.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -1183,6 +1201,23 @@ Creates a new matrix with the results of calling a provided function on every el
 **Example**  
 ```js
 //Calculate a gaussian function in 2D for a range -3:0.1:3 in x and y.import * as Matrix from 't-matrix';const [Y,X]=Matrix.grid([-3,'::',0.1,3]);const gauss=Matrix.mapMany(Y,X,(y,x)=>Math.exp(-Math.pow(x+y,2)));
+```
+<br>
+<a name="bin"></a>
+
+## Matrix.bin(...matrices, [fn]) ⇒ [<code>Matrix</code>](#Matrix)
+Creates a new binary matrix with the results of calling a provided function on every element in the supplied set of one or more.
+
+**Category**: operation  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| ...matrices | [<code>Matrix</code>](#Matrix) \| <code>Number</code> |  |
+| [fn] | <code>function</code> | Optional for the special case of a single parameter, mandatory otherwise |
+
+**Example**  
+```js
+//Sum only the values of a matrix above a thresholdimport * as Matrix from 't-matrix';const m = Matrix.magic(10);const selection = Matrix.bin(m, v=>v>0.5);const sum = Matrix.sum(m.get(selection));
 ```
 <br>
 <a name="mult"></a>
