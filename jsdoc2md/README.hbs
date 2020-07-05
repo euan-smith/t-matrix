@@ -3,11 +3,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/zakalwe314/t-matrix/badge.svg?branch=master)](https://coveralls.io/github/zakalwe314/t-matrix?branch=master)
 
 # t-matrix
-- [Aims](#aims)
-- [Status](#status)
-  - [Roadmap](#roadmap)
 - [Installation](#installation)
 - [Example Usage](#example-usage)
+- [Aims](#aims)
+- [Status](#status)
+  - [Release Notes](#release-notes)
+  - [Roadmap](#roadmap)
 - [Guide](#guide)
   - [Creating Matrices](#guide-creating)
   - [Matrix Methods and Properties](#guide-matrix)
@@ -19,73 +20,6 @@
   - [Helpers and Mixins](#guide-other)
 - [Tutorial - making magic squares](#tutorial)
 - [API reference](#api)
-
-
-
-# <a id="aims"></a> Aims
-- a small library with no dependencies
-- Be a familiar as possible to those used to other tools, in particular [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
-- based on linear double (float64) arrays for precision and speed
-- use row and column offset arrays so common operations, such as transpose or row/column swaps, are 'free' (no copying of data required)
-- an ES6 module - only use the methods you need.  If building with a tree-shaking bundler (e.g. rollup) then you only include what you use.
-- provide what you need for most linear algebra work
-- matrix construction (zeros, ones, eye, rand, diagonal, from arrays)
-- operations (add, multiple, map elements)
-- submatrices and transpose without copying data
-- a good balance between speed and ease of use (if you need super-fast operations on large matrices you may want to look elsewhere).
-- LU decomposition-based operations - inv, div, ldiv, det, solve
-- flexible, expressive, extendable.
-
-# <a id="status"></a> Status
-V1 now released.  Some changes from the initial 0.x versions are breaking as all of the code has been rewritten.
-Starting work on some of the more straightforward parts of 1.1 (cross, dot, etc).
-## <a id="roadmap"></a> Roadmap
-The current plan for future versions. Obviously the version numbers further out are more speculative.
-- v1.0
-  - Breaking from v0.x.x
-    - `Matrix.from` behaves differently
-    - Methods built on the base class reduced to a minimum (only include what you need)
-    - All arithmetic operations separately importable.
-    - A `mixin` function can be used to add methods to the class prototype.
-  - Constructors: zeros, ones, eye, rand, diag
-  - Core methods: get, set, t (transpose), map, clone, size
-  - expressive get and set methods ([Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)-like range selection and manipulation)
-  - Manipulations: reshape, diag, swapRows, swapCols, minor, repmat
-  - Matrix operations: mult (matrix), div, ldiv, det, inv, trace
-  - Element-wise operations (within and between matrices): product, sum, max, min
-  - minimal data copying
-  - dense matrices and vectors.
-  - iterables: for val of matrix, for row of rows(matrix) etc.
-  - composable: mixin functions to the Matrix prototype to customise your preferred usage.
-- v1.1
-  - binary matrices
-  - binary matrix addressing
-  - kron, shift
-  - norm, dot, cross
-- v1.2
-  - conv, grad, trapz, cumsum
-- v1.3
-  - LU and QR decomposition
-- after v1.3
-  - eigen, SVD
-  - fft and supporting methods
-  - sort, unique
-## <a id="release-notes"></a> Release Notes
-- v1.0.0
-  - Refactored to the new API, fully testing implemented and passing, documentation now derived from jsdoc.
-- v1.0.1 - v1.0.4
-  - Entirely documentation corrections and improvements.
-- v1.0.5
-  - More doc typo/inconsistency corrections.
-  - Added a cross product operation and testing.
-  - Updated devDependencies to remove vulnerabilities.
-- v1.0.6
-  - Added testing and coverage badges
-  - Added a dot product operation and testing
-- v1.0.7
-  - Binary matrices added
-  - Binary matrix addressing
-  - Texting and docs for binary matrices
 
 # <a id="installation"></a> Installation
 ```
@@ -104,7 +38,7 @@ import * as Matrix from 't-matrix';
 const M=Matrix.magic(5);
 
 //and a target vector (column matrix)
-const v=Matrix.vect([65,65,65,65,65])
+const v=Matrix.from([65,65,65,65,65])
 //the expected sum of any row of a magic square is (n^3 + n)/2, which for n=5 is 65.
 
 //then solve v = M * a by rearranging to M \ v = a
@@ -113,6 +47,73 @@ const a=Matrix.ldiv(M,v);
 //the answer should be [1,1,1,1,1] (plus some roundoff);
 console.log([...a]);
 ```
+
+# <a id="aims"></a> Aims
+- a small library with no dependencies
+- Be a familiar as possible to those used to other tools, in particular [Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)
+- based on linear double (float64) arrays for precision and speed
+- use row and column offset arrays so common operations, such as transpose or row/column swaps, are 'free' (no copying of data required)
+- an ES6 module - only use the methods you need.  If building with a tree-shaking bundler (e.g. rollup) then you only include what you use.
+- provide what you need for most linear algebra work
+- matrix construction (zeros, ones, eye, rand, diagonal, from arrays)
+- operations (add, multiple, map elements)
+- submatrices and transpose without copying data
+- a good balance between speed and ease of use (if you need super-fast operations on large matrices you may want to look elsewhere).
+- LU decomposition-based operations - inv, div, ldiv, det, solve
+- flexible, expressive, extendable.
+
+# <a id="status"></a> Status
+V1 now released.  Some changes from the initial 0.x versions are breaking as all of the code has been rewritten.
+As of v1.0.7 most of the way through implementing 1.1 - just kron (the Kronecker tensor product) left to do.
+
+## <a id="release-notes"></a> Release Notes
+- v1.0.0
+  - Refactored to the new API, fully testing implemented and passing, documentation now derived from jsdoc.
+- v1.0.1 - v1.0.4
+  - Entirely documentation corrections and improvements.
+- v1.0.5
+  - More doc typo/inconsistency corrections.
+  - Added a cross product operation and testing.
+  - Updated devDependencies to remove vulnerabilities.
+- v1.0.6
+  - Added testing and coverage badges
+  - Added a dot product operation and testing
+- v1.0.7
+  - Binary matrices added
+  - Binary matrix addressing
+  - Texting and docs for binary matrices
+
+## <a id="roadmap"></a> Roadmap
+The current plan for future versions. Obviously the version numbers further out are more speculative.
+- v1.0
+- Breaking from v0.x.x
+- `Matrix.from` behaves differently
+- Methods built on the base class reduced to a minimum (only include what you need)
+- All arithmetic operations separately importable.
+- A `mixin` function can be used to add methods to the class prototype.
+- Constructors: zeros, ones, eye, rand, diag
+- Core methods: get, set, t (transpose), map, clone, size
+- expressive get and set methods ([Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)-like range selection and manipulation)
+- Manipulations: reshape, diag, swapRows, swapCols, minor, repmat
+- Matrix operations: mult (matrix), div, ldiv, det, inv, trace
+- Element-wise operations (within and between matrices): product, sum, max, min
+- minimal data copying
+- dense matrices and vectors.
+- iterables: for val of matrix, for row of rows(matrix) etc.
+- composable: mixin functions to the Matrix prototype to customise your preferred usage.
+- v1.1
+- binary matrices
+- binary matrix addressing
+- kron, shift
+- norm, dot, cross
+- v1.2
+- conv, grad, trapz, cumsum
+- v1.
+- LU and QR decomposition
+- after v1.3
+- eigen, SVD
+- fft and supporting methods
+- sort, unique
 
 # <a id="guide"></a> Guide
 
