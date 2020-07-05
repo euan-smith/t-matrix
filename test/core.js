@@ -110,6 +110,9 @@ describe('Matrix',function(){
       expect(s.toJSON()).to.eql([[0,0],[1,1]]);
       s.set(0,0,2);
       expect(m.get(0,0)).to.equal(1);
+    });
+    it('returns a number from a single linear index', function(){
+      expect(magic(4).get(3)).to.equal(13);
     })
   });
   describe('set',function(){

@@ -129,33 +129,55 @@ class Matrix{
   get t(){return new Matrix(this[COLS],this[ROWS],this[DATA])}
 
   /**
-   * Return a value or subset of a matrix.  The matrix subset is a view into the current matrix.
+   * Return a value or subset of a matrix.  The matrix subset is a view into the current matrix. This means that _any_
+   * change to the returned matrix subset will also change the original matrix.  If a copy of the matrix data is desired
+   * then {@link clone} should be used.
    * @param rows {Matrix|Range|Number} Zero-based row or linear index or indices or a binary matrix
    * @param [cols] {Matrix|Range|Number} Zero-based column index or indices or a binary matrix
    * @returns {Matrix|Number}
    * @example
    * const m=Matrix.from([[1,2],[3,4]]);
-   * //Specify single indices to return a value
+   * // Specify single indices to return a value
    * m.get(0,0) //1
    *
-   * //The same indices in an array will return a matrix
+   * // The same indices in an array will return a matrix
    * m.get([0],[0]) //Matrix [1]
    *
-   * //A general {@link Range} can be specified.
-   * m.get(':',0) //Matrix [1;3]
-   * m.get(':',':') //The original matrix.
-   * m.get(['::',-1],':') //Return a matrix flipped vertically
+   * // A general {@link Range} can be specified.
+   * m.get(':',0) // Matrix [1;3]
+   * m.get(':',':') // The original matrix.
+   * m.get(['::',-1],':') // Return a matrix flipped vertically
    *
-   * //Any sub-matrix returned is a view into the source matrix.
+   * // Any sub-matrix returned is a view into the source matrix.
    * const a=zeros(4), b=a.get([1,2],[1,2]);
    * b.set(2);
-   * console.log(a.toJSON()) //[[0,0,0,0], [0,2,2,0], [0,2,2,0], [0,0,0,0]]
+   * console.log(a.toJSON())  // [[0,0,0,0], [0,2,2,0], [0,2,2,0], [0,0,0,0]]
+   *
+   * // Binary 1D matrices can also be used to select rows or columns
+   * const b = Matrix.bin([1,0,1,0]);
+   * const m = Matrix.magic(4);
+   * console.log(m.get(b,b).toJSON()); // [ [ 16, 3 ], [ 9, 6 ] ]
+   *
+   * // Linear indices can also be used.  The index is in **row major order**.
+   * // A single index returns a single value.
+   * const m = Matrix.magic(4);
+   * console.log(m.get(3)); // 13,
+   *
+   * // Ranges or matrices can be used.  A column vector will always be returned
+   * console.log(Matrix.magic(4).get([4,':',7]).toJSON()); // [ 5, 11, 10, 8 ]
+   **
+   * // A binary matrix can also be used.  This is often derived from the matrix itself
+   * const m = Matrix.magic(4);
+   * const b = Matrix.bin(m,v=>v>12);
+   * console.log(m.get(b).toJSON()); // [ 16, 13, 14, 15 ]
+   *
    */
   get(rows,cols){
     const D=this[DATA], R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
     const binary = isBinary(this);
     if (isNum(rows) && isNum(cols)) return D[R[(rows+Rl)%Rl]+C[(cols+Cl)%Cl]];
     if (arguments.length === 1){
+      if (isNum(rows)) return D[R[(rows / Cl) | 0] + C[rows % Cl]];
       return new Matrix(
         ...getIndices(R, Rl, C, Cl, rows),
         D,
