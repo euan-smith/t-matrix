@@ -14,6 +14,7 @@
     - [Core Methods](#guide-matrix-core)
     - [Iterables](#guide-matrix-iterables)
   - [Operations on matrices](#guide-operations)
+  - [Binary matrices](#guide-binary)
   - [Matrix manipulation](#guide-manipulation)
   - [Helpers and Mixins](#guide-other)
 - [Tutorial - making magic squares](#tutorial)
@@ -57,9 +58,8 @@ The current plan for future versions. Obviously the version numbers further out 
   - iterables: for val of matrix, for row of rows(matrix) etc.
   - composable: mixin functions to the Matrix prototype to customise your preferred usage.
 - v1.1
-  - logical matrices
-  - logical matrix addressing
-  - logical operations (gt, gte, lt, lte, eq, neq, not)
+  - binary matrices
+  - binary matrix addressing
   - kron, shift
   - norm, dot, cross
 - v1.2
@@ -82,6 +82,10 @@ The current plan for future versions. Obviously the version numbers further out 
 - v1.0.6
   - Added testing and coverage badges
   - Added a dot product operation and testing
+- v1.0.7
+  - Binary matrices added
+  - Binary matrix addressing
+  - Texting and docs for binary matrices
 
 # <a id="installation"></a> Installation
 ```
@@ -241,6 +245,10 @@ So far there are only a small set of the basic matrix arithmetic operations.  Mo
 one matrix, and the matrix dimensions must agree with standard matrix multiplication rules.
 - [Matrix.det](#det) returns the determinant of a matrix.
 - [Matrix.trace](#trace) returns the trace (the sum of the diagonal) of a matrix.
+## <a id="guide-binary"></a> Binary matrices
+There is just on function required for binary matrices, [Matrix.bin](#bin), which acts as a creation function, a conversion
+function or to map the contents of several matrices to a binary matrix.  the standard [matrix.get](#Matrix+get) and
+[matrix.set](#Matrix+set) both can be used with binary matrices for indexing into and modifying matrix contents.
 ## <a id="guide-manipulation"></a> Matrix manipulation
 Again just the most essential matrix manipulation methods have been implemented so far.  More will follow, however the flexibility
 of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow most others to be composed.
@@ -373,15 +381,17 @@ All this means, however, is that we don't need the transpose:
 const [I,J] = grid([1,':',n]);
 const M = reshape(from([1,':',n*n]),n,n);
 ```
-The final step is done slightly differently as _t-matrix_ does not (yet) have logical matrix addressing, however there
-is a useful element-wise mapping function which can do the job for us, [Matrix.mapMany](#mapMany), which takes as input
-any number of matrices or scalar values and then creates a new matrix through an element-wise mapping:
+The final step requires the use of binary (logical in Matlab/Octave terminology) matrices and binary addressing.
+The binary matrix function [Matrix.bin](#bin) is used to create _K_ and mapping function is used in set to then modify the matrix values.
 ```js
-return mapMany(I,J,M, (i,j,m) => Math.floor((i%4)/2)===Math.floor((j%4)/2) ? n*n+1-m : m);
+import {bin} from 't-matrix'
+const K = bin(I, J, (i,j) => Math.floor((i%4)/2) === Math.floor((j%4)/2));
+M.set(K, m => n*n+1-m);
+return M;
 ```
 The expanded code now looks like this:
 ```js
-import {grid, sum, product, mapMany, from} from 't-matrix';
+import {grid, sum, product, from, bin} from 't-matrix';
 export function magic(n){
   if (n%2){
     const [I,J] = grid([1,':',n]);
@@ -391,7 +401,9 @@ export function magic(n){
   } else if (n%4===0) {
     const [I,J] = grid([1,':',n]);
     const M = reshape(from([1,':',n*n]),n,n);
-    return mapMany(I,J,M, (i,j,m) => Math.floor((i%4)/2)===Math.floor((j%4)/2) ? n*n+1-m : m);
+    const K = bin(I, J, (i,j) => Math.floor((i%4)/2) === Math.floor((j%4)/2));
+    M.set(K, m => n*n+1-m);
+    return M;
   }
 }
 ```
@@ -438,7 +450,7 @@ swapping the left and right halves of a full range.
 
 So, the final code for generating magic squares:
 ```js
-import {grid, sum, product, mapMany, from, mcat, reshape} from 't-matrix';
+import {grid, sum, product, from, bin, mcat, reshape} from 't-matrix';
 //Valid for any integer n of 3 or greater
 export function magic(n){
   if (n%2){
@@ -450,7 +462,9 @@ export function magic(n){
   if (n%4===0) {
     const [I,J] = grid([1,':',n]);
     const M = reshape(from([1,':',n*n]),n,n);
-    return mapMany(I,J,M, (i,j,m) => Math.floor((i%4)/2)===Math.floor((j%4)/2) ? n*n+1-m : m);
+    const K = bin(I, J, (i,j) => Math.floor((i%4)/2) === Math.floor((j%4)/2));
+    M.set(K, m => n*n+1-m);
+    return M;
   }
   const p=n>>1;
   let M=magic(p);
