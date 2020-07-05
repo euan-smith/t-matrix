@@ -116,6 +116,12 @@ describe('Matrix',function(){
     })
   });
   describe('set',function(){
+    it('can set a single matrix value with rc or linear addressing', function(){
+      const m=zeros(2);
+      m.set(0,0,1);
+      m.set(3,2);
+      expect(m.toJSON()).to.eql([[1,0],[0,2]]);
+    })
     it('can set a submatrix',function(){
       const m=zeros(4);
       expect([...m.set([0,1],[0,1],2)]).to.eql([2,2,0,0,2,2,0,0,0,0,0,0,0,0,0,0]);
@@ -143,8 +149,10 @@ describe('Matrix',function(){
       m.set(0,[1,2],4);
       m.set([1,2],0,(v,r,c)=>r+c);
       m.set([1,2],[1,2],[[0,1],[1,0]]);
-      expect(m.toJSON()).to.eql([[1,1,1],[0,0,1],[1,1,0]]);
-      m.set(0,0,false);
+      m.set(3,true);
+      expect(m.toJSON()).to.eql([[1,1,1],[1,0,1],[1,1,0]]);
+      m.set(0,0,0);
+      m.set(3,false);
       m.set(0,[1,2],0);
       expect(m.toJSON()).to.eql([[0,0,0],[0,0,1],[1,1,0]]);
     })

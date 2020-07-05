@@ -210,11 +210,22 @@ class Matrix{
    *
    * //If no row and column indices are provided, the value will apply to the whole matrix
    * m.set(1); //[1,1,1; 1,1,1; 1,1,1]
+   *
+   * //Linear indices can be used for single values
+   * m.set(4,2); //[1,1,1; 1,2,1; 1,1,1]
+   *
+   * //Or for vectors of values.  Note that the addressing is **row major order** although data must be provided in a column matrix
+   * m.set([2,':',6],Matrix.zeros(5,1)); //[1,1,0; 0,0,0; 0,1,1]
+   *
+   * //A binary matrix can also be used.
+   * Matrix.mixin(Matrix.bin);
+   * m.set(m.bin(v=>v===0), 2); //[1,1,2; 2,2,2; 2,1,1]
    */
   set(rows,cols,val){
     let R=this[ROWS], C=this[COLS], Rl=R.length, Cl=C.length;
     const D=this[DATA], binary = isBinary(this);
-    if (isNum(rows) && isNum(cols) && isNum(val)) {
+    let isNumR=isNum(rows), isNumC=isNum(cols);
+    if (isNumR && isNumC && isNum(val)) {
       D[R[rows]+C[cols]]=binary ? val ? 1 : 0 : val;
       return this;
     }
@@ -223,6 +234,10 @@ class Matrix{
         val = rows;
         break;
       case 2:
+        if (isNumR && isNumC) {
+          D[R[(rows / Cl) | 0] + C[rows % Cl]] = binary ? cols ? 1 : 0 : cols;
+          return this;
+        }
         [R,C] = getIndices(R, Rl, C, Cl, rows)
         Rl = R.length;
         Cl = 1;
