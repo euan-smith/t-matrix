@@ -1,7 +1,6 @@
-import {grid,sum,product} from "./operations";
-import {Matrix} from "./core";
-import {range,mapIter,zipIters} from "./tools";
-import {hcat, vcat} from "./manipulations";
+import {grid,sum,product,bin} from "./operations";
+import {Matrix, from} from "./core";
+import {hcat, vcat, reshape} from "./manipulations";
 
 /**
  * Creates a magic square of the specified size
@@ -21,11 +20,11 @@ export function magic(size){
   }
   if (!(size%4)){
     //size is doubly even
-    const vals = range([1,':',size*size]);
     const [I,J] = grid([1,':',size]);
-    return new Matrix(size,size,mapIter(zipIters(vals,I,J),([v,i,j])=>{
-      return (i%4)>>1===(j%4)>>1 ? size*size+1-v : v
-    }));
+    const M = reshape(from([1,':',size*size]),size,size);
+    const K = bin(I, J, (i,j) => Math.floor((i%4)/2) === Math.floor((j%4)/2));
+    M.set(K, m => size*size+1-m);
+    return M;
   }
   //size is singly even
   const p=size>>1;

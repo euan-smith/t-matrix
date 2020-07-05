@@ -169,7 +169,7 @@ mapMany[METHOD]='mapMany';
 
 // noinspection JSCommentMatchesSignature
 /**
- * Creates a new binary matrix with the results of calling a provided function on every element in the supplied set of one or more.
+ * Creates a new binary matrix with the results of calling a provided function on every element in the supplied set of one or more matrices.
  * @param matrices {...(Matrix|Number)}
  * @param [fn] {Function} Optional for the special case of a single parameter, mandatory otherwise
  * @category operation
@@ -180,6 +180,10 @@ mapMany[METHOD]='mapMany';
  * const m = Matrix.magic(10);
  * const selection = Matrix.bin(m, v=>v>0.5);
  * const sum = Matrix.sum(m.get(selection));
+ *
+ * //If using bin a lot, consider mixing it in
+ * Matrix.mixin(Matrix.bin);
+ * console.log('count of non-zero values of m:',Matrix.sum(m.bin()));
  *
  */
 export function bin(...matrices){
