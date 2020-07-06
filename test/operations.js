@@ -2,7 +2,7 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {eye,ones,zeros,rand} from "../src/create";
-import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross,mapMany,dot,bin} from "../src/operations";
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross,mapMany,dot,bin,kron} from "../src/operations";
 import {from, isBinary} from "../src/core";
 import * as E from "../src/errors";
 import {magic} from "../src/extras";
@@ -329,5 +329,14 @@ describe('bin', function(){
   it('creates a binary array from multiple matrices and a function', function(){
     const b = bin(magic(4), magic(4).t, (a,b)=>a>b);
     expect(sum(b)).to.equal(6);
+  })
+})
+
+describe('kron',function(){
+  it('performs a Kronecker tensor product',function(){
+    const A = eye(2);
+    const B = from([[1,-1],[-1,1]]);
+    const K = kron(A,B);
+    expect(K.toJSON()).to.eql([[1,-1,0,-0],[-1,1,-0,0],[0,-0,1,-1],[-0,0,-1,1]]);
   })
 })

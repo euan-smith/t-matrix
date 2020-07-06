@@ -2,7 +2,7 @@ import {Matrix, isMatrix, from} from "./core";
 import {ROWS,COLS,DATA,METHOD} from "./const";
 import {rows, cols} from "./conversions";
 import {mapIter, zipIters, isNum, toList, repeat} from "./tools";
-import {diag, minor,repmat} from "./manipulations";
+import {diag, minor,repmat, hcat, vcat} from "./manipulations";
 import {eye} from "./create";
 import * as E from "./errors";
 
@@ -483,3 +483,29 @@ export function dot(A,B,dim){
   return sum(product(A,B),null,dim);
 }
 
+/**
+ * @summary Calculate the [Kronecker tensor product](https://en.wikipedia.org/wiki/Kronecker_product) of two matrices
+ * @description If the two matrices have the dimensions m x n and p x q then the returned matrix will have dimensions
+ * m*p x n*q and will be a block matrix containing all possible products of the elements of two matrices.
+ * @param A {Matrix}
+ * @param B {Matrix}
+ * @returns {Matrix}
+ * @example
+ * const A = Matrix.eye(2);
+ * const B = Matrix.ones(2);
+ * K = Matrix.kron(A,B);
+ * console.log(K.toJSON());
+ * // [[ 1, 1, 0, 0 ],
+ * //  [ 1, 1, 0, 0 ],
+ * //  [ 0, 0, 1, 1 ],
+ * //  [ 0, 0, 1, 1 ]]
+ */
+export function kron(A,B){
+  A=from(A);
+  B=from(B);
+  const m2cat=[];
+  for(let row of rows(A)){
+    m2cat.push(hcat(...row.map(a=>B.map(b=>a*b))));
+  }
+  return vcat(...m2cat);
+}
