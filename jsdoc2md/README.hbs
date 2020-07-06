@@ -92,7 +92,7 @@ As of v1.0.7 most of the way through implementing 1.1 - just kron (the Kronecker
 The current plan for future versions. Obviously the version numbers further out are more speculative.
 - v1.2
   - conv, grad, trapz, cumsum, interp1, interp2
-- v1.
+- v1.3
   - LU and QR decomposition
 - after v1.3
   - eigen, SVD
@@ -231,10 +231,16 @@ one matrix, and the matrix dimensions must agree with standard matrix multiplica
 - [Matrix.det](#det) returns the determinant of a matrix.
 - [Matrix.trace](#trace) returns the trace (the sum of the diagonal) of a matrix.
 - [Matrix.kron](#kron) returns the Kronecker product of two matrices.
+- [Matrix.mapMany](#mapMany) is an extension of the [matrix.map](#Matrix+map) which takes an arbitrary list of matrices and a mapping lambda function to create a new matrix.  This can be a much more concise method to use if you end up
+with many nested or chained arithmetic operations.
+
+
 ## <a id="guide-binary"></a> Binary matrices
-There is just on function required for binary matrices, [Matrix.bin](#bin), which acts as a creation function, a conversion
+There is just one function required for binary matrices, [Matrix.bin](#bin), which acts as a creation function, a conversion
 function or to map the contents of several matrices to a binary matrix.  the standard [matrix.get](#Matrix+get) and
 [matrix.set](#Matrix+set) both can be used with binary matrices for indexing into and modifying matrix contents.
+
+
 ## <a id="guide-manipulation"></a> Matrix manipulation
 Again just the most essential matrix manipulation methods have been implemented so far.  More will follow, however the flexibility
 of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow most others to be composed.
@@ -246,7 +252,6 @@ of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow mos
 - [Matrix.repmat](#repmat) can repeat a matrix horizontally and vertically.
 - [Matrix.minor](#minor) returns a matrix with a specified row and column removed.
 - [Matrix.swapRows](#swapRows) and [Matrix.swapCols](#swapCols) does pretty much what you might expect.
-
 
 
 ## <a id="guide-other"></a> Helpers and Mixins

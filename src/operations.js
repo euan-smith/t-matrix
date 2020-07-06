@@ -490,6 +490,7 @@ export function dot(A,B,dim){
  * @param A {Matrix}
  * @param B {Matrix}
  * @returns {Matrix}
+ * @category operation
  * @example
  * const A = Matrix.eye(2);
  * const B = Matrix.ones(2);

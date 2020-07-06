@@ -207,6 +207,7 @@ function * _hcat(matrices){
  * @param [rowShift] {Number} Number of rows to shift down.  A negative number shifts up.  If matrix is a vector and only one shift parameter is specified then this applies to the first dimension of length greater than 1.
  * @param [colShift] {Number} Number of columns to shift right.  A negative number shifts left.
  * @returns {Matrix}
+ * @category manipulation
  * @example
  * const m = Matrix.from([1,2,3],[4,5,6],[7,8,9]);
  * Matrix.shift(m,1,1) //  shift the contents one down and one to the right

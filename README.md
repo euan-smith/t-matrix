@@ -92,7 +92,7 @@ As of v1.0.7 most of the way through implementing 1.1 - just kron (the Kronecker
 The current plan for future versions. Obviously the version numbers further out are more speculative.
 - v1.2
   - conv, grad, trapz, cumsum, interp1, interp2
-- v1.
+- v1.3
   - LU and QR decomposition
 - after v1.3
   - eigen, SVD
@@ -231,10 +231,16 @@ one matrix, and the matrix dimensions must agree with standard matrix multiplica
 - [Matrix.det](#det) returns the determinant of a matrix.
 - [Matrix.trace](#trace) returns the trace (the sum of the diagonal) of a matrix.
 - [Matrix.kron](#kron) returns the Kronecker product of two matrices.
+- [Matrix.mapMany](#mapMany) is an extension of the [matrix.map](#Matrix+map) which takes an arbitrary list of matrices and a mapping lambda function to create a new matrix.  This can be a much more concise method to use if you end up
+with many nested or chained arithmetic operations.
+
+
 ## <a id="guide-binary"></a> Binary matrices
-There is just on function required for binary matrices, [Matrix.bin](#bin), which acts as a creation function, a conversion
+There is just one function required for binary matrices, [Matrix.bin](#bin), which acts as a creation function, a conversion
 function or to map the contents of several matrices to a binary matrix.  the standard [matrix.get](#Matrix+get) and
 [matrix.set](#Matrix+set) both can be used with binary matrices for indexing into and modifying matrix contents.
+
+
 ## <a id="guide-manipulation"></a> Matrix manipulation
 Again just the most essential matrix manipulation methods have been implemented so far.  More will follow, however the flexibility
 of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow most others to be composed.
@@ -246,7 +252,6 @@ of the matrix [get](#Matrix+get) and [set](#Matrix+set) methods should allow mos
 - [Matrix.repmat](#repmat) can repeat a matrix horizontally and vertically.
 - [Matrix.minor](#minor) returns a matrix with a specified row and column removed.
 - [Matrix.swapRows](#swapRows) and [Matrix.swapCols](#swapCols) does pretty much what you might expect.
-
 
 
 ## <a id="guide-other"></a> Helpers and Mixins
@@ -519,6 +524,9 @@ export function magic(n){
 <dt>Matrix.<a href="#hcat">hcat(matrices)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Horizontally concatenate matrices together</p>
 </dd>
+<dt>Matrix.<a href="#shift">shift(matrix, [rowShift], [colShift])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Circularly shift the matrix by the specified steps.  The shifts are MOD the respective matrix dimension.</p>
+</dd>
 <dt>Matrix.<a href="#diag">diag(matrix, [set])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
           <dd><p>gets, sets or creates diagonal matrices</p>
 </dd>
@@ -575,6 +583,9 @@ export function magic(n){
 <dt>Matrix.<a href="#dot">dot(A, B, [dim])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Calculate the scalar dot product(s) of two vectors or sets of vectors.</p>
 </dd>
+<dt>Matrix.<a href="#kron">kron(A, B)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Calculate the <a href="https://en.wikipedia.org/wiki/Kronecker_product">Kronecker tensor product</a> of two matrices</p>
+</dd>
 </dl>
 
 ## Other Matrix Functions
@@ -594,12 +605,6 @@ export function magic(n){
 </dd>
 <dt>Matrix.<a href="#mixin">mixin(...methods)</a></dt>
     <dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
-</dd>
-<dt>Matrix.<a href="#shift">shift(matrix, [rowShift], [colShift])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>Circularly shift the matrix by the specified steps.  The shifts are MOD the respective matrix dimension.</p>
-</dd>
-<dt>Matrix.<a href="#kron">kron(A, B)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
-    <dd><p>Calculate the <a href="https://en.wikipedia.org/wiki/Kronecker_product">Kronecker tensor product</a> of two matrices</p>
 </dd>
 </dl>
 
@@ -848,41 +853,6 @@ console.log(Matrix.from([1,':',9]).reshape(3,3).neg().toJSON());//[[-1,-2,-3],[-
 import * as Matrix from 't-matrix';
 Matrix.mixin(Matrix);
 console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,10,12],[14,16,18]]
-```
-<br>
-<a name="shift"></a>
-
-## Matrix.shift(matrix, [rowShift], [colShift]) ⇒ [<code>Matrix</code>](#Matrix)
-Circularly shift the matrix by the specified steps.  The shifts are MOD the respective matrix dimension.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| matrix | [<code>Matrix</code>](#Matrix) |  |
-| [rowShift] | <code>Number</code> | Number of rows to shift down.  A negative number shifts up.  If matrix is a vector and only one shift parameter is specified then this applies to the first dimension of length greater than 1. |
-| [colShift] | <code>Number</code> | Number of columns to shift right.  A negative number shifts left. |
-
-**Example**  
-```js
-const m = Matrix.from([1,2,3],[4,5,6],[7,8,9]);Matrix.shift(m,1,1) //  shift the contents one down and one to the rightMatrix.shift(m,-1,3) // shift the contents one up.  The matrix has three columns so a shift of 3 does nothing.
-```
-<br>
-<a name="kron"></a>
-
-## Matrix.kron(A, B) ⇒ [<code>Matrix</code>](#Matrix)
-*Calculate the [Kronecker tensor product](https://en.wikipedia.org/wiki/Kronecker_product) of two matrices*
-
-If the two matrices have the dimensions m x n and p x q then the returned matrix will have dimensionsm*p x n*q and will be a block matrix containing all possible products of the elements of two matrices.
-
-
-| Param | Type |
-| --- | --- |
-| A | [<code>Matrix</code>](#Matrix) | 
-| B | [<code>Matrix</code>](#Matrix) | 
-
-**Example**  
-```js
-const A = Matrix.eye(2);const B = Matrix.ones(2);K = Matrix.kron(A,B);console.log(K.toJSON());// [[ 1, 1, 0, 0 ],//  [ 1, 1, 0, 0 ],//  [ 0, 0, 1, 1 ],//  [ 0, 0, 1, 1 ]]
 ```
 <br>
 <a name="Range"></a>
@@ -1143,6 +1113,24 @@ Horizontally concatenate matrices together
 | matrices | [<code>Matrix</code>](#Matrix) | 
 
 <br>
+<a name="shift"></a>
+
+## Matrix.shift(matrix, [rowShift], [colShift]) ⇒ [<code>Matrix</code>](#Matrix)
+Circularly shift the matrix by the specified steps.  The shifts are MOD the respective matrix dimension.
+
+**Category**: manipulation  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| matrix | [<code>Matrix</code>](#Matrix) |  |
+| [rowShift] | <code>Number</code> | Number of rows to shift down.  A negative number shifts up.  If matrix is a vector and only one shift parameter is specified then this applies to the first dimension of length greater than 1. |
+| [colShift] | <code>Number</code> | Number of columns to shift right.  A negative number shifts left. |
+
+**Example**  
+```js
+const m = Matrix.from([1,2,3],[4,5,6],[7,8,9]);Matrix.shift(m,1,1) //  shift the contents one down and one to the rightMatrix.shift(m,-1,3) // shift the contents one up.  The matrix has three columns so a shift of 3 does nothing.
+```
+<br>
 <a name="sum"></a>
 
 ## Matrix.sum(...matrices) ⇒ [<code>Matrix</code>](#Matrix) \| <code>Number</code>
@@ -1397,6 +1385,25 @@ Both matrices must contain either 1 or N row vectors or column vectors of equal 
 | B | [<code>Matrix</code>](#Matrix) | 
 | [dim] | <code>Number</code> | 
 
+<br>
+<a name="kron"></a>
+
+## Matrix.kron(A, B) ⇒ [<code>Matrix</code>](#Matrix)
+*Calculate the [Kronecker tensor product](https://en.wikipedia.org/wiki/Kronecker_product) of two matrices*
+
+If the two matrices have the dimensions m x n and p x q then the returned matrix will have dimensionsm*p x n*q and will be a block matrix containing all possible products of the elements of two matrices.
+
+**Category**: operation  
+
+| Param | Type |
+| --- | --- |
+| A | [<code>Matrix</code>](#Matrix) | 
+| B | [<code>Matrix</code>](#Matrix) | 
+
+**Example**  
+```js
+const A = Matrix.eye(2);const B = Matrix.ones(2);K = Matrix.kron(A,B);console.log(K.toJSON());// [[ 1, 1, 0, 0 ],//  [ 1, 1, 0, 0 ],//  [ 0, 0, 1, 1 ],//  [ 0, 0, 1, 1 ]]
+```
 <br>
 * * *
 
