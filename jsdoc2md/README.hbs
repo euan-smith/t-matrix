@@ -383,7 +383,7 @@ const [I,J] = grid([1,':',n]);
 const M = reshape(from([1,':',n*n]),n,n);
 ```
 The final step requires the use of binary (logical in Matlab/Octave terminology) matrices and binary addressing.
-The binary matrix function [Matrix.bin](#bin) is used to create _K_ and mapping function is used in set to then modify the matrix values.
+The binary matrix function [Matrix.bin](#bin) is used to create _K_ and a mapping function is used in set to then modify the matrix values.
 ```js
 import {bin} from 't-matrix'
 const K = bin(I, J, (i,j) => Math.floor((i%4)/2) === Math.floor((j%4)/2));
@@ -428,18 +428,18 @@ Forming the M matrix on the third line needs the introduction of another new _t-
 This could be done using separate horizontal and vertical concatenation ([hcat](#hcat) and [vcat](#vcat)), however _mcat_
 makes this job a lot simpler:
 ```js
-const p=size>>1;
-let M=magic(p);
-M=mcat([[      M     , sum(M,2*p*p)],
-        [sum(M,3*p*p),  sum(M,p*p) ]]);
+const p = n>>1;
+let M = magic(p);
+M = mcat([[      M     , sum(M,2*p*p)],
+          [sum(M,3*p*p),  sum(M,p*p) ]]);
 ```
 We need to be careful in the matrix addressing with the next two steps as matlab uses a 1-based index, whereas _t-matrix_
 (like JavaScript) is 0-based.  Note also that the [i; i+p] is just addressing the whole range.  Similarly [i+p; i] is
 the whole range with a half-way circular shift.  Here the flexibility of [Range](#Range) indexing really helps:
 ```js
-let k=(n-2)>>2, j=[':',k-1,size+1-k,':'];
+let k = (n-2)>>2, j = [':',k-1,n+1-k,':'];
 M.set(':', j, M.get([p,':',':',p-1], j));
-j=[0,k];
+j = [0,k];
 M.set([k,k+p], j, M.get([k+p,k], j));
 return M;
 ```
@@ -467,13 +467,13 @@ export function magic(n){
     M.set(K, m => n*n+1-m);
     return M;
   }
-  const p=n>>1;
-  let M=magic(p);
-  M=mcat([[      M     , sum(M,2*p*p)],
-          [sum(M,3*p*p),  sum(M,p*p) ]]);
-  let k=(n-2)>>2, j=[':',k-1,n+1-k,':',n-1];
+  const p = n>>1;
+  let M = magic(p);
+  M = mcat([[      M     , sum(M,2*p*p)],
+            [sum(M,3*p*p),  sum(M,p*p) ]]);
+  let k = (n-2)>>2, j = [':',k-1,n+1-k,':',n-1];
   M.set(':', j, M.get([p,':',':',p-1], j));
-  j=[0,k];
+  j = [0,k];
   M.set([k,k+p], j, M.get([k+p,k], j));
   return M;
 }
