@@ -2,7 +2,7 @@ import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
 import {zeros,rand,eye} from "../src/create";
-import {diag,reshape,swapCols,swapRows,repmat,hcat,vcat,cat} from "../src/manipulations";
+import {diag, reshape, swapCols, swapRows, repmat, hcat, vcat, cat, shift} from "../src/manipulations";
 import {sum} from "../src/operations";
 import {from} from "../src/core";
 
@@ -88,3 +88,22 @@ describe('concat',function(){
     expect(()=>vcat([[1,2]],[[1,2,3]])).to.throw();
   });
 });
+
+describe('shift', function(){
+  it('shifts a matrix', function(){
+    const m=from([[1,2,3],[4,5,6],[7,8,9]]);
+    expect(shift(m).toJSON()).to.eql([[1,2,3],[4,5,6],[7,8,9]])
+    expect(shift(m,0).toJSON()).to.eql([[1,2,3],[4,5,6],[7,8,9]])
+    expect(shift(m,0,0).toJSON()).to.eql([[1,2,3],[4,5,6],[7,8,9]])
+    expect(shift(m,1,0).toJSON()).to.eql([[7,8,9],[1,2,3],[4,5,6]])
+    expect(shift(m,0,1).toJSON()).to.eql([[3,1,2],[6,4,5],[9,7,8]])
+    expect(shift(m,1,1).toJSON()).to.eql([[9,7,8],[3,1,2],[6,4,5]])
+    expect(shift(m,2,2).toJSON()).to.eql(shift(m,-1,-1).toJSON())
+    expect(shift(m,0,0).toJSON()).to.eql(shift(m,3,3).toJSON())
+    expect(shift(m.get(0,':'),0).toJSON()).to.eql([[1,2,3]])
+    expect(shift(m.get(0,':'),1).toJSON()).to.eql([[3,1,2]])
+    expect(shift(m.get(':',0),0).toJSON()).to.eql([1,4,7])
+    expect(shift(m.get(':',0),1).toJSON()).to.eql([7,1,4])
+    expect(()=>shift(m,'foo')).to.throw();
+  })
+})

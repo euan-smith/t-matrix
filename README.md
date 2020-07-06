@@ -67,53 +67,37 @@ V1 now released.  Some changes from the initial 0.x versions are breaking as all
 As of v1.0.7 most of the way through implementing 1.1 - just kron (the Kronecker tensor product) left to do.
 
 ## <a id="release-notes"></a> Release Notes
-- v1.0.0
-  - Refactored to the new API, fully testing implemented and passing, documentation now derived from jsdoc.
-- v1.0.1 - v1.0.4
-  - Entirely documentation corrections and improvements.
+- v1.1
+  - kron and shift added
+  - Test and docs for kron and shift
+  - roadmap for v1.1. complete
+- v1.0.7
+  - Binary matrices added
+  - Binary matrix addressing
+  - Testing and docs for binary matrices
+- v1.0.6
+  - Added testing and coverage badges
+  - Added a dot product operation and testing
 - v1.0.5
   - More doc typo/inconsistency corrections.
   - Added a cross product operation and testing.
   - Updated devDependencies to remove vulnerabilities.
-- v1.0.6
-  - Added testing and coverage badges
-  - Added a dot product operation and testing
-- v1.0.7
-  - Binary matrices added
-  - Binary matrix addressing
-  - Texting and docs for binary matrices
+- v1.0.1 - v1.0.4
+  - Entirely documentation corrections and improvements.
+- v1.0.0
+  - Refactored to the new API, fully testing implemented and passing, documentation now derived from jsdoc.
+
 
 ## <a id="roadmap"></a> Roadmap
 The current plan for future versions. Obviously the version numbers further out are more speculative.
-- v1.0
-- Breaking from v0.x.x
-- `Matrix.from` behaves differently
-- Methods built on the base class reduced to a minimum (only include what you need)
-- All arithmetic operations separately importable.
-- A `mixin` function can be used to add methods to the class prototype.
-- Constructors: zeros, ones, eye, rand, diag
-- Core methods: get, set, t (transpose), map, clone, size
-- expressive get and set methods ([Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)-like range selection and manipulation)
-- Manipulations: reshape, diag, swapRows, swapCols, minor, repmat
-- Matrix operations: mult (matrix), div, ldiv, det, inv, trace
-- Element-wise operations (within and between matrices): product, sum, max, min
-- minimal data copying
-- dense matrices and vectors.
-- iterables: for val of matrix, for row of rows(matrix) etc.
-- composable: mixin functions to the Matrix prototype to customise your preferred usage.
-- v1.1
-- binary matrices
-- binary matrix addressing
-- kron, shift
-- norm, dot, cross
 - v1.2
-- conv, grad, trapz, cumsum
+  - conv, grad, trapz, cumsum, interp1, interp2
 - v1.
-- LU and QR decomposition
+  - LU and QR decomposition
 - after v1.3
-- eigen, SVD
-- fft and supporting methods
-- sort, unique
+  - eigen, SVD
+  - fft and supporting methods
+  - sort, unique
 
 # <a id="guide"></a> Guide
 
@@ -246,6 +230,7 @@ So far there are only a small set of the basic matrix arithmetic operations.  Mo
 one matrix, and the matrix dimensions must agree with standard matrix multiplication rules.
 - [Matrix.det](#det) returns the determinant of a matrix.
 - [Matrix.trace](#trace) returns the trace (the sum of the diagonal) of a matrix.
+- [Matrix.kron](#kron) returns the Kronecker product of two matrices.
 ## <a id="guide-binary"></a> Binary matrices
 There is just on function required for binary matrices, [Matrix.bin](#bin), which acts as a creation function, a conversion
 function or to map the contents of several matrices to a binary matrix.  the standard [matrix.get](#Matrix+get) and
@@ -383,7 +368,7 @@ const [I,J] = grid([1,':',n]);
 const M = reshape(from([1,':',n*n]),n,n);
 ```
 The final step requires the use of binary (logical in Matlab/Octave terminology) matrices and binary addressing.
-The binary matrix function [Matrix.bin](#bin) is used to create _K_ and mapping function is used in set to then modify the matrix values.
+The binary matrix function [Matrix.bin](#bin) is used to create _K_ and a mapping function is used in set to then modify the matrix values.
 ```js
 import {bin} from 't-matrix'
 const K = bin(I, J, (i,j) => Math.floor((i%4)/2) === Math.floor((j%4)/2));
@@ -428,18 +413,18 @@ Forming the M matrix on the third line needs the introduction of another new _t-
 This could be done using separate horizontal and vertical concatenation ([hcat](#hcat) and [vcat](#vcat)), however _mcat_
 makes this job a lot simpler:
 ```js
-const p=size>>1;
-let M=magic(p);
-M=mcat([[      M     , sum(M,2*p*p)],
-        [sum(M,3*p*p),  sum(M,p*p) ]]);
+const p = n>>1;
+let M = magic(p);
+M = mcat([[      M     , sum(M,2*p*p)],
+          [sum(M,3*p*p),  sum(M,p*p) ]]);
 ```
 We need to be careful in the matrix addressing with the next two steps as matlab uses a 1-based index, whereas _t-matrix_
 (like JavaScript) is 0-based.  Note also that the [i; i+p] is just addressing the whole range.  Similarly [i+p; i] is
 the whole range with a half-way circular shift.  Here the flexibility of [Range](#Range) indexing really helps:
 ```js
-let k=(n-2)>>2, j=[':',k-1,size+1-k,':'];
+let k = (n-2)>>2, j = [':',k-1,n+1-k,':'];
 M.set(':', j, M.get([p,':',':',p-1], j));
-j=[0,k];
+j = [0,k];
 M.set([k,k+p], j, M.get([k+p,k], j));
 return M;
 ```
@@ -467,13 +452,13 @@ export function magic(n){
     M.set(K, m => n*n+1-m);
     return M;
   }
-  const p=n>>1;
-  let M=magic(p);
-  M=mcat([[      M     , sum(M,2*p*p)],
-          [sum(M,3*p*p),  sum(M,p*p) ]]);
-  let k=(n-2)>>2, j=[':',k-1,n+1-k,':',n-1];
+  const p = n>>1;
+  let M = magic(p);
+  M = mcat([[      M     , sum(M,2*p*p)],
+            [sum(M,3*p*p),  sum(M,p*p) ]]);
+  let k = (n-2)>>2, j = [':',k-1,n+1-k,':',n-1];
   M.set(':', j, M.get([p,':',':',p-1], j));
-  j=[0,k];
+  j = [0,k];
   M.set([k,k+p], j, M.get([k+p,k], j));
   return M;
 }
@@ -609,6 +594,12 @@ export function magic(n){
 </dd>
 <dt>Matrix.<a href="#mixin">mixin(...methods)</a></dt>
     <dd><p>Add static functions of the form <code>fn(matrix,...args)</code> to the <a href="#Matrix">Matrix</a> prototype as <code>matrix.fn(args)</code></p>
+</dd>
+<dt>Matrix.<a href="#shift">shift(matrix, [rowShift], [colShift])</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Circularly shift the matrix by the specified steps.  The shifts are MOD the respective matrix dimension.</p>
+</dd>
+<dt>Matrix.<a href="#kron">kron(A, B)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Calculate the <a href="https://en.wikipedia.org/wiki/Kronecker_product">Kronecker tensor product</a> of two matrices</p>
 </dd>
 </dl>
 
@@ -857,6 +848,41 @@ console.log(Matrix.from([1,':',9]).reshape(3,3).neg().toJSON());//[[-1,-2,-3],[-
 import * as Matrix from 't-matrix';
 Matrix.mixin(Matrix);
 console.log(Matrix.from([1,':',9]).reshape(3,3).mult(2).toJSON());//[[2,4,6],[8,10,12],[14,16,18]]
+```
+<br>
+<a name="shift"></a>
+
+## Matrix.shift(matrix, [rowShift], [colShift]) ⇒ [<code>Matrix</code>](#Matrix)
+Circularly shift the matrix by the specified steps.  The shifts are MOD the respective matrix dimension.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| matrix | [<code>Matrix</code>](#Matrix) |  |
+| [rowShift] | <code>Number</code> | Number of rows to shift down.  A negative number shifts up.  If matrix is a vector and only one shift parameter is specified then this applies to the first dimension of length greater than 1. |
+| [colShift] | <code>Number</code> | Number of columns to shift right.  A negative number shifts left. |
+
+**Example**  
+```js
+const m = Matrix.from([1,2,3],[4,5,6],[7,8,9]);Matrix.shift(m,1,1) //  shift the contents one down and one to the rightMatrix.shift(m,-1,3) // shift the contents one up.  The matrix has three columns so a shift of 3 does nothing.
+```
+<br>
+<a name="kron"></a>
+
+## Matrix.kron(A, B) ⇒ [<code>Matrix</code>](#Matrix)
+*Calculate the [Kronecker tensor product](https://en.wikipedia.org/wiki/Kronecker_product) of two matrices*
+
+If the two matrices have the dimensions m x n and p x q then the returned matrix will have dimensionsm*p x n*q and will be a block matrix containing all possible products of the elements of two matrices.
+
+
+| Param | Type |
+| --- | --- |
+| A | [<code>Matrix</code>](#Matrix) | 
+| B | [<code>Matrix</code>](#Matrix) | 
+
+**Example**  
+```js
+const A = Matrix.eye(2);const B = Matrix.ones(2);K = Matrix.kron(A,B);console.log(K.toJSON());// [[ 1, 1, 0, 0 ],//  [ 1, 1, 0, 0 ],//  [ 0, 0, 1, 1 ],//  [ 0, 0, 1, 1 ]]
 ```
 <br>
 <a name="Range"></a>

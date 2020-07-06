@@ -1,6 +1,6 @@
 import {Matrix,from} from "./core";
 import {DATA,ROWS,COLS,METHOD} from "./const";
-import {range, zipIters, isArray} from "./tools";
+import {range, zipIters, isArray, isNum} from "./tools";
 import {rows} from "./conversions";
 
 /**
@@ -199,4 +199,31 @@ hcat[METHOD]='hcat';
 function * _hcat(matrices){
   for(let mRows of zipIters(...matrices.map(m=>rows(m))))
     for(let row of mRows) yield*row;
+}
+
+/**
+ * Circularly shift the matrix by the specified steps.  The shifts are MOD the respective matrix dimension.
+ * @param matrix {Matrix}
+ * @param [rowShift] {Number} Number of rows to shift down.  A negative number shifts up.  If matrix is a vector and only one shift parameter is specified then this applies to the first dimension of length greater than 1.
+ * @param [colShift] {Number} Number of columns to shift right.  A negative number shifts left.
+ * @returns {Matrix}
+ * @example
+ * const m = Matrix.from([1,2,3],[4,5,6],[7,8,9]);
+ * Matrix.shift(m,1,1) //  shift the contents one down and one to the right
+ * Matrix.shift(m,-1,3) // shift the contents one up.  The matrix has three columns so a shift of 3 does nothing.
+ */
+export function shift(matrix, rowShift, colShift){
+  matrix = from(matrix);
+  if (!rowShift && !colShift) return matrix;
+  if (isNum(rowShift) && isNum(colShift)){
+    return matrix.get(
+      rowShift === 0 ? ':' : [-rowShift, ':', ':', -rowShift - 1],
+      colShift === 0 ? ':' : [-colShift, ':', ':', -colShift - 1],
+    );
+  }
+  if (~colShift && isNum(rowShift)){
+    const idx = [-rowShift, ':', ':', -rowShift - 1];
+    return matrix.size[0]===1 ? matrix.get( ':', idx ) : matrix.get( idx, ':' );
+  }
+  throw new Error('Matrix::shift the second and third parameters, if defined, must be numbers');
 }

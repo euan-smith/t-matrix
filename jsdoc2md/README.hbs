@@ -67,53 +67,37 @@ V1 now released.  Some changes from the initial 0.x versions are breaking as all
 As of v1.0.7 most of the way through implementing 1.1 - just kron (the Kronecker tensor product) left to do.
 
 ## <a id="release-notes"></a> Release Notes
-- v1.0.0
-  - Refactored to the new API, fully testing implemented and passing, documentation now derived from jsdoc.
-- v1.0.1 - v1.0.4
-  - Entirely documentation corrections and improvements.
+- v1.1
+  - kron and shift added
+  - Test and docs for kron and shift
+  - roadmap for v1.1. complete
+- v1.0.7
+  - Binary matrices added
+  - Binary matrix addressing
+  - Testing and docs for binary matrices
+- v1.0.6
+  - Added testing and coverage badges
+  - Added a dot product operation and testing
 - v1.0.5
   - More doc typo/inconsistency corrections.
   - Added a cross product operation and testing.
   - Updated devDependencies to remove vulnerabilities.
-- v1.0.6
-  - Added testing and coverage badges
-  - Added a dot product operation and testing
-- v1.0.7
-  - Binary matrices added
-  - Binary matrix addressing
-  - Texting and docs for binary matrices
+- v1.0.1 - v1.0.4
+  - Entirely documentation corrections and improvements.
+- v1.0.0
+  - Refactored to the new API, fully testing implemented and passing, documentation now derived from jsdoc.
+
 
 ## <a id="roadmap"></a> Roadmap
 The current plan for future versions. Obviously the version numbers further out are more speculative.
-- v1.0
-- Breaking from v0.x.x
-- `Matrix.from` behaves differently
-- Methods built on the base class reduced to a minimum (only include what you need)
-- All arithmetic operations separately importable.
-- A `mixin` function can be used to add methods to the class prototype.
-- Constructors: zeros, ones, eye, rand, diag
-- Core methods: get, set, t (transpose), map, clone, size
-- expressive get and set methods ([Matlab](https://www.mathworks.com/products/matlab.html)/[Octave](https://www.gnu.org/software/octave/)-like range selection and manipulation)
-- Manipulations: reshape, diag, swapRows, swapCols, minor, repmat
-- Matrix operations: mult (matrix), div, ldiv, det, inv, trace
-- Element-wise operations (within and between matrices): product, sum, max, min
-- minimal data copying
-- dense matrices and vectors.
-- iterables: for val of matrix, for row of rows(matrix) etc.
-- composable: mixin functions to the Matrix prototype to customise your preferred usage.
-- v1.1
-- binary matrices
-- binary matrix addressing
-- kron, shift
-- norm, dot, cross
 - v1.2
-- conv, grad, trapz, cumsum
+  - conv, grad, trapz, cumsum, interp1, interp2
 - v1.
-- LU and QR decomposition
+  - LU and QR decomposition
 - after v1.3
-- eigen, SVD
-- fft and supporting methods
-- sort, unique
+  - eigen, SVD
+  - fft and supporting methods
+  - sort, unique
 
 # <a id="guide"></a> Guide
 
@@ -246,6 +230,7 @@ So far there are only a small set of the basic matrix arithmetic operations.  Mo
 one matrix, and the matrix dimensions must agree with standard matrix multiplication rules.
 - [Matrix.det](#det) returns the determinant of a matrix.
 - [Matrix.trace](#trace) returns the trace (the sum of the diagonal) of a matrix.
+- [Matrix.kron](#kron) returns the Kronecker product of two matrices.
 ## <a id="guide-binary"></a> Binary matrices
 There is just on function required for binary matrices, [Matrix.bin](#bin), which acts as a creation function, a conversion
 function or to map the contents of several matrices to a binary matrix.  the standard [matrix.get](#Matrix+get) and
