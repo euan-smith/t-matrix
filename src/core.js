@@ -165,7 +165,7 @@ class Matrix{
    *
    * // Ranges or matrices can be used.  A column vector will always be returned
    * console.log(Matrix.magic(4).get([4,':',7]).toJSON()); // [ 5, 11, 10, 8 ]
-   **
+   *
    * // A binary matrix can also be used.  This is often derived from the matrix itself
    * const m = Matrix.magic(4);
    * const b = Matrix.bin(m,v=>v>12);

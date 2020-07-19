@@ -1,6 +1,9 @@
 import {from} from "./core";
 import {bin, mapMany} from "./operations";
 import {zeros} from "./create";
+import {Matrix} from "./core";
+import {mapIter} from "./tools";
+import {rows} from "./conversions";
 
 /**
  * @summary 1D interpolation of uniformly spaced data.
@@ -11,6 +14,7 @@ import {zeros} from "./create";
  * a column vector and the output matrix will have the row count of _q_ and the column count of _v_.
  * @param v {Matrix}
  * @param q {Matrix}
+ * @returns {Matrix}
  * @category calculation
  */
 export function gridInterp1(v, q){
@@ -32,5 +36,29 @@ export function gridInterp1(v, q){
   const rtn = zeros(qR, oC).set(Number.NaN);
   const mapParams = is.map(i => v.get(i, ...prms));
   return rtn.set(sel, ...prms, mapMany(...mapParams, ...rs, fn));
+}
+
+/**
+ * @summary Calculate the cumulative sum along the rows or down the columns of a matrix.
+ * @param m {Matrix}
+ * @param dim {Number}
+ * @returns {Matrix}
+ * @category calculation
+ */
+export function cumsum(m, dim){
+  const rtn = from(m).clone();
+  const [R,C] = rtn.size;
+  if (dim===2){
+    for (let r=0; r<R; r++){
+      let t=0;
+      rtn.set(r,':',v=>t+=v);
+    }
+  } else {
+    for (let c=0; c<C; c++){
+      let t=0;
+      rtn.set(':',c,v=>t+=v);
+    }
+  }
+  return rtn;
 }
 

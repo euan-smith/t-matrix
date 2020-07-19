@@ -1,10 +1,12 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {gridInterp1} from "../src/calculations";
+import {gridInterp1, cumsum} from "../src/calculations";
 import {from} from "../src/core";
 import {rand} from "../src/create";
 import {reshape} from "../src/manipulations";
+import {magic} from "../src/extras";
+import {sum} from "../src/operations";
 
 describe('gridInterp1',function(){
   it('interpolates simple data correctly',function(){
@@ -28,5 +30,20 @@ describe('gridInterp1',function(){
   });
   it('throws an error if neither matrix is a column',function(){
     expect(()=>gridInterp1(rand(2,2),rand(2,2))).to.throw();
+  });
+});
+
+describe('cumsum',function(){
+  it('operates on the columns of a matrix', function(){
+    const m = magic(4);
+    const c = cumsum(m);
+    expect(c.get(0,':').toJSON()).to.eql(m.get(0,':').toJSON())
+    expect(c.get(3,':').toJSON()).to.eql(sum(m,null,1).toJSON())
+  });
+  it('operates on the rows of a matrix', function(){
+    const m = magic(4);
+    const c = cumsum(m,2);
+    expect(c.get(':',0).toJSON()).to.eql(m.get(':',0).toJSON())
+    expect(c.get(':',3).toJSON()).to.eql(sum(m,null,2).toJSON())
   });
 })
