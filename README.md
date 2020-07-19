@@ -63,8 +63,8 @@ console.log([...a]);
 - flexible, expressive, extendable.
 
 # <a id="status"></a> Status
-V1.1.0 now released.  Binary matrices are the big addition over v1.0.
-Starting to work on v1.2 which is all about adding numerical methods - interpolation, integration and such.
+V1 now released.  Some changes from the initial 0.x versions are breaking as all of the code has been rewritten.
+As of v1.0.7 most of the way through implementing 1.1 - just kron (the Kronecker tensor product) left to do.
 
 ## <a id="release-notes"></a> Release Notes
 - v1.1
@@ -282,8 +282,8 @@ import * as Matrix from 't-matrix';
 const A = Matrix.magic(3);
 const B = Matrix.from([15,15,15]);
 const x = A.ldiv(B);
-console.log(x.toJSON());
-//[ 1, 1, 1 ]
+console.log(x.toJSON);
+//[ [ 1 ], [ 1 ], [ 1 ] ]
 ```
 
 Alternatively, to add a custom method:
@@ -760,7 +760,7 @@ console.log(m.get(3)); // 13,
 
 // Ranges or matrices can be used.  A column vector will always be returned
 console.log(Matrix.magic(4).get([4,':',7]).toJSON()); // [ 5, 11, 10, 8 ]
-*
+
 // A binary matrix can also be used.  This is often derived from the matrix itself
 const m = Matrix.magic(4);
 const b = Matrix.bin(m,v=>v>12);
