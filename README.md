@@ -63,11 +63,15 @@ console.log([...a]);
 - flexible, expressive, extendable.
 
 # <a id="status"></a> Status
-V1 now released.  Some changes from the initial 0.x versions are breaking as all of the code has been rewritten.
-As of v1.0.7 most of the way through implementing 1.1 - just kron (the Kronecker tensor product) left to do.
+V1.1 complete with binary matrices as the main new feature.  Started work on 1.2 which is mostly numerical methods such
+as interpolation, integration.
 
 ## <a id="release-notes"></a> Release Notes
-- v1.1
+- v1.1.2
+  - cumsum added.
+- v1.1.1
+  - gridInterp1 added - just linear interpolation so far
+- v1.1.0
   - kron and shift added
   - Test and docs for kron and shift
   - roadmap for v1.1. complete
