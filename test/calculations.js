@@ -28,5 +28,5 @@ describe('gridInterp1',function(){
   });
   it('throws an error if neither matrix is a column',function(){
     expect(()=>gridInterp1(rand(2,2),rand(2,2))).to.throw();
-  })
+  });
 })

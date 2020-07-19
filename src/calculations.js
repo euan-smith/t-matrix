@@ -19,45 +19,18 @@ export function gridInterp1(v, q){
   q = from(q);
   const [qR, qC] = q.size;
   if (qC>1 && vC>1) throw new Error('Matrix:: gridInterp1 - either the first or second parameter must be a column vector');
-  const sel = bin(q, x => x >=0 && x <= vR);
-  const x = q.get(sel), i0 = x.map(Math.floor), i1 = i0.map(i=>i+1), ir = x.map(x=>x%1);
-  if (qC === 1) {
-    return zeros(qR, vC)
-      .set(Number.NaN)
-      .set(sel, ':',
-        mapMany(
-          v.get(i0, ':'),
-          v.get(i1, ':'),
-          ir,
-          (v0, v1, r) => (1 - r) * v0 + r * v1)
-      );
-  } else {
-    return zeros(qR, qC)
-      .set(Number.NaN)
-      .set(sel,
-        mapMany(
-          v.get(i0),
-          v.get(i1),
-          ir,
-          (v0, v1, r) => (1 - r) * v0 + r * v1)
-      );
-  }
+  const sel = bin(q, x => x >=0 && x <= vR), x = q.get(sel);
+  let is, rs, fn;
+
+  // Linear case (no other case right now)
+  const i0 = x.map(Math.floor), i1 = i0.map(i=>i+1), ir = x.map(x=>x%1);
+  is=[i0, i1];
+  rs=[ir];
+  fn=(v0, v1, r) => (1 - r) * v0 + r * v1;
+
+  const [oC, prms] = vC > 1 ? [vC, [':']] : [qC, []];
+  const rtn = zeros(qR, oC).set(Number.NaN);
+  const mapParams = is.map(i => v.get(i, ...prms));
+  return rtn.set(sel, ...prms, mapMany(...mapParams, ...rs, fn));
 }
-
-/**
- * X  V   C0   C1
- * x1 v1  v1   0
- * x2 v2
- *
- *
- * v = c0 + x.c1 + x.x.c2
- * v1 = c0 + x1.c1
- * v2 = c0 + x2.c1
- * v1 - x1.c1 = v2 - x2.c1
- * c1 = (v2-v1)/(x2-x1)
- * c0 = v1 - x1.c1
- *
- *
- */
-
 
