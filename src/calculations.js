@@ -62,3 +62,27 @@ export function cumsum(m, dim){
   return rtn;
 }
 
+/**
+ * @summary Calculate the differences along the rows or down the columns of a matrix.
+ * @param m {Matrix}
+ * @param dim {Number}
+ * @returns {Matrix}
+ * @category calculation
+ */
+export function diff(m, dim){
+  const rtn = from(m).clone();
+  const [R,C] = rtn.size;
+  if (dim===2){
+    for (let r=0; r<R; r++){
+      let p=0;
+      rtn.set(r,':',v=>-p+(p=v));
+    }
+  } else {
+    for (let c=0; c<C; c++){
+      let p=0;
+      rtn.set(':',c,v=>-p+(p=v));
+    }
+  }
+  return rtn;
+}
+

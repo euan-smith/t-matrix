@@ -1,7 +1,7 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {gridInterp1, cumsum} from "../src/calculations";
+import {gridInterp1, cumsum, diff} from "../src/calculations";
 import {from} from "../src/core";
 import {rand} from "../src/create";
 import {reshape} from "../src/manipulations";
@@ -46,4 +46,21 @@ describe('cumsum',function(){
     expect(c.get(':',0).toJSON()).to.eql(m.get(':',0).toJSON())
     expect(c.get(':',3).toJSON()).to.eql(sum(m,null,2).toJSON())
   });
+})
+
+describe('diff',function(){
+  it('operates on the columns of a matrix', function(){
+    const m = magic(4);
+    const c = diff(cumsum(m));
+    expect(c.toJSON()).to.eql(m.toJSON())
+  });
+  it('operates on the rows of a matrix', function(){
+    const m = magic(4);
+    const c = diff(cumsum(m,2),2);
+    expect(c.toJSON()).to.eql(m.toJSON())
+  });
+  it('with cumsum operates independently on rows and columns', function(){
+    const m = magic(8);
+    expect(diff(diff(cumsum(cumsum(m),2)),2).toJSON()).to.eql(m.toJSON())
+  })
 })

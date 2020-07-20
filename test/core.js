@@ -83,7 +83,6 @@ describe('Matrix',function(){
     });
     it('can use linear addressing', function(){
       const m=magic(4);
-      console.log(m.toJSON());
       expect(m.get([0,3,12,15]).toJSON()).to.eql([ 16, 13, 4, 1 ]);
       expect(m.get(from([0,3,12,15])).toJSON()).to.eql([ 16, 13, 4, 1 ]);
     })
