@@ -7,8 +7,8 @@
   "module": "index.mjs",
   "scripts": {
     "test": "mocha  test/*.js",
-    "cover": "nyc --reporter=lcov --reporter=text npm test",
-    "coveralls": "npm run cover && nyc report --reporter=text-lcov | coveralls",
+    "cover": "c8 --reporter=lcov --reporter=text npm test",
+    "coveralls": "npm run cover && c8 report --reporter=text-lcov | coveralls",
     "build": "rollup -c",
     "prepublish": "npm test && npm run docs && npm run build",
     "docs": "jsdoc2md --template jsdoc2md/README.hbs --partial jsdoc2md/global-index-dl.hbs --partial jsdoc2md/body.hbs --files src/*.js > README.md & node ./jsdoc2md/post-process.js"
@@ -33,12 +33,12 @@
   },
   "homepage": "https://github.com/zakalwe314/t-matrix#readme",
   "devDependencies": {
+    "c8": "^7.11.0",
     "chai": "^4.3.6",
     "chai-almost": "^1.0.1",
     "coveralls": "^3.1.1",
-    "jsdoc-to-markdown": "^6.0.1",
+    "jsdoc-to-markdown": "^7.1.1",
     "mocha": "^9.2.0",
-    "nyc": "^15.1.0",
     "rollup": "^2.67.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-json": "^4.0.0",

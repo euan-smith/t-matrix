@@ -601,6 +601,9 @@ export function magic(n){
 <dt>Matrix.<a href="#cumsum">cumsum(m, dim)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
     <dd><p>Calculate the cumulative sum along the rows or down the columns of a matrix.</p>
 </dd>
+<dt>Matrix.<a href="#diff">diff(m, dim)</a> ⇒ <code><a href="#Matrix">Matrix</a></code></dt>
+    <dd><p>Calculate the differences along the rows or down the columns of a matrix.</p>
+</dd>
 </dl>
 
 ## Other Matrix Functions
@@ -899,6 +902,19 @@ The first parameter, _v_, is the data to be interpolatedand the second paramete
 
 ## Matrix.cumsum(m, dim) ⇒ [<code>Matrix</code>](#Matrix)
 *Calculate the cumulative sum along the rows or down the columns of a matrix.*
+
+**Category**: calculation  
+
+| Param | Type |
+| --- | --- |
+| m | [<code>Matrix</code>](#Matrix) | 
+| dim | <code>Number</code> | 
+
+<br>
+<a name="diff"></a>
+
+## Matrix.diff(m, dim) ⇒ [<code>Matrix</code>](#Matrix)
+*Calculate the differences along the rows or down the columns of a matrix.*
 
 **Category**: calculation  
 
