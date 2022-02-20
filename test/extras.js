@@ -1,8 +1,8 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {magic} from "../src/extras";
-import {sum,trace} from "../src/operations"
+import {magic} from "../src/extras.js";
+import {sum,trace} from "../src/operations.js"
 
 describe('magic',function(){
   it('throws if a square of size 2 is requested',function(){

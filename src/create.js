@@ -1,6 +1,6 @@
-import {Matrix} from './core';
-import {diag} from "./manipulations";
-import {isArray} from "./tools";
+import {Matrix} from './core.js';
+import {diag} from "./manipulations.js";
+import {isArray} from "./tools.js";
 
 export const
   /**

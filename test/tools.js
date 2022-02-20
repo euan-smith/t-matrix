@@ -1,7 +1,7 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {isNum, range, mapIter, zipIters, repeat, flatten} from '../src/tools';
+import {isNum, range, mapIter, zipIters, repeat, flatten} from '../src/tools.js';
 
 describe('range',function(){
   it('returns a sequence of values',function(){

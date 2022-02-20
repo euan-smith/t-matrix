@@ -1,10 +1,10 @@
-import {Matrix, isMatrix, from} from "./core";
-import {ROWS,COLS,DATA,METHOD} from "./const";
-import {rows, cols} from "./conversions";
-import {mapIter, zipIters, isNum, toList, repeat} from "./tools";
-import {diag, minor,repmat, hcat, vcat} from "./manipulations";
-import {eye} from "./create";
-import * as E from "./errors";
+import {Matrix, isMatrix, from} from "./core.js";
+import {ROWS,COLS,DATA,METHOD} from "./const.js";
+import {rows, cols} from "./conversions.js";
+import {mapIter, zipIters, isNum, toList, repeat} from "./tools.js";
+import {diag, minor,repmat, hcat, vcat} from "./manipulations.js";
+import {eye} from "./create.js";
+import * as E from "./errors.js";
 
 const
   op = (m, dir, opFn) => {

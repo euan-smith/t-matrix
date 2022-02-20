@@ -1,7 +1,7 @@
-import {Matrix,from} from "./core";
-import {DATA,ROWS,COLS,METHOD} from "./const";
-import {range, zipIters, isArray, isNum} from "./tools";
-import {rows} from "./conversions";
+import {Matrix,from} from "./core.js";
+import {DATA,ROWS,COLS,METHOD} from "./const.js";
+import {range, zipIters, isArray, isNum} from "./tools.js";
+import {rows} from "./conversions.js";
 
 /**
  * gets, sets or creates diagonal matrices

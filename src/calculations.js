@@ -1,9 +1,9 @@
-import {from} from "./core";
-import {bin, mapMany} from "./operations";
-import {zeros} from "./create";
-import {Matrix} from "./core";
-import {mapIter} from "./tools";
-import {rows} from "./conversions";
+import {from} from "./core.js";
+import {bin, mapMany} from "./operations.js";
+import {zeros} from "./create.js";
+import {Matrix} from "./core.js";
+// import {mapIter} from "./tools";
+// import {rows} from "./conversions";
 
 /**
  * @summary 1D interpolation of uniformly spaced data.
@@ -57,6 +57,30 @@ export function cumsum(m, dim){
     for (let c=0; c<C; c++){
       let t=0;
       rtn.set(':',c,v=>t+=v);
+    }
+  }
+  return rtn;
+}
+
+/**
+ * @summary Calculate the differences along the rows or down the columns of a matrix.
+ * @param m {Matrix}
+ * @param dim {Number}
+ * @returns {Matrix}
+ * @category calculation
+ */
+export function diff(m, dim){
+  const rtn = from(m).clone();
+  const [R,C] = rtn.size;
+  if (dim===2){
+    for (let r=0; r<R; r++){
+      let p=0;
+      rtn.set(r,':',v=>-p+(p=v));
+    }
+  } else {
+    for (let c=0; c<C; c++){
+      let p=0;
+      rtn.set(':',c,v=>-p+(p=v));
     }
   }
   return rtn;

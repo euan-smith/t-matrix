@@ -1,5 +1,5 @@
-import {COLS, DATA, ROWS, METHOD} from "./const";
-import {from, mixin} from "./core";
+import {COLS, DATA, ROWS, METHOD} from "./const.js";
+import {from, mixin} from "./core.js";
 // import {mapIter} from "./tools";
 
 /**

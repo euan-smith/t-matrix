@@ -1,6 +1,6 @@
-import {DATA,ROWS,COLS,METHOD} from "./const";
+import {DATA,ROWS,COLS,METHOD} from "./const.js";
 
-import {isNum, range, isFunction, isArray, mapIter, flatten} from "./tools";
+import {isNum, range, isFunction, isArray, mapIter, flatten} from "./tools.js";
 
 const NUMERICAL = Float64Array, BINARY = Uint8Array, INDEX = Uint32Array;
 

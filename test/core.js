@@ -1,12 +1,12 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {Matrix, from, mixin, isBinary} from "../src/core";
-import {METHOD} from "../src/const";
-import {eye,zeros,rand} from "../src/create";
-import * as Operations from "../src/operations";
-import * as Manipulations from "../src/manipulations"
-import {magic} from "../src/extras";
+import {Matrix, from, mixin, isBinary} from "../src/core.js";
+import {METHOD} from "../src/const.js";
+import {eye,zeros,rand} from "../src/create.js";
+import * as Operations from "../src/operations.js";
+import * as Manipulations from "../src/manipulations.js"
+import {magic} from "../src/extras.js";
 
 
 describe('Matrix',function(){
@@ -83,7 +83,6 @@ describe('Matrix',function(){
     });
     it('can use linear addressing', function(){
       const m=magic(4);
-      console.log(m.toJSON());
       expect(m.get([0,3,12,15]).toJSON()).to.eql([ 16, 13, 4, 1 ]);
       expect(m.get(from([0,3,12,15])).toJSON()).to.eql([ 16, 13, 4, 1 ]);
     })
