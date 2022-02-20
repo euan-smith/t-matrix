@@ -1,9 +1,9 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {eye,ones,zeros,rand} from "../src/create";
-import {diag} from "../src/manipulations";
-import {sum,max,min} from "../src/operations";
+import {eye,ones,zeros,rand} from "../src/create.js";
+import {diag} from "../src/manipulations.js";
+import {sum,max,min} from "../src/operations.js";
 const sizes = [1,2,3,4,11,17,32,54,89,123];
 describe('eye',function(){
   it('returns the identity matrix',function(){

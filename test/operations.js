@@ -1,11 +1,11 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {eye,ones,zeros,rand} from "../src/create";
-import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross,mapMany,dot,bin,kron} from "../src/operations";
-import {from, isBinary} from "../src/core";
-import * as E from "../src/errors";
-import {magic} from "../src/extras";
+import {eye,ones,zeros,rand} from "../src/create.js";
+import {sum,max,min,trace,product,mult,det,ldiv,div,inv,abs,grid,cross,mapMany,dot,bin,kron} from "../src/operations.js";
+import {from, isBinary} from "../src/core.js";
+import * as E from "../src/errors.js";
+import {magic} from "../src/extras.js";
 
 const m=from([[1,2,4],[8,16,32],[64,128,256]]);
 

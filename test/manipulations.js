@@ -1,10 +1,10 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {zeros,rand,eye} from "../src/create";
-import {diag, reshape, swapCols, swapRows, repmat, hcat, vcat, cat, shift} from "../src/manipulations";
-import {sum} from "../src/operations";
-import {from} from "../src/core";
+import {zeros,rand,eye} from "../src/create.js";
+import {diag, reshape, swapCols, swapRows, repmat, hcat, vcat, shift} from "../src/manipulations.js";
+import {sum} from "../src/operations.js";
+import {from} from "../src/core.js";
 
 function *skip(iter,N){
   let n=0;

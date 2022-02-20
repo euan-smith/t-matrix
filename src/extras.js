@@ -1,6 +1,6 @@
-import {grid,sum,product,bin} from "./operations";
-import {Matrix, from} from "./core";
-import {hcat, vcat, reshape} from "./manipulations";
+import {grid,sum,product,bin} from "./operations.js";
+import {Matrix, from} from "./core.js";
+import {hcat, vcat, reshape} from "./manipulations.js";
 
 /**
  * Creates a magic square of the specified size

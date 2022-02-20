@@ -1,12 +1,12 @@
 import chai,{expect} from "chai";
 import chaiAlmost from "chai-almost";
 chai.use(chaiAlmost());
-import {gridInterp1, cumsum, diff} from "../src/calculations";
-import {from} from "../src/core";
-import {rand} from "../src/create";
-import {reshape} from "../src/manipulations";
-import {magic} from "../src/extras";
-import {sum} from "../src/operations";
+import {gridInterp1, cumsum, diff} from "../src/calculations.js";
+import {from} from "../src/core.js";
+import {rand} from "../src/create.js";
+import {reshape} from "../src/manipulations.js";
+import {magic} from "../src/extras.js";
+import {sum} from "../src/operations.js";
 
 describe('gridInterp1',function(){
   it('interpolates simple data correctly',function(){

@@ -1,9 +1,9 @@
-import {from} from "./core";
-import {bin, mapMany} from "./operations";
-import {zeros} from "./create";
-import {Matrix} from "./core";
-import {mapIter} from "./tools";
-import {rows} from "./conversions";
+import {from} from "./core.js";
+import {bin, mapMany} from "./operations.js";
+import {zeros} from "./create.js";
+import {Matrix} from "./core.js";
+// import {mapIter} from "./tools";
+// import {rows} from "./conversions";
 
 /**
  * @summary 1D interpolation of uniformly spaced data.
